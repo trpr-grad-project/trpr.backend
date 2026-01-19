@@ -14,6 +14,7 @@ public static class ApplicationDependencyInjection
         // Register the domain event dispatcher
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IProfileManagementService, ProfileManagementService>();
         // Register domain event handlers
         services.Scan(scan => scan
             .FromAssemblies(AssemblyRefrence.Assembly)

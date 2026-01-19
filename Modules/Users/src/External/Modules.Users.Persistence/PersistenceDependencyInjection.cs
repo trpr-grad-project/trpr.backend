@@ -30,6 +30,7 @@ public static class PersistenceDependencyInjection
         services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
         services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IAppDbContext, AppDbContext>();
         services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<AppDbContext>());
         // adding quartz for background jobs 
         services.AddQuartz();
