@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Dtos.Responses;
 using Modules.Users.Application.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Common.Presentation;
 
 namespace Modules.Users.Presentation.Controllers.v1
 {
@@ -11,6 +9,19 @@ namespace Modules.Users.Presentation.Controllers.v1
     [Route("api/v1/[controller]")]
     public class ProfileController(IProfileManagementService profileManagementService) : ControllerBase
     {
+        /// <summary>
+        /// Create a new profile for a user with languages, interests, and vibes
+        /// </summary>
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<ProfileResponseDto>> CreateProfile(
+            Guid userId,
+            [FromBody] CreateProfileRequestDto createRequest,
+            CancellationToken cancellationToken)
+        {
+            var profile = await profileManagementService.CreateProfileAsync(userId, createRequest, cancellationToken);
+            return Ok(profile);
+        }
+
         /// <summary>
         /// Get user profile with all languages, interests, and vibes
         /// </summary>

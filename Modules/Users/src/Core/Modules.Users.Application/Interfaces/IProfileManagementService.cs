@@ -6,6 +6,11 @@ namespace Modules.Users.Application.Interfaces;
 public interface IProfileManagementService
 {
     /// <summary>
+    /// Create a new profile for a user with languages, interests, and vibes
+    /// </summary>
+    Task<ProfileResponseDto> CreateProfileAsync(Guid userId, CreateProfileRequestDto createRequest, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Get profile by user ID with all related languages, interests, and vibes
     /// </summary>
     Task<ProfileResponseDto> GetProfileByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);

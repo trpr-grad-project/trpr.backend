@@ -15,6 +15,32 @@ public class ProfileManagementService(
     IUnitOfWork unitOfWork,
     ILogger<ProfileManagementService> logger) : IProfileManagementService
 {
+    public async Task<ProfileResponseDto> CreateProfileAsync(Guid userId, CreateProfileRequestDto createRequest, CancellationToken cancellationToken = default)
+    {
+        logger.LogInformation("Creating profile for user {UserId}", userId);
+
+        var existingProfile = await context.Profiles
+            .FirstOrDefaultAsync(p => p.Id == userId, cancellationToken);
+
+        if (existingProfile != null)
+        {
+            logger.LogWarning("Profile already exists for user {UserId}", userId);
+            throw new ConflictException("Profile.Conflict", userId);
+        }
+
+        await ValidateReferences(createRequest);
+        var profile = new Profile { Id = userId };
+        UpdateProfileInterests(profile, createRequest.InterestIds);
+        UpdateProfileInterests(profile, createRequest.InterestIds);
+        UpdateProfileVibes(profile, createRequest.VibeIds);
+        context.Profiles.Add(profile);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        logger.LogInformation("Profile created successfully for user {UserId}", userId);
+
+        return await GetProfileByUserIdAsync(userId, cancellationToken);
+    }
+
     public async Task<ProfileResponseDto> GetProfileByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Fetching profile for user {UserId}", userId);
@@ -55,9 +81,9 @@ public class ProfileManagementService(
         }
 
         // Update languages
-        UpdateProfileLanguages(profile, userId, updateRequest.LanguageIds);
-        UpdateProfileInterests(profile, userId, updateRequest.InterestIds);
-        UpdateProfileVibes(profile, userId, updateRequest.VibeIds);
+        UpdateProfileLanguages(profile, updateRequest.LanguageIds);
+        UpdateProfileInterests(profile, updateRequest.InterestIds);
+        UpdateProfileVibes(profile, updateRequest.VibeIds);
         context.Profiles.Update(profile);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -67,39 +93,66 @@ public class ProfileManagementService(
         return await GetProfileByUserIdAsync(userId, cancellationToken);
     }
 
-    private void UpdateProfileLanguages(Profile profile, Guid userId, List<Guid>? languageIds)
+    private static void UpdateProfileLanguages(Profile profile, List<Guid>? languageIds)
     {
         if (languageIds != null)
         {
             profile.Languages.Clear();
             foreach (var languageId in languageIds)
             {
-                profile.Languages.Add(new ProfileLanguage { ProfileId = userId, LanguageId = languageId });
+                profile.Languages.Add(new ProfileLanguage { ProfileId = profile.Id, LanguageId = languageId });
             }
         }
     }
 
-    private void UpdateProfileInterests(Profile profile, Guid userId, List<Guid>? interestIds)
+    private static void UpdateProfileInterests(Profile profile, List<Guid>? interestIds)
     {
         if (interestIds != null)
         {
             profile.Interests.Clear();
             foreach (var interestId in interestIds)
             {
-                profile.Interests.Add(new ProfileInterest { ProfileId = userId, InterestId = interestId });
+                profile.Interests.Add(new ProfileInterest { ProfileId = profile.Id, InterestId = interestId });
             }
         }
     }
 
-    private void UpdateProfileVibes(Profile profile, Guid userId, List<Guid>? vibeIds)
+    private static void UpdateProfileVibes(Profile profile, List<Guid>? vibeIds)
     {
         if (vibeIds != null)
         {
             profile.Vibes.Clear();
             foreach (var vibeId in vibeIds)
             {
-                profile.Vibes.Add(new ProfileVibe { ProfileId = userId, VibeId = vibeId });
+                profile.Vibes.Add(new ProfileVibe { ProfileId = profile.Id, VibeId = vibeId });
             }
         }
+    }
+
+    private async Task ValidateReferences(CreateProfileRequestDto dto)
+    {
+        var langIds = dto.LanguageIds ?? [];
+        logger.LogInformation("Validating languages: {LanguageIds}", langIds);
+        var languagesExist = await context.Languages
+            .CountAsync(l => langIds.Contains(l.Id));
+        logger.LogInformation("Languages found: {LanguagesExist}", languagesExist);
+        if (languagesExist != langIds.Count)
+            throw new NotFoundException("Language.Ref.NotFound");
+
+        var intrestIds = dto.InterestIds ?? [];
+        logger.LogInformation("Validating interests: {InterestIds}", intrestIds);
+        var interestsExist = await context.Interests
+            .CountAsync(i => intrestIds.Contains(i.Id));
+        logger.LogInformation("Interests found: {InterestsExist}", interestsExist);
+        if (interestsExist != intrestIds.Count)
+            throw new NotFoundException("Interest.Ref.NotFound");
+
+        var vibeIds = dto.VibeIds ?? [];
+        logger.LogInformation("Validating vibes: {VibeIds}", vibeIds);
+        var vibesExist = await context.Vibes
+            .CountAsync(v => vibeIds.Contains(v.Id));
+        logger.LogInformation("Vibes found: {VibesExist}", vibesExist);
+        if (vibesExist != vibeIds.Count)
+            throw new NotFoundException("Vibe.Ref.NotFound");
     }
 }

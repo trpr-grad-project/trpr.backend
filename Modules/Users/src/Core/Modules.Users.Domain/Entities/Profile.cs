@@ -52,7 +52,7 @@ namespace Modules.Users.Domain.Entities
     {
         public Guid Id { get; set; }
         public virtual User User { get; set; } = default!;
-        
+
         // Navigation properties
         public virtual ICollection<ProfileLanguage> Languages { get; set; } = new List<ProfileLanguage>();
         public virtual ICollection<ProfileInterest> Interests { get; set; } = new List<ProfileInterest>();
