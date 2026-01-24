@@ -251,12 +251,12 @@ namespace Modules.Users.Persistence.Migrations
                         .HasColumnName("value");
 
                     b.HasKey("Id")
-                        .HasName("pk_token");
+                        .HasName("pk_tokens");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_token_user_id");
+                        .HasDatabaseName("ix_tokens_user_id");
 
-                    b.ToTable("token", (string)null);
+                    b.ToTable("tokens", (string)null);
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.User", b =>
@@ -427,7 +427,7 @@ namespace Modules.Users.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_token_users_user_id");
+                        .HasConstraintName("fk_tokens_users_user_id");
 
                     b.Navigation("User");
                 });
