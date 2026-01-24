@@ -11,9 +11,8 @@ namespace Modules.Users.Application.Validators
     {
         public LoginUserRequestValidator()
         {
-            RuleFor(x => x.Email)
-                .NotEmpty()
-                .EmailAddress();
+            RuleFor(x => x.Identifier)
+                .NotEmpty();
             RuleFor(x => x.Password)
                 .NotEmpty()
                 .WithMessage("Password is required.")

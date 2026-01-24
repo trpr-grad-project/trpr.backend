@@ -9,6 +9,7 @@ namespace Modules.Users.Persistence.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IUnitOfWork, IAppDbContext
 {
+    public virtual DbSet<Token> Tokens { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Profile> Profiles { get; set; }
     public virtual DbSet<Language> Languages { get; set; }

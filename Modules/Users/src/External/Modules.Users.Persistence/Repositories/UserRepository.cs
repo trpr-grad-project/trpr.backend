@@ -7,10 +7,11 @@ namespace Modules.Users.Persistence.Repositories
 {
     public class UserRepository(AppDbContext context) : IUserRepository
     {
-        public Task<User?> GetByEmail(string email)
+        public Task<User?> GetByIdentifier(string identifier)
         {
             return context.Users
-                .FirstOrDefaultAsync(u => u.Email == email);
+                .Include(u => u.Profile)
+                .FirstOrDefaultAsync(u => u.UserName == identifier);
         }
     }
 }

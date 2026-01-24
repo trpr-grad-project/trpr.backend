@@ -5,7 +5,6 @@ using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Dtos.Responses;
 using Modules.Users.Application.Exceptions;
 using Modules.Users.Application.Helpers;
-using Modules.Users.Application.Interfaces;
 using Modules.Users.Domain.Entities;
 
 namespace Modules.Users.Application.Services;
@@ -13,7 +12,7 @@ namespace Modules.Users.Application.Services;
 public class ProfileManagementService(
     IAppDbContext context,
     IUnitOfWork unitOfWork,
-    ILogger<ProfileManagementService> logger) : IProfileManagementService
+    ILogger<ProfileManagementService> logger)
 {
     public async Task<ProfileResponseDto> CreateProfileAsync(Guid userId, CreateProfileRequestDto createRequest, CancellationToken cancellationToken = default)
     {
@@ -154,5 +153,30 @@ public class ProfileManagementService(
         logger.LogInformation("Vibes found: {VibesExist}", vibesExist);
         if (vibesExist != vibeIds.Count)
             throw new NotFoundException("Vibe.Ref.NotFound");
+    }
+
+    public async Task<ProfileLookupResponseDto> GetProfileMetaDataAsync(CancellationToken cancellationToken = default)
+    {
+        var vibesTask = context.Vibes
+            .AsNoTracking()
+            .Select(v => v.ToVibeResponseDto())
+            .ToListAsync(cancellationToken);
+        var interestsTask = context.Interests
+            .AsNoTracking()
+            .Select(i => i.ToInterestResponseDto())
+            .ToListAsync(cancellationToken);
+        var languagesTask = context.Languages
+            .AsNoTracking()
+            .Select(l => l.ToLanguageResponseDto())
+            .ToListAsync(cancellationToken);
+
+        await Task.WhenAll(vibesTask, interestsTask, languagesTask);
+
+        return new ProfileLookupResponseDto
+        {
+            Vibes = await vibesTask,
+            Interests = await interestsTask,
+            Languages = await languagesTask
+        };
     }
 }

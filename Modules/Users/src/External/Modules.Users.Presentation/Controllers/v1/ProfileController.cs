@@ -1,13 +1,15 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Dtos.Responses;
-using Modules.Users.Application.Interfaces;
+using Modules.Users.Application.Services;
 
 namespace Modules.Users.Presentation.Controllers.v1
 {
     [ApiController]
+    [Authorize]
     [Route("api/v1/[controller]")]
-    public class ProfileController(IProfileManagementService profileManagementService) : ControllerBase
+    public class ProfileController(ProfileManagementService profileManagementService) : ControllerBase
     {
         /// <summary>
         /// Create a new profile for a user with languages, interests, and vibes

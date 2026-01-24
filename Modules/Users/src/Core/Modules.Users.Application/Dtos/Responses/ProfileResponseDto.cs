@@ -32,3 +32,10 @@ public class ProfileResponseDto
     public List<InterestResponseDto> Interests { get; set; } = new();
     public List<VibeResponseDto> Vibes { get; set; } = new();
 }
+
+public class ProfileLookupResponseDto
+{
+    public List<LanguageResponseDto> Languages { get; set; } = new();
+    public List<InterestResponseDto> Interests { get; set; } = new();
+    public List<VibeResponseDto> Vibes { get; set; } = new();
+}

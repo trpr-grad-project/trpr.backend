@@ -7,11 +7,9 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequestDto
 {
     public CreateUserRequestValidator()
     {
-        RuleFor(x => x.Email)
+        RuleFor(x => x.Identifier)
             .NotEmpty()
-            .WithMessage("Email is required.")
-            .EmailAddress()
-            .WithMessage("Email must be a valid email address.");
+            .WithMessage("Identifier is required.");
         RuleFor(x => x.Password)
             .NotEmpty()
             .WithMessage("Password is required.")

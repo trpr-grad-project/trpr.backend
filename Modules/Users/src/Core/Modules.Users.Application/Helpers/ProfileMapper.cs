@@ -10,49 +10,45 @@ public static class ProfileMapper
         return new ProfileResponseDto
         {
             Id = profile.Id,
-            Languages = ToLanguageResponseDtos(profile.Languages),
-            Interests = ToInterestResponseDtos(profile.Interests),
-            Vibes = ToVibeResponseDtos(profile.Vibes)
+            Languages = [.. profile.Languages.Select(x => x.Language.ToLanguageResponseDto())],
+            Interests = [.. profile.Interests.Select(x => x.Interest.ToInterestResponseDto())],
+            Vibes = [.. profile.Vibes.Select(x => x.Vibe.ToVibeResponseDto())]
         };
     }
 
-    private static List<LanguageResponseDto> ToLanguageResponseDtos(ICollection<ProfileLanguage> profileLanguages)
+    public static LanguageResponseDto ToLanguageResponseDto(this Language language)
     {
-        return profileLanguages
-            .Select(pl => new LanguageResponseDto
-            {
-                Id = pl.Language.Id,
-                Name = pl.Language.Name,
-                Code = pl.Language.Code,
-                NativeName = pl.Language.NativeName,
-                Icon = pl.Language.Icon
-            })
-            .ToList();
+        return new LanguageResponseDto
+        {
+            Id = language.Id,
+            Name = language.Name,
+            Code = language.Code,
+            NativeName = language.NativeName,
+            Icon = language.Icon
+        };
     }
 
-    private static List<InterestResponseDto> ToInterestResponseDtos(ICollection<ProfileInterest> profileInterests)
+    public static InterestResponseDto ToInterestResponseDto(this Interest interest)
     {
-        return profileInterests
-            .Select(pi => new InterestResponseDto
-            {
-                Id = pi.Interest.Id,
-                Icon = pi.Interest.Icon,
-                Name = pi.Interest.Name
-            })
-            .ToList();
+        return new InterestResponseDto
+        {
+            Id = interest.Id,
+            Icon = interest.Icon,
+            Name = interest.Name
+        };
     }
 
-    private static List<VibeResponseDto> ToVibeResponseDtos(ICollection<ProfileVibe> profileVibes)
+    public static VibeResponseDto ToVibeResponseDto(this Vibe vibe)
     {
-        return profileVibes
-            .Select(pv => new VibeResponseDto
-            {
-                Id = pv.Vibe.Id,
-                Thumbnail = pv.Vibe.Thumbnail,
-                Description = pv.Vibe.Description,
-                Name = pv.Vibe.Name,
-                IsActive = pv.Vibe.IsActive
-            })
-            .ToList();
+        return new VibeResponseDto
+        {
+            Id = vibe.Id,
+            Thumbnail = vibe.Thumbnail,
+            Description = vibe.Description,
+            Name = vibe.Name,
+            IsActive = vibe.IsActive
+        };
     }
+
+
 }

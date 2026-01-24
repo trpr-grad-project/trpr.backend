@@ -6,6 +6,7 @@ namespace Modules.Users.Application.Abstractions;
 public interface IAppDbContext
 {
     public DbSet<User> Users { get; set; }
+    public DbSet<Token> Tokens { get; set; }
     public DbSet<Profile> Profiles { get; set; }
     public DbSet<Language> Languages { get; set; }
     public DbSet<Interest> Interests { get; set; }

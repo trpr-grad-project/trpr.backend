@@ -12,16 +12,29 @@ namespace Modules.Users.Infrastructure.Services;
 internal sealed class IdentityProviderService(AdminKeyCloakClient adminKeyCloakClient, TokenKeyCloackCLient tokenKeyCloackCLient, ILogger<IdentityProviderService> logger)
     : IIdentityProviderService
 {
+
+    public Task<LoginUserResponseDto> ImpersonateUserAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var authResponse = adminKeyCloakClient.ImpersonateUserAsync(userId, cancellationToken);
+        return Task.FromResult(new LoginUserResponseDto()
+        {
+            AccessToken = authResponse.Result.AccessToken,
+            RefreshToken = authResponse.Result.RefreshToken,
+            ProfileSetupCompleted = false
+        });
+    }
+
     // POST /admin/realms/{realm}/users
-    public async Task<LoginUserResponse> LoginUserAsync(string email, string password, CancellationToken cancellationToken = default)
+    public async Task<LoginUserResponseDto> LoginUserAsync(string email, string password, CancellationToken cancellationToken = default)
     {
         try
         {
             var authResponse = await tokenKeyCloackCLient.LoginUserAsync(email, password, cancellationToken);
-            return new LoginUserResponse()
+            return new LoginUserResponseDto()
             {
                 AccessToken = authResponse.AccessToken,
-                RefreshToken = authResponse.RefreshToken
+                RefreshToken = authResponse.RefreshToken,
+                ProfileSetupCompleted = false
             };
         }
         catch (HttpRequestException exception)
@@ -35,37 +48,63 @@ internal sealed class IdentityProviderService(AdminKeyCloakClient adminKeyCloakC
         }
     }
 
-    public Task<LoginUserResponse> RefreshUserAsync(string token, CancellationToken cancellationToken = default)
+    public Task<LoginUserResponseDto> RefreshUserAsync(string token, CancellationToken cancellationToken = default)
     {
         var authResponse = tokenKeyCloackCLient.RefreshTokenAsync(token, cancellationToken);
-        return Task.FromResult(new LoginUserResponse()
+        return Task.FromResult(new LoginUserResponseDto()
         {
             AccessToken = authResponse.Result.AccessToken,
-            RefreshToken = authResponse.Result.RefreshToken
+            RefreshToken = authResponse.Result.RefreshToken,
+            ProfileSetupCompleted = false
         });
     }
 
 
     public async Task<string> RegisterUserAsync(UserModel user, CancellationToken cancellationToken = default)
     {
-        var userRepresentation = new UserRepresentation(
-            user.Email,
-            user.Email,
-            user.FirstName,
-            user.LastName,
-            true,
-            true,
-            [new CredentialRepresentation("password", user.Password, false)]);
 
         try
         {
+            var userRepresentation = new UserRepresentation(
+                user.UserName,
+                user.FirstName,
+                user.LastName,
+                false,
+                [new CredentialRepresentation("password", user.Password, false)]);
+
             string identityId = await adminKeyCloakClient.RegisterUserAsync(userRepresentation, cancellationToken);
             return identityId;
         }
         catch (HttpRequestException exception) when (exception.StatusCode == HttpStatusCode.Conflict)
         {
             logger.LogError("User registration failed {exception}", exception);
-            throw new ConflictException("User.Conflict.Email", user.Email);
+            throw new ConflictException("User.Conflict", user.UserName);
+        }
+    }
+
+    public Task RemoveUserAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return adminKeyCloakClient.RemoveUserAsync(userId, cancellationToken);
+        }
+        catch (HttpRequestException exception) when (exception.StatusCode == HttpStatusCode.NotFound)
+        {
+            logger.LogError("User removal failed {exception}", exception);
+            throw new NotFoundException("User.NotFound", userId);
+        }
+    }
+
+    public Task EnableUserAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return adminKeyCloakClient.ToggleUserAsync(userId.ToString(), true, cancellationToken);
+        }
+        catch (HttpRequestException exception) when (exception.StatusCode == HttpStatusCode.NotFound)
+        {
+            logger.LogError("Toggle enable/disable user failed {exception}", exception);
+            throw new NotFoundException("User.NotFound", userId);
         }
     }
 }
