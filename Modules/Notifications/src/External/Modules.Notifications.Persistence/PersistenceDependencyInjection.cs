@@ -1,14 +1,13 @@
-using Modules.Users.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
-using Modules.Users.Application.Abstractions;
-using Modules.Users.Application.Repositories;
-using Modules.Users.Persistence.Repositories;
-using Modules.Users.Persistence.Outbox;
+using Modules.Notifications.Application.Abstractions;
+using Modules.Notifications.Persistence.Outbox;
+using Modules.Notifications.Persistence.Repositories;
+using Modules.Notifications.Persistence.Data;
 
-namespace Modules.Users.Persistence;
+namespace Modules.Notifications.Persistence;
 
 public static class PersistenceDependencyInjection
 {
@@ -26,10 +25,9 @@ public static class PersistenceDependencyInjection
                 .AddInterceptors(sp.GetRequiredService<PublishOutboxMessagesInterceptor>());
         });
         services.AddScoped<PublishOutboxMessagesInterceptor>();
-        services.Configure<OutBoxOptions>(configuration.GetSection("Users:OutBox"));
+        services.Configure<OutBoxOptions>(configuration.GetSection("Notifications:OutBox"));
         services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
         services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
-        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAppDbContext, AppDbContext>();
         services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<AppDbContext>());
         // adding quartz for background jobs 

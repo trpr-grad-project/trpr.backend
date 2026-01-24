@@ -14,7 +14,7 @@ public static class InfrastructureDependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<KeyCloakOptions>(configuration.GetSection("KeyCloak"));
+        services.Configure<KeyCloakOptions>(configuration.GetSection("Users:KeyCloak"));
         services.AddTransient<AdminKeyCloakAuthDelegatingHandler>();
         services.AddHttpClient<AdminKeyCloakClient>((sp, client) =>
         {
@@ -29,7 +29,7 @@ public static class InfrastructureDependencyInjection
         });
         services.AddHttpClient<SemanticModelClient>((sp, client) =>
         {
-            string baseUrl = configuration.GetConnectionString("SemanticModelUrl")!;
+            string baseUrl = configuration.GetConnectionString("Users:SemanticModelUrl")!;
             client.BaseAddress = new Uri(baseUrl);
         });
         services.AddScoped<IIdentityProviderService, IdentityProviderService>();

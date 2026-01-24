@@ -1,7 +1,7 @@
-using Api.Middleware;
 using Api.Extensions;
 using Serilog;
 using Modules.Users.Infrastructure;
+using Modules.Notifications.Infrastructure;
 using Common.Application;
 using Common.Presentation;
 
@@ -9,9 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureSwagger();
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddCommonApplication(Modules.Users.Application.AssemblyRefrence.Assembly);
-builder.Services.AddCommonPresentation(Modules.Users.Presentation.AssemblyRefrence.Assembly);
+builder.Services.AddConfigurations(builder.Configuration, "Users", "Notifications");
+builder.Services.AddCommonApplication(
+    Modules.Users.Application.AssemblyRefrence.Assembly,
+    Modules.Notifications.Application.AssemblyRefrence.Assembly);
+builder.Services.AddCommonPresentation(
+    Modules.Users.Presentation.AssemblyRefrence.Assembly,
+    Modules.Notifications.Presentation.AssemblyRefrence.Assembly);
 builder.Services.AddUsersModule(builder.Configuration);
+builder.Services.AddNotificationsModule(builder.Configuration);
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .WriteTo.Console()

@@ -15,5 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Modules\Users\src\External\Modules.Users.Infrastructure\Modules.Users.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Common\Common.Application\Common.Application.csproj" />
+    <ProjectReference Include="..\..\Modules\Notifications\src\External\Modules.Notifications.Infrastructure\Modules.Notifications.Infrastructure.csproj" />
   </ItemGroup>
 </Project>
