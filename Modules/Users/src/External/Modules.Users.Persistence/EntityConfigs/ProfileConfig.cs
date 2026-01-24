@@ -16,7 +16,8 @@ namespace Modules.Users.Persistence.EntityConfigs
             builder
                 .HasOne(x => x.User)
                 .WithOne(x => x.Profile)
-                .HasForeignKey<Profile>(x => x.Id);
+                .HasForeignKey<Profile>(x => x.Id)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

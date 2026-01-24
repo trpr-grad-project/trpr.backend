@@ -7,42 +7,118 @@ using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Abstractions;
 using Modules.Users.Application.Repositories;
 using Modules.Users.Application.Interfaces;
+using Modules.Users.Application.Factories;
+using Modules.Users.Domain.ValueObjects;
 
 namespace Modules.Users.Application.Services;
 
 public class UserService(
 IUserRepository userRepository,
 IGenericRepository<User, Guid> UserRepo,
-IGenericRepository<Profile, Guid> ProfileRepo,
+IGenericRepository<Token, Guid> TokenRepo,
+TokenFactory tokenFactory,
 IIdentityProviderService identityProviderService,
+OtpHandlerFactory otpHandlerFactory,
 ILogger<UserService> logger,
-IUnitOfWork unitOfWork) : IUserService
+IUnitOfWork unitOfWork)
 {
-    public async Task<Guid> CreateUserAsync(CreateUserRequestDto createUserRequestDto, CancellationToken cancellationToken)
+    public async Task<OtpResponseDto> CreateUserAsync(CreateUserRequestDto createUserRequestDto, CancellationToken cancellationToken = default)
     {
-        User? user = await userRepository.GetByEmail(createUserRequestDto.Email);
-        if (user != null)
+        User? user = await userRepository.GetByIdentifier(createUserRequestDto.Identifier);
+        if (user != null && user.IsVerified)
         {
-            logger.LogWarning("User creation failed. Email already exists: {Email}", createUserRequestDto.Email);
-            throw new ConflictException("User.Conflict.Email", createUserRequestDto.Email);
+            logger.LogWarning("User creation failed. Identifier already exists: {Identifier}", user.Id);
+            throw new ConflictException("User.Conflict", user.Id);
         }
-        string userIdentitfier = await identityProviderService.RegisterUserAsync(new UserModel(createUserRequestDto.Email, createUserRequestDto.Password, createUserRequestDto.FirstName, createUserRequestDto.LastName), cancellationToken);
-        user = User.Create(createUserRequestDto.Email, createUserRequestDto.FirstName, createUserRequestDto.LastName, userIdentitfier);
+        await RemoveUnVerifiedUserAsync(user, cancellationToken);
+        string userIdentitfier = await identityProviderService.RegisterUserAsync(
+            new UserModel(
+                createUserRequestDto.Identifier,
+                createUserRequestDto.Password,
+                createUserRequestDto.FirstName,
+                createUserRequestDto.LastName),
+            cancellationToken);
+        user = User.Create(
+                createUserRequestDto.Identifier,
+                createUserRequestDto.FirstName,
+                createUserRequestDto.LastName,
+                userIdentitfier);
         UserRepo.Add(user);
-        var Profile = new Profile { Id = user.Id };
-        ProfileRepo.Add(Profile);
+        var token = tokenFactory.CreateToken(TokenType.Otp, user);
+        TokenRepo.Add(token);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        return user.Id;
+        return new OtpResponseDto { OtpId = token.Id };
+    }
+    public async Task<OtpResponseDto> ForgetPasswordAsync(ForgetPasswordRequestIdentifierDto forgetPasswordRequestIdentifierDto, CancellationToken cancellationToken = default)
+    {
+        var user = await userRepository.GetByIdentifier(forgetPasswordRequestIdentifierDto.Identifier) ?? throw new NotFoundException("User.NotFound", forgetPasswordRequestIdentifierDto.Identifier);
+        var token = tokenFactory.CreateToken(TokenType.ForgetPasswordOtp, user);
+        TokenRepo.Add(token);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        return new OtpResponseDto { OtpId = token.Id };
     }
 
-    public async Task<LoginUserResponse> LoginUserAsync(LoginUserRequestDto loginUserRequestDto, CancellationToken cancellationToken = default)
+    public async Task<LoginUserResponseDto> LoginUserAsync(LoginUserRequestDto loginUserRequestDto, CancellationToken cancellationToken = default)
     {
-        return await identityProviderService.LoginUserAsync(loginUserRequestDto.Email, loginUserRequestDto.Password, cancellationToken);
+
+        var user = await userRepository.GetByIdentifier(loginUserRequestDto.Identifier) ?? throw new NotFoundException("User.NotFound", loginUserRequestDto.Identifier);
+        var loginResponse = await identityProviderService.LoginUserAsync(
+            loginUserRequestDto.Identifier,
+            loginUserRequestDto.Password,
+            cancellationToken);
+        loginResponse.ProfileSetupCompleted = user.Profile != null;
+        return loginResponse;
     }
 
-    public async Task<LoginUserResponse> RefreshUserAsnc(RefreshTokenRequestDto refreshTokenRequestDto, CancellationToken cancellationToken = default)
+    public async Task<LoginUserResponseDto> RefreshUserAsnc(RefreshTokenRequestDto refreshTokenRequestDto, CancellationToken cancellationToken = default)
     {
-        return await identityProviderService.RefreshUserAsync(refreshTokenRequestDto.Token, cancellationToken);
+        return await identityProviderService.RefreshUserAsync(
+            refreshTokenRequestDto.Token,
+            cancellationToken);
+    }
+
+    public async Task<LoginUserResponseDto> VerifyOtpAsync(VerifyOtpRequestDto verifyOtpRequestDto, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await unitOfWork.BeginTransactionAsync(cancellationToken);
+            var otpToken = await TokenRepo.GetByIdForUpdate(verifyOtpRequestDto.Identifier);
+            if (
+                otpToken == null ||
+                otpToken.Expiration > DateTime.UtcNow ||
+                otpToken.IsRevoked)
+            {
+                logger.LogWarning(
+                    "OTP verification failed. Invalid or expired OTP ID: {OtpId}",
+                    verifyOtpRequestDto.Identifier);
+                throw new BadRequestException("Otp.Invalid", verifyOtpRequestDto.Identifier);
+            }
+            User user =
+                await UserRepo.GetById(otpToken.UserId) ??
+                throw new NotFoundException("User.NotFound", otpToken.UserId);
+            await unitOfWork
+                .SaveChangesAsync(cancellationToken);
+            var otpHandler = otpHandlerFactory
+                .CreateOtpHandler(otpToken.Type);
+            var loginResponse = await otpHandler
+                .VerifyOtpAsync(otpToken, user, verifyOtpRequestDto.Value, cancellationToken);
+            await unitOfWork.CommitTransactionAsync(cancellationToken);
+            return loginResponse;
+        }
+        catch
+        {
+            await unitOfWork.RollbackTransactionAsync(cancellationToken);
+            throw;
+        }
+    }
+
+    private async Task RemoveUnVerifiedUserAsync(User? user, CancellationToken cancellationToken)
+    {
+        if (user == null || user.IsVerified) return;
+        logger.LogInformation("User with identifier {Identifier} exists but is not verified. Proceeding to re-register.", user.Id);
+        UserRepo.Remove(user);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await identityProviderService.RemoveUserAsync(user.Id, cancellationToken);
     }
 
 }

@@ -7,10 +7,17 @@ using Modules.Users.Persistence;
 
 namespace Modules.Users.Persistence.Data;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IUnitOfWork
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IUnitOfWork, IAppDbContext
 {
+    public virtual DbSet<Token> Tokens { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Profile> Profiles { get; set; }
+    public virtual DbSet<Language> Languages { get; set; }
+    public virtual DbSet<Interest> Interests { get; set; }
+    public virtual DbSet<Vibe> Vibes { get; set; }
+    public virtual DbSet<ProfileLanguage> ProfileLanguages { get; set; }
+    public virtual DbSet<ProfileInterest> ProfileInterests { get; set; }
+    public virtual DbSet<ProfileVibe> ProfileVibes { get; set; }
     public virtual DbSet<OutboxMessage> OutboxMessages { get; set; }
     public virtual DbSet<OutboxConsumerMessage> OutboxConsumerMessages { get; set; }
 

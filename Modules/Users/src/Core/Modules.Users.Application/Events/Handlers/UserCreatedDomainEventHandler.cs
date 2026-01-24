@@ -15,6 +15,6 @@ public class UserCreatedDomainEventHandler(IGenericRepository<User, Guid> userGe
             logger.LogError("User with ID {UserId} not found for UserCreatedDomainEvent", domainEvent.UserId);
             throw new InvalidOperationException($"User with ID {domainEvent.UserId} not found.");
         }
-        logger.LogInformation("User created with ID: {UserId}, Email: {Email}", domainEvent.UserId, user.Email);
+        logger.LogInformation("User created with ID: {UserId}, Identifier: {Identifier}", domainEvent.UserId, user.UserName);
     }
 }

@@ -5,7 +5,7 @@ namespace Modules.Users.Application.Dtos.Requests
 {
     public class CreateUserRequestDto
     {
-        public string Email { get; set; } = string.Empty;
+        public string Identifier { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         [JsonConverter(typeof(MaskedStringConverter))]

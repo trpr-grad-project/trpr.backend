@@ -22,6 +22,62 @@ namespace Modules.Users.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Modules.Users.Domain.Entities.Interest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("icon");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_interests");
+
+                    b.ToTable("interests", (string)null);
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.Language", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("code");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("icon");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NativeName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("native_name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_languages");
+
+                    b.ToTable("languages", (string)null);
+                });
+
             modelBuilder.Entity("Modules.Users.Domain.Entities.Outbox.OutboxConsumerMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -84,10 +140,123 @@ namespace Modules.Users.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("AvatarUrl")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("avatar_url");
+
+                    b.Property<string>("Bio")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("bio");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text")
+                        .HasColumnName("email");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text")
+                        .HasColumnName("phone_number");
+
                     b.HasKey("Id")
                         .HasName("pk_profiles");
 
                     b.ToTable("profiles", (string)null);
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.ProfileInterest", b =>
+                {
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("profile_id");
+
+                    b.Property<Guid>("InterestId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("interest_id");
+
+                    b.HasKey("ProfileId", "InterestId")
+                        .HasName("pk_profile_interests");
+
+                    b.HasIndex("InterestId")
+                        .HasDatabaseName("ix_profile_interests_interest_id");
+
+                    b.ToTable("profile_interests", (string)null);
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.ProfileLanguage", b =>
+                {
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("profile_id");
+
+                    b.Property<Guid>("LanguageId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("language_id");
+
+                    b.HasKey("ProfileId", "LanguageId")
+                        .HasName("pk_profile_languages");
+
+                    b.HasIndex("LanguageId")
+                        .HasDatabaseName("ix_profile_languages_language_id");
+
+                    b.ToTable("profile_languages", (string)null);
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.ProfileVibe", b =>
+                {
+                    b.Property<Guid>("ProfileId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("profile_id");
+
+                    b.Property<Guid>("VibeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("vibe_id");
+
+                    b.HasKey("ProfileId", "VibeId")
+                        .HasName("pk_profile_vibes");
+
+                    b.HasIndex("VibeId")
+                        .HasDatabaseName("ix_profile_vibes_vibe_id");
+
+                    b.ToTable("profile_vibes", (string)null);
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.Token", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("Expiration")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expiration");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_revoked");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("value");
+
+                    b.HasKey("Id")
+                        .HasName("pk_token");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_token_user_id");
+
+                    b.ToTable("token", (string)null);
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.User", b =>
@@ -96,12 +265,6 @@ namespace Modules.Users.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("email");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -130,18 +293,56 @@ namespace Modules.Users.Persistence.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("two_factor_enabled");
 
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("user_name");
+
                     b.HasKey("Id")
                         .HasName("pk_users");
-
-                    b.HasIndex("Email")
-                        .IsUnique()
-                        .HasDatabaseName("ix_users_email");
 
                     b.HasIndex("IdentityProviderId")
                         .IsUnique()
                         .HasDatabaseName("ix_users_identity_provider_id");
 
+                    b.HasIndex("UserName")
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_user_name");
+
                     b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.Vibe", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Thumbnail")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("thumbnail");
+
+                    b.HasKey("Id")
+                        .HasName("pk_vibes");
+
+                    b.ToTable("vibes", (string)null);
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Profile", b =>
@@ -156,10 +357,96 @@ namespace Modules.Users.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Modules.Users.Domain.Entities.ProfileInterest", b =>
+                {
+                    b.HasOne("Modules.Users.Domain.Entities.Interest", "Interest")
+                        .WithMany()
+                        .HasForeignKey("InterestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_profile_interests_interests_interest_id");
+
+                    b.HasOne("Modules.Users.Domain.Entities.Profile", "Profile")
+                        .WithMany("Interests")
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_profile_interests_profiles_profile_id");
+
+                    b.Navigation("Interest");
+
+                    b.Navigation("Profile");
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.ProfileLanguage", b =>
+                {
+                    b.HasOne("Modules.Users.Domain.Entities.Language", "Language")
+                        .WithMany()
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_profile_languages_languages_language_id");
+
+                    b.HasOne("Modules.Users.Domain.Entities.Profile", "Profile")
+                        .WithMany("Languages")
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_profile_languages_profiles_profile_id");
+
+                    b.Navigation("Language");
+
+                    b.Navigation("Profile");
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.ProfileVibe", b =>
+                {
+                    b.HasOne("Modules.Users.Domain.Entities.Profile", "Profile")
+                        .WithMany("Vibes")
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_profile_vibes_profiles_profile_id");
+
+                    b.HasOne("Modules.Users.Domain.Entities.Vibe", "Vibe")
+                        .WithMany()
+                        .HasForeignKey("VibeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_profile_vibes_vibes_vibe_id");
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("Vibe");
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.Token", b =>
+                {
+                    b.HasOne("Modules.Users.Domain.Entities.User", "User")
+                        .WithMany("Tokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_token_users_user_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.Profile", b =>
+                {
+                    b.Navigation("Interests");
+
+                    b.Navigation("Languages");
+
+                    b.Navigation("Vibes");
+                });
+
             modelBuilder.Entity("Modules.Users.Domain.Entities.User", b =>
                 {
                     b.Navigation("Profile")
                         .IsRequired();
+
+                    b.Navigation("Tokens");
                 });
 #pragma warning restore 612, 618
         }
