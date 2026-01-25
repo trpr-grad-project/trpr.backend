@@ -4,7 +4,7 @@ using Modules.Users.Infrastructure;
 using Modules.Notifications.Infrastructure;
 using Common.Application;
 using Common.Presentation;
-
+using Common.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureSwagger();
 builder.Services.AddControllers();
@@ -16,6 +16,7 @@ builder.Services.AddCommonApplication(
 builder.Services.AddCommonPresentation(
     Modules.Users.Presentation.AssemblyRefrence.Assembly,
     Modules.Notifications.Presentation.AssemblyRefrence.Assembly);
+builder.Services.AddCommonInfrastructure(builder.Configuration);
 builder.Services.AddUsersModule(builder.Configuration);
 builder.Services.AddNotificationsModule(builder.Configuration);
 Log.Logger = new LoggerConfiguration()
