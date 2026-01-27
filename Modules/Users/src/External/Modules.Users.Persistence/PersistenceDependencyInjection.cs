@@ -15,7 +15,7 @@ public static class PersistenceDependencyInjection
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
         string dbConnectionString = configuration.GetConnectionString("RommieDb")!;
-        services.AddDbContext<AppDbContext>((sp, options) =>
+        services.AddDbContext<UsersDbContext>((sp, options) =>
         {
             options
                 .UseNpgsql(dbConnectionString, op =>
@@ -30,8 +30,8 @@ public static class PersistenceDependencyInjection
         services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
         services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IAppDbContext, AppDbContext>();
-        services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<AppDbContext>());
+        services.AddScoped<IUsersDbContext, UsersDbContext>();
+        services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<UsersDbContext>());
         // adding quartz for background jobs 
         services.AddQuartz();
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);

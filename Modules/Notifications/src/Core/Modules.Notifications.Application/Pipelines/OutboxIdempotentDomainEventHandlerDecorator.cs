@@ -3,6 +3,7 @@ using Modules.Notifications.Domain.Entities.Outbox;
 using Microsoft.Extensions.Logging;
 using Modules.Notifications.Domain.Abstractions;
 using Modules.Notifications.Application.Abstractions;
+using Common.Application;
 
 namespace Modules.Notifications.Application.Pipelines;
 
@@ -23,7 +24,7 @@ public class OutboxIdempotentDomainEventHandlerDecorator<TDomainEvent>(
             HandlerName = innerHandler.GetType().Name
         };
 
-        const string query = $"SELECT COUNT(1) FROM outbox_consumer_messages WHERE id = @id AND handler_name = @HandlerName";
+        const string query = $"SELECT COUNT(1) FROM {Schema.Notifications}.outbox_consumer_messages WHERE id = @id AND handler_name = @HandlerName";
         var exists = await connection.ExecuteScalarAsync<int>(query, outboxConsumerMessage);
 
         if (exists > 0)

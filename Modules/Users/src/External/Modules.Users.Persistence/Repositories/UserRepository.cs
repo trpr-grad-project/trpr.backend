@@ -5,7 +5,7 @@ using Modules.Users.Persistence.Data;
 
 namespace Modules.Users.Persistence.Repositories
 {
-    public class UserRepository(AppDbContext context) : IUserRepository
+    public class UserRepository(UsersDbContext context) : IUserRepository
     {
         public Task<User?> GetByIdentifier(string identifier)
         {

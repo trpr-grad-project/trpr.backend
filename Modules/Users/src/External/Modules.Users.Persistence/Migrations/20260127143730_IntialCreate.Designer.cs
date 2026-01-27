@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Modules.Users.Persistence.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -10,13 +11,16 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Modules.Users.Persistence.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(UsersDbContext))]
+    [Migration("20260127143730_IntialCreate")]
+    partial class IntialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("usr")
                 .HasAnnotation("ProductVersion", "9.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -42,7 +46,7 @@ namespace Modules.Users.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_interests");
 
-                    b.ToTable("interests", (string)null);
+                    b.ToTable("interests", "usr");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Language", b =>
@@ -75,7 +79,7 @@ namespace Modules.Users.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_languages");
 
-                    b.ToTable("languages", (string)null);
+                    b.ToTable("languages", "usr");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Outbox.OutboxConsumerMessage", b =>
@@ -91,7 +95,7 @@ namespace Modules.Users.Persistence.Migrations
                     b.HasKey("Id", "HandlerName")
                         .HasName("pk_outbox_consumer_messages");
 
-                    b.ToTable("outbox_consumer_messages", (string)null);
+                    b.ToTable("outbox_consumer_messages", "usr");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Outbox.OutboxMessage", b =>
@@ -131,7 +135,7 @@ namespace Modules.Users.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_outbox_messages");
 
-                    b.ToTable("outbox_messages", (string)null);
+                    b.ToTable("outbox_messages", "usr");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Profile", b =>
@@ -161,7 +165,7 @@ namespace Modules.Users.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_profiles");
 
-                    b.ToTable("profiles", (string)null);
+                    b.ToTable("profiles", "usr");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.ProfileInterest", b =>
@@ -180,7 +184,7 @@ namespace Modules.Users.Persistence.Migrations
                     b.HasIndex("InterestId")
                         .HasDatabaseName("ix_profile_interests_interest_id");
 
-                    b.ToTable("profile_interests", (string)null);
+                    b.ToTable("profile_interests", "usr");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.ProfileLanguage", b =>
@@ -199,7 +203,7 @@ namespace Modules.Users.Persistence.Migrations
                     b.HasIndex("LanguageId")
                         .HasDatabaseName("ix_profile_languages_language_id");
 
-                    b.ToTable("profile_languages", (string)null);
+                    b.ToTable("profile_languages", "usr");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.ProfileVibe", b =>
@@ -218,7 +222,7 @@ namespace Modules.Users.Persistence.Migrations
                     b.HasIndex("VibeId")
                         .HasDatabaseName("ix_profile_vibes_vibe_id");
 
-                    b.ToTable("profile_vibes", (string)null);
+                    b.ToTable("profile_vibes", "usr");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Token", b =>
@@ -256,7 +260,7 @@ namespace Modules.Users.Persistence.Migrations
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_tokens_user_id");
 
-                    b.ToTable("tokens", (string)null);
+                    b.ToTable("tokens", "usr");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.User", b =>
@@ -310,7 +314,7 @@ namespace Modules.Users.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_users_user_name");
 
-                    b.ToTable("users", (string)null);
+                    b.ToTable("users", "usr");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Vibe", b =>
@@ -342,7 +346,7 @@ namespace Modules.Users.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_vibes");
 
-                    b.ToTable("vibes", (string)null);
+                    b.ToTable("vibes", "usr");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Profile", b =>

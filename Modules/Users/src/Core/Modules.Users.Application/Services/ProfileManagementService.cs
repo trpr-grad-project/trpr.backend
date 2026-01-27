@@ -10,7 +10,7 @@ using Modules.Users.Domain.Entities;
 namespace Modules.Users.Application.Services;
 
 public class ProfileManagementService(
-    IAppDbContext context,
+    IUsersDbContext context,
     IUnitOfWork unitOfWork,
     ILogger<ProfileManagementService> logger)
 {

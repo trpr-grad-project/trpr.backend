@@ -3,7 +3,7 @@ using Modules.Users.Domain.Entities;
 
 namespace Modules.Users.Application.Abstractions;
 
-public interface IAppDbContext
+public interface IUsersDbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Token> Tokens { get; set; }

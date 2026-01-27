@@ -10,6 +10,7 @@ using Serilog.Context;
 using Modules.Notifications.Domain.Entities.Outbox;
 using Modules.Notifications.Domain.Abstractions;
 using Modules.Notifications.Application.Abstractions;
+using Common.Application;
 
 namespace Modules.Notifications.Persistence.Outbox;
 
@@ -72,7 +73,7 @@ public class ProcessOutboxJob(
         occurred_on_utc AS {nameof(OutboxMessage.OccurredOnUtc)},
         processed_on_utc AS {nameof(OutboxMessage.ProcessedOnUtc)},
         error AS Error
-        FROM outbox_messages
+        FROM {Schema.Notifications}.outbox_messages
         WHERE processed_on_utc IS NULL
         ORDER BY "occurred_on_utc"
         FOR UPDATE
@@ -92,7 +93,7 @@ public class ProcessOutboxJob(
         const string query =
         $"""
         UPDATE 
-            outbox_messages
+            {Schema.Notifications}.outbox_messages
         SET
             processed_on_utc = @ProcessedOnUtc ,
             error = @Error

@@ -11,8 +11,12 @@ namespace Modules.Users.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "usr");
+
             migrationBuilder.CreateTable(
                 name: "interests",
+                schema: "usr",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -26,6 +30,7 @@ namespace Modules.Users.Persistence.Migrations
 
             migrationBuilder.CreateTable(
                 name: "languages",
+                schema: "usr",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -41,6 +46,7 @@ namespace Modules.Users.Persistence.Migrations
 
             migrationBuilder.CreateTable(
                 name: "outbox_consumer_messages",
+                schema: "usr",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -53,6 +59,7 @@ namespace Modules.Users.Persistence.Migrations
 
             migrationBuilder.CreateTable(
                 name: "outbox_messages",
+                schema: "usr",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -70,6 +77,7 @@ namespace Modules.Users.Persistence.Migrations
 
             migrationBuilder.CreateTable(
                 name: "users",
+                schema: "usr",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -87,6 +95,7 @@ namespace Modules.Users.Persistence.Migrations
 
             migrationBuilder.CreateTable(
                 name: "vibes",
+                schema: "usr",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -102,6 +111,7 @@ namespace Modules.Users.Persistence.Migrations
 
             migrationBuilder.CreateTable(
                 name: "profiles",
+                schema: "usr",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -116,6 +126,7 @@ namespace Modules.Users.Persistence.Migrations
                     table.ForeignKey(
                         name: "fk_profiles_users_id",
                         column: x => x.id,
+                        principalSchema: "usr",
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -123,6 +134,7 @@ namespace Modules.Users.Persistence.Migrations
 
             migrationBuilder.CreateTable(
                 name: "tokens",
+                schema: "usr",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -138,6 +150,7 @@ namespace Modules.Users.Persistence.Migrations
                     table.ForeignKey(
                         name: "fk_tokens_users_user_id",
                         column: x => x.user_id,
+                        principalSchema: "usr",
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -145,6 +158,7 @@ namespace Modules.Users.Persistence.Migrations
 
             migrationBuilder.CreateTable(
                 name: "profile_interests",
+                schema: "usr",
                 columns: table => new
                 {
                     profile_id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -156,12 +170,14 @@ namespace Modules.Users.Persistence.Migrations
                     table.ForeignKey(
                         name: "fk_profile_interests_interests_interest_id",
                         column: x => x.interest_id,
+                        principalSchema: "usr",
                         principalTable: "interests",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_profile_interests_profiles_profile_id",
                         column: x => x.profile_id,
+                        principalSchema: "usr",
                         principalTable: "profiles",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -169,6 +185,7 @@ namespace Modules.Users.Persistence.Migrations
 
             migrationBuilder.CreateTable(
                 name: "profile_languages",
+                schema: "usr",
                 columns: table => new
                 {
                     profile_id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -180,12 +197,14 @@ namespace Modules.Users.Persistence.Migrations
                     table.ForeignKey(
                         name: "fk_profile_languages_languages_language_id",
                         column: x => x.language_id,
+                        principalSchema: "usr",
                         principalTable: "languages",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_profile_languages_profiles_profile_id",
                         column: x => x.profile_id,
+                        principalSchema: "usr",
                         principalTable: "profiles",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -193,6 +212,7 @@ namespace Modules.Users.Persistence.Migrations
 
             migrationBuilder.CreateTable(
                 name: "profile_vibes",
+                schema: "usr",
                 columns: table => new
                 {
                     profile_id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -204,12 +224,14 @@ namespace Modules.Users.Persistence.Migrations
                     table.ForeignKey(
                         name: "fk_profile_vibes_profiles_profile_id",
                         column: x => x.profile_id,
+                        principalSchema: "usr",
                         principalTable: "profiles",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_profile_vibes_vibes_vibe_id",
                         column: x => x.vibe_id,
+                        principalSchema: "usr",
                         principalTable: "vibes",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -217,32 +239,38 @@ namespace Modules.Users.Persistence.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "ix_profile_interests_interest_id",
+                schema: "usr",
                 table: "profile_interests",
                 column: "interest_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_profile_languages_language_id",
+                schema: "usr",
                 table: "profile_languages",
                 column: "language_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_profile_vibes_vibe_id",
+                schema: "usr",
                 table: "profile_vibes",
                 column: "vibe_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_tokens_user_id",
+                schema: "usr",
                 table: "tokens",
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_users_identity_provider_id",
+                schema: "usr",
                 table: "users",
                 column: "identity_provider_id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_users_user_name",
+                schema: "usr",
                 table: "users",
                 column: "user_name",
                 unique: true);
@@ -252,37 +280,48 @@ namespace Modules.Users.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "outbox_consumer_messages");
+                name: "outbox_consumer_messages",
+                schema: "usr");
 
             migrationBuilder.DropTable(
-                name: "outbox_messages");
+                name: "outbox_messages",
+                schema: "usr");
 
             migrationBuilder.DropTable(
-                name: "profile_interests");
+                name: "profile_interests",
+                schema: "usr");
 
             migrationBuilder.DropTable(
-                name: "profile_languages");
+                name: "profile_languages",
+                schema: "usr");
 
             migrationBuilder.DropTable(
-                name: "profile_vibes");
+                name: "profile_vibes",
+                schema: "usr");
 
             migrationBuilder.DropTable(
-                name: "tokens");
+                name: "tokens",
+                schema: "usr");
 
             migrationBuilder.DropTable(
-                name: "interests");
+                name: "interests",
+                schema: "usr");
 
             migrationBuilder.DropTable(
-                name: "languages");
+                name: "languages",
+                schema: "usr");
 
             migrationBuilder.DropTable(
-                name: "profiles");
+                name: "profiles",
+                schema: "usr");
 
             migrationBuilder.DropTable(
-                name: "vibes");
+                name: "vibes",
+                schema: "usr");
 
             migrationBuilder.DropTable(
-                name: "users");
+                name: "users",
+                schema: "usr");
         }
     }
 }

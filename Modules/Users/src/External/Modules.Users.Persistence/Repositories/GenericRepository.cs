@@ -3,10 +3,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Modules.Users.Application.Abstractions;
 using Modules.Users.Persistence.Data;
+using Common.Application;
 
 namespace Modules.Users.Persistence.Repositories;
 
-public class GenericRepository<T, TKey>(AppDbContext context, ILogger<GenericRepository<T, TKey>> logger) : IGenericRepository<T, TKey> where T : class
+public class GenericRepository<T, TKey>(UsersDbContext context, ILogger<GenericRepository<T, TKey>> logger) : IGenericRepository<T, TKey> where T : class
 {
     public async Task<T?> GetById(TKey id)
     {
@@ -30,7 +31,7 @@ public class GenericRepository<T, TKey>(AppDbContext context, ILogger<GenericRep
         var storeObject = StoreObjectIdentifier.Create(entityType, StoreObjectType.Table);
         var keyColumnName = keyProperty!.GetColumnName(storeObject!.Value);
 
-        var sql = $"SELECT * FROM \"{tableName}\" WHERE \"{keyColumnName}\" = @p0 FOR UPDATE";
+        var sql = $"SELECT * FROM {Schema.Users}.\"{tableName}\" WHERE \"{keyColumnName}\" = @p0 FOR UPDATE";
 
         var entity = await context.Set<T>().FromSqlRaw(sql, id).FirstOrDefaultAsync();
 

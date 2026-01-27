@@ -21,14 +21,14 @@ public static class ApplicationDependencyInjection
         // Register the domain event dispatcher
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         // Register domain event handlers
-        services.Scan(scan => scan
-            .FromAssemblies(AssemblyRefrence.Assembly)
-            .AddClasses(classes => classes.AssignableTo(typeof(IDomainEventHandler<>)))
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-        );
-        services.Decorate(typeof(IDomainEventHandler<>), typeof(LoggingDomainEventHandlerDecorator<>));
-        services.Decorate(typeof(IDomainEventHandler<>), typeof(OutboxIdempotentDomainEventHandlerDecorator<>));
+        // services.Scan(scan => scan
+        //     .FromAssemblies(AssemblyRefrence.Assembly)
+        //     .AddClasses(classes => classes.AssignableTo(typeof(IDomainEventHandler<>)))
+        //     .AsImplementedInterfaces()
+        //     .WithScopedLifetime()
+        // );
+        // services.Decorate(typeof(IDomainEventHandler<>), typeof(LoggingDomainEventHandlerDecorator<>));
+        // services.Decorate(typeof(IDomainEventHandler<>), typeof(OutboxIdempotentDomainEventHandlerDecorator<>));
         return services;
     }
 }

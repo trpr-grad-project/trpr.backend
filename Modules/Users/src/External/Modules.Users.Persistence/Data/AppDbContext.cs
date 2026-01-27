@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Modules.Users.Domain.Entities.Outbox;
 using Modules.Users.Domain.Entities;
 using Modules.Users.Application.Abstractions;
-using Modules.Users.Persistence;
+using Common.Application;
 
 namespace Modules.Users.Persistence.Data;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IUnitOfWork, IAppDbContext
+public class UsersDbContext(DbContextOptions<UsersDbContext> options) : DbContext(options), IUnitOfWork, IUsersDbContext
 {
     public virtual DbSet<Token> Tokens { get; set; }
     public virtual DbSet<User> Users { get; set; }
@@ -25,6 +25,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema(Schema.Users);
         modelBuilder.ApplyConfigurationsFromAssembly
         (AssemblyRefrence.Assembly);
     }

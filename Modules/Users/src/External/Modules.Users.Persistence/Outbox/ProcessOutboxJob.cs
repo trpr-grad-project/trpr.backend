@@ -10,6 +10,7 @@ using Serilog.Context;
 using Modules.Users.Domain.Entities.Outbox;
 using Modules.Users.Domain.Abstractions;
 using Modules.Users.Application.Abstractions;
+using Common.Application;
 
 namespace Modules.Users.Persistence.Outbox;
 
@@ -72,7 +73,7 @@ public class ProcessOutboxJob(
         occurred_on_utc AS {nameof(OutboxMessage.OccurredOnUtc)},
         processed_on_utc AS {nameof(OutboxMessage.ProcessedOnUtc)},
         error AS Error
-        FROM outbox_messages
+        FROM {Schema.Users}.outbox_messages
         WHERE processed_on_utc IS NULL
         ORDER BY "occurred_on_utc"
         FOR UPDATE
@@ -92,7 +93,7 @@ public class ProcessOutboxJob(
         const string query =
         $"""
         UPDATE 
-            outbox_messages
+            {Schema.Users}.outbox_messages
         SET
             processed_on_utc = @ProcessedOnUtc ,
             error = @Error

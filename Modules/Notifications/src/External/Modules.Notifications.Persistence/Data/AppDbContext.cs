@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Modules.Notifications.Domain.Entities.Outbox;
 using Modules.Notifications.Application.Abstractions;
+using Common.Application;
 
 namespace Modules.Notifications.Persistence.Data;
 
@@ -9,11 +10,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public virtual DbSet<OutboxMessage> OutboxMessages { get; set; }
     public virtual DbSet<OutboxConsumerMessage> OutboxConsumerMessages { get; set; }
-
     private IDbContextTransaction? _transaction;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema(Schema.Notifications);
         modelBuilder.ApplyConfigurationsFromAssembly
         (AssemblyRefrence.Assembly);
     }

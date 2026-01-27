@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Modules.Notifications.Application.Abstractions;
 using Modules.Notifications.Persistence.Data;
+using Common.Application;
 
 namespace Modules.Notifications.Persistence.Repositories;
 
@@ -30,7 +31,7 @@ public class GenericRepository<T, TKey>(AppDbContext context, ILogger<GenericRep
         var storeObject = StoreObjectIdentifier.Create(entityType, StoreObjectType.Table);
         var keyColumnName = keyProperty!.GetColumnName(storeObject!.Value);
 
-        var sql = $"SELECT * FROM \"{tableName}\" WHERE \"{keyColumnName}\" = @p0 FOR UPDATE";
+        var sql = $"SELECT * FROM {Schema.Notifications}.\"{tableName}\" WHERE \"{keyColumnName}\" = @p0 FOR UPDATE";
 
         var entity = await context.Set<T>().FromSqlRaw(sql, id).FirstOrDefaultAsync();
 

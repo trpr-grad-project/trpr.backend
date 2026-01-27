@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Modules.Notifications.Persistence.Data;
+using Modules.Users.Persistence.Data;
 
 namespace Api.Extensions;
 
@@ -8,9 +10,9 @@ public static class MigrationsExtension
     {
         using var scope = application.ApplicationServices.CreateScope();
         var usersDbContext = scope.ServiceProvider
-            .GetRequiredService<Modules.Users.Persistence.Data.AppDbContext>();
+            .GetRequiredService<UsersDbContext>();
         var notificationsDbContext = scope.ServiceProvider
-            .GetRequiredService<Modules.Notifications.Persistence.Data.AppDbContext>();
+            .GetRequiredService<AppDbContext>();
         usersDbContext.Database.Migrate();
         notificationsDbContext.Database.Migrate();
     }
