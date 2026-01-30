@@ -1,4 +1,4 @@
-using Modules.Users.Domain.Abstractions;
+using Common.Domain;
 
 namespace Modules.Users.Domain.Events;
 

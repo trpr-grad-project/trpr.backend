@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Modules.Notifications.Persistence.Data;
-using Modules.Users.Persistence.Data;
+using Modules.Notifications.Infrastructure.Data;
+using Modules.Users.Infrastructure.Data;
 
 namespace Api.Extensions;
 

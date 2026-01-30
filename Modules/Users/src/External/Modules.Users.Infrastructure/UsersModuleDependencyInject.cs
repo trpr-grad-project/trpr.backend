@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Modules.Users.Application;
-using Modules.Users.Persistence;
 using Modules.Users.Presentation;
 
 namespace Modules.Users.Infrastructure
@@ -12,9 +11,8 @@ namespace Modules.Users.Infrastructure
         {
             services.AddApplication();
             services.AddInfrastructure(configuration);
-            services.AddPersistence(configuration);
             services.AddPresentation();
-            return services; 
+            return services;
         }
     }
 }

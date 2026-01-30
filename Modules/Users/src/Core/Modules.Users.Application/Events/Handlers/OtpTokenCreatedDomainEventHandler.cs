@@ -1,3 +1,4 @@
+using Common.Application.DomainEvents;
 using Microsoft.EntityFrameworkCore;
 using Modules.Users.Application.Abstractions;
 using Modules.Users.Application.Exceptions;
@@ -6,9 +7,9 @@ using Modules.Users.Domain.ValueObjects;
 
 namespace Modules.Users.Application.Events.Handlers
 {
-    public class OtpTokenCreatedDomainEventHandler(IUsersDbContext appDbContext) : DomainEventHandler<TokenCreatedDomainEvent>
+    public class OtpTokenCreatedDomainEventHandler(IUsersDbContext appDbContext) : IDomainEventHandler<TokenCreatedDomainEvent>
     {
-        public override async Task HandleAsync(TokenCreatedDomainEvent domainEvent, CancellationToken cancellationToken = default)
+        public async Task HandleAsync(TokenCreatedDomainEvent domainEvent, CancellationToken cancellationToken = default)
         {
             var token = await appDbContext
                 .Tokens

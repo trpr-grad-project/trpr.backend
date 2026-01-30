@@ -2,12 +2,13 @@ using Microsoft.Extensions.Logging;
 using Modules.Users.Domain.Events;
 using Modules.Users.Domain.Entities;
 using Modules.Users.Application.Abstractions;
+using Common.Application.DomainEvents;
 
 namespace Modules.Users.Application.Events.Handlers;
 
-public class UserCreatedDomainEventHandler(IGenericRepository<User, Guid> userGenericRepository, ILogger<UserCreatedDomainEventHandler> logger) : DomainEventHandler<UserCreatedDomainEvent>
+public class UserCreatedDomainEventHandler(IGenericRepository<User, Guid> userGenericRepository, ILogger<UserCreatedDomainEventHandler> logger) : IDomainEventHandler<UserCreatedDomainEvent>
 {
-    public override async Task HandleAsync(UserCreatedDomainEvent domainEvent, CancellationToken cancellationToken = default)
+    public async Task HandleAsync(UserCreatedDomainEvent domainEvent, CancellationToken cancellationToken = default)
     {
         var user = await userGenericRepository.GetById(domainEvent.UserId);
         if (user == null)

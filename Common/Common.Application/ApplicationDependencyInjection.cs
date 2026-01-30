@@ -1,5 +1,6 @@
 using System.Reflection;
 using Common.Application.Correlation;
+using Common.Application.DomainEvents;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ public static class ApplicationDependencyInjection
     {
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblies(assemblies);
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddSingleton<ICorrelationIdAccessor, CorrelationIdAccessor>();
         return services;
     }

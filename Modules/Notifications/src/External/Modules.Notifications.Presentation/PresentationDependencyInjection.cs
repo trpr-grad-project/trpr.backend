@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.DependencyInjection;
 using Modules.Notifications.Application.Abstractions;
+using Modules.Notifications.Application.Abstractions.Identity;
 using Modules.Users.Contracts.IntegrationEvents;
 using Rebus.Handlers;
 
@@ -14,8 +15,7 @@ namespace Modules.Notifications.Presentation
             {
                 options.LoggingFields = HttpLoggingFields.Request | HttpLoggingFields.Response;
             });
-            services
-                .AddTransient<IHandleMessages<UserCreatedIntegrationEvent>, BaseIngtegrationEventHandler<UserCreatedIntegrationEvent>>();
+
             services
                 .AddIntegrationEvents();
             return services;

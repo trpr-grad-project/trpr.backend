@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using Modules.Users.Domain.Abstractions;
 using Modules.Users.Application.Abstractions;
 using Common.Application;
+using Common.Application.DomainEvents;
+using Common.Domain;
 
 namespace Modules.Users.Application.Pipelines;
 

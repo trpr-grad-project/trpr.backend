@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Modules.Notifications.Application.Abstractions;
 using Common.Application;
 using Common.Domain;
+using Common.Application.DomainEvents;
 
 namespace Modules.Notifications.Application.Pipelines;
 

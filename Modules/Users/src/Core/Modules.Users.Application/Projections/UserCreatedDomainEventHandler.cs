@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Modules.Users.Domain.Events;
-using Modules.Users.Application.Abstractions;
+using Common.Application.DomainEvents;
 
 namespace Modules.Users.Application.Projections
 {

@@ -5,6 +5,9 @@
   <ItemGroup>
     <PackageReference Include="Rebus" Version="8.9.0" />
     <PackageReference Include="Rebus.ServiceProvider" Version="10.7.2" />
+    <PackageReference Include="EFCore.NamingConventions" Version="9.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.14.0" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>

@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Modules.Notifications.Application;
-using Modules.Notifications.Persistence;
+using Modules.Notifications.Infrastructure.Inbox;
 using Modules.Notifications.Presentation;
+using Modules.Users.Contracts.IntegrationEvents;
+using Rebus.Handlers;
 
 namespace Modules.Notifications.Infrastructure
 {
@@ -12,8 +14,10 @@ namespace Modules.Notifications.Infrastructure
         {
             services.AddApplication();
             services.AddInfrastructure(configuration);
-            services.AddPersistence(configuration);
             services.AddPresentation();
+
+            services
+                .AddTransient<IHandleMessages<UserCreatedIntegrationEvent>, BaseIngtegrationEventHandler<UserCreatedIntegrationEvent>>();
             return services;
         }
     }

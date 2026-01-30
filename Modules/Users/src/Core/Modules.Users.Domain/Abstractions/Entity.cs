@@ -1,3 +1,5 @@
+using Common.Domain;
+
 namespace Modules.Users.Domain.Abstractions;
 
 public interface IEntity

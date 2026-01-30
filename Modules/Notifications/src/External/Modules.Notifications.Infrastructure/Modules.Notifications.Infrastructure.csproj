@@ -4,8 +4,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Modules.Notifications.Application\Modules.Notifications.Application.csproj" />
-    <ProjectReference Include="..\Modules.Notifications.Persistence\Modules.Notifications.Persistence.csproj" />
     <ProjectReference Include="..\Modules.Notifications.Presentation\Modules.Notifications.Presentation.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\Common.Infrastructure\Common.Infrastructure.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>

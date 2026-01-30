@@ -1,13 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
-using Modules.Users.Application.Events;
 using Modules.Users.Application.Interfaces;
-using Modules.Users.Application.Abstractions;
 using Modules.Users.Application.Services;
 using Modules.Users.Application.Pipelines;
 using Modules.Users.Application.Options;
 using Modules.Users.Application.Factories;
 using Modules.Users.Domain.ValueObjects;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Common.Application.DomainEvents;
+using Common.Domain;
+using Common.Application.DomainEvents.Extensions;
 
 namespace Modules.Users.Application;
 
@@ -33,38 +34,16 @@ public static class ApplicationDependencyInjection
         services.AddKeyedScoped<ITokenHandler, CreateUserOtpHandler>(TokenType.Otp);
         #endregion
 
-        // Register the domain event dispatcher
-        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
-        services.AddDomainEventHandlers();
+        services.AddDomainEventHandlers(cfg =>
+            cfg
+                .AddAssembly(Application.AssemblyRefrence.Assembly)
+        );
+        services.AddDomainEventHandlerDecorators(cfg =>
+            cfg
+                .AddPipeline(typeof(OutboxIdempotentDomainEventHandlerDecorator<>))
+                .AddAssembly(Application.AssemblyRefrence.Assembly));
         return services;
     }
 
-    private static void AddDomainEventHandlers(this IServiceCollection services)
-    {
-        Type[] domainEventHandlers = AssemblyRefrence.Assembly
-            .GetTypes()
-            .Where(t =>
-            !t.IsAbstract &&
-            !t.IsInterface &&
-            !t.IsGenericTypeDefinition &&
-            t.IsAssignableTo(typeof(IDomainEventHandler<>)))
-            .ToArray();
-
-
-        foreach (Type domainEventHandler in domainEventHandlers)
-        {
-            Type domainEvent = domainEventHandler
-                .GetInterfaces()
-                .Single(x => x.IsGenericType)
-                .GetGenericArguments()
-                .Single();
-            Type handlerInterface = typeof(IDomainEventHandler<>)
-                .MakeGenericType(domainEvent);
-            Type closedIdempotentHandler = typeof(OutboxIdempotentDomainEventHandlerDecorator<>)
-                .MakeGenericType(domainEvent);
-            services.TryAddScoped(handlerInterface, domainEventHandler);
-            services.TryDecorate(handlerInterface, closedIdempotentHandler);
-        }
-    }
 
 }
