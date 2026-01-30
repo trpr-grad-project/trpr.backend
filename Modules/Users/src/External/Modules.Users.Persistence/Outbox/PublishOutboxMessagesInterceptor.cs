@@ -1,14 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
-using Microsoft.AspNetCore.Http;
 using Modules.Users.Domain.Abstractions;
-using Modules.Users.Domain.Entities.Outbox;
+using Common.Application.Correlation;
 
 namespace Modules.Users.Persistence.Outbox;
 
 public class PublishOutboxMessagesInterceptor(
-    IHttpContextAccessor httpContextAccessor
+    ICorrelationIdAccessor correlationIdAccessor
 ) : SaveChangesInterceptor
 {
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
@@ -17,7 +16,7 @@ public class PublishOutboxMessagesInterceptor(
         CancellationToken cancellationToken = default)
     {
 
-        var correlationId = httpContextAccessor.HttpContext?.Items["CorrelationId"]?.ToString()!;
+        var correlationId = correlationIdAccessor.CorrelationId ?? Guid.Empty.ToString();
         if (eventData.Context is not null)
         {
             InsertOutboxMessages(eventData.Context, correlationId);

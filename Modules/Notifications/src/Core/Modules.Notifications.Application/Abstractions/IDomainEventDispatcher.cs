@@ -1,4 +1,4 @@
-using Modules.Notifications.Domain.Abstractions;
+using Common.Domain;
 
 namespace Modules.Notifications.Application.Abstractions
 {

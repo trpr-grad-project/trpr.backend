@@ -5,9 +5,9 @@ using Modules.Users.Application.Abstractions;
 
 namespace Modules.Users.Application.Events.Handlers;
 
-public class UserCreatedDomainEventHandler(IGenericRepository<User, Guid> userGenericRepository, ILogger<UserCreatedDomainEventHandler> logger) : IDomainEventHandler<UserCreatedDomainEvent>
+public class UserCreatedDomainEventHandler(IGenericRepository<User, Guid> userGenericRepository, ILogger<UserCreatedDomainEventHandler> logger) : DomainEventHandler<UserCreatedDomainEvent>
 {
-    public async Task HandleAsync(UserCreatedDomainEvent domainEvent, CancellationToken cancellationToken = default)
+    public override async Task HandleAsync(UserCreatedDomainEvent domainEvent, CancellationToken cancellationToken = default)
     {
         var user = await userGenericRepository.GetById(domainEvent.UserId);
         if (user == null)

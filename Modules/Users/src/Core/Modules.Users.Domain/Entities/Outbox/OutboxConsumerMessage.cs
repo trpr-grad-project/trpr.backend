@@ -1,7 +1,0 @@
-namespace Modules.Users.Domain.Entities.Outbox;
-
-public class OutboxConsumerMessage
-{
-    public Guid Id { get; set; }
-    public string HandlerName { get; set; } = string.Empty;
-}

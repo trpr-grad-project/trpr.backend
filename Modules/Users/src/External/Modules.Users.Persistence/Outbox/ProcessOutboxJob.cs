@@ -7,10 +7,10 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Quartz;
 using Serilog.Context;
-using Modules.Users.Domain.Entities.Outbox;
 using Modules.Users.Domain.Abstractions;
 using Modules.Users.Application.Abstractions;
 using Common.Application;
+using Common.Application.Correlation;
 
 namespace Modules.Users.Persistence.Outbox;
 
@@ -39,9 +39,15 @@ public class ProcessOutboxJob(
                         TypeNameHandling = TypeNameHandling.All
                     }
                 )!;
+
+                using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
+                var correlationAccessor =
+                    serviceScope.ServiceProvider.GetRequiredService<ICorrelationIdAccessor>();
+
+                correlationAccessor.CorrelationId = outboxMessage.CorrelationId;
+
                 using (LogContext.PushProperty("CorrelationId", outboxMessage.CorrelationId))
                 {
-                    using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
                     IDomainEventDispatcher publisher = serviceScope.ServiceProvider.GetRequiredService<IDomainEventDispatcher>();
                     await publisher.DispatchAsync(domainEvent);
                 }

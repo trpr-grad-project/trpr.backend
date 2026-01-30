@@ -8,9 +8,9 @@ using Newtonsoft.Json;
 using Quartz;
 using Serilog.Context;
 using Modules.Notifications.Domain.Entities.Outbox;
-using Modules.Notifications.Domain.Abstractions;
 using Modules.Notifications.Application.Abstractions;
 using Common.Application;
+using Common.Domain;
 
 namespace Modules.Notifications.Persistence.Outbox;
 

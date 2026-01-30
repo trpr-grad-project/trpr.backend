@@ -2,6 +2,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Modules.Notifications.Application\Modules.Notifications.Application.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\Common.Presentation\Common.Presentation.csproj" />
+    <ProjectReference Include="..\..\..\..\Users\src\External\Modules.Users.Contracts\Modules.Users.Contracts.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>

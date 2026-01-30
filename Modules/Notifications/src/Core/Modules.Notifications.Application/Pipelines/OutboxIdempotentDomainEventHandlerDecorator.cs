@@ -1,9 +1,8 @@
 using Dapper;
-using Modules.Notifications.Domain.Entities.Outbox;
 using Microsoft.Extensions.Logging;
-using Modules.Notifications.Domain.Abstractions;
 using Modules.Notifications.Application.Abstractions;
 using Common.Application;
+using Common.Domain;
 
 namespace Modules.Notifications.Application.Pipelines;
 
@@ -18,7 +17,7 @@ public class OutboxIdempotentDomainEventHandlerDecorator<TDomainEvent>(
         await using var connection = await dbConnectionFactory.CreateSqlConnection();
 
         IDomainEvent domainEvent = notification;
-        var outboxConsumerMessage = new OutboxConsumerMessage
+        var outboxConsumerMessage = new
         {
             Id = domainEvent.Id,
             HandlerName = innerHandler.GetType().Name

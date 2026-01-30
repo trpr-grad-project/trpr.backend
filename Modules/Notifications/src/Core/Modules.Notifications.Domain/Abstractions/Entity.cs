@@ -1,3 +1,5 @@
+using Common.Domain;
+
 namespace Modules.Notifications.Domain.Abstractions;
 
 public interface IEntity

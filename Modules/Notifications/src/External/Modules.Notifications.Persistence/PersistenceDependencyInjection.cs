@@ -6,6 +6,7 @@ using Modules.Notifications.Application.Abstractions;
 using Modules.Notifications.Persistence.Outbox;
 using Modules.Notifications.Persistence.Repositories;
 using Modules.Notifications.Persistence.Data;
+using Modules.Notifications.Persistence.Inbox;
 
 namespace Modules.Notifications.Persistence;
 
@@ -25,7 +26,9 @@ public static class PersistenceDependencyInjection
                 .AddInterceptors(sp.GetRequiredService<PublishOutboxMessagesInterceptor>());
         });
         services.AddScoped<PublishOutboxMessagesInterceptor>();
+        services.AddScoped<IBoxMessageManager, BoxMessageManager>();
         services.Configure<OutBoxOptions>(configuration.GetSection("Notifications:OutBox"));
+        services.Configure<InBoxOptions>(configuration.GetSection("Notifications:Inbox"));
         services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
         services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
         services.AddScoped<IAppDbContext, AppDbContext>();
@@ -34,6 +37,7 @@ public static class PersistenceDependencyInjection
         services.AddQuartz();
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
         services.ConfigureOptions<ConfigureProcessOutboxJob>();
+        services.ConfigureOptions<ConfigureProcessInboxJob>();
         return services;
     }
 }

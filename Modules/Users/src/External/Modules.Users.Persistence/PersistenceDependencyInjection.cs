@@ -7,6 +7,7 @@ using Modules.Users.Application.Abstractions;
 using Modules.Users.Application.Repositories;
 using Modules.Users.Persistence.Repositories;
 using Modules.Users.Persistence.Outbox;
+using Modules.Users.Persistence.Inbox;
 
 namespace Modules.Users.Persistence;
 
@@ -27,6 +28,7 @@ public static class PersistenceDependencyInjection
         });
         services.AddScoped<PublishOutboxMessagesInterceptor>();
         services.Configure<OutBoxOptions>(configuration.GetSection("Users:OutBox"));
+        services.Configure<InBoxOptions>(configuration.GetSection("Users:InBox"));
         services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
         services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
         services.AddScoped<IUserRepository, UserRepository>();
@@ -36,6 +38,7 @@ public static class PersistenceDependencyInjection
         services.AddQuartz();
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
         services.ConfigureOptions<ConfigureProcessOutboxJob>();
+        services.ConfigureOptions<ConfigureProcessInboxJob>();
         return services;
     }
 }

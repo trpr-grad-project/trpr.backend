@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using Modules.Notifications.Domain.Abstractions;
 using Modules.Notifications.Application.Abstractions;
+using Common.Domain;
 
 namespace Modules.Notifications.Application.Events;
 

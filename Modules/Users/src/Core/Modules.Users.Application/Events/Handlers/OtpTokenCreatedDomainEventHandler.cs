@@ -6,9 +6,9 @@ using Modules.Users.Domain.ValueObjects;
 
 namespace Modules.Users.Application.Events.Handlers
 {
-    public class OtpTokenCreatedDomainEventHandler(IUsersDbContext appDbContext) : IDomainEventHandler<TokenCreatedDomainEvent>
+    public class OtpTokenCreatedDomainEventHandler(IUsersDbContext appDbContext) : DomainEventHandler<TokenCreatedDomainEvent>
     {
-        public async Task HandleAsync(TokenCreatedDomainEvent domainEvent, CancellationToken cancellationToken = default)
+        public override async Task HandleAsync(TokenCreatedDomainEvent domainEvent, CancellationToken cancellationToken = default)
         {
             var token = await appDbContext
                 .Tokens

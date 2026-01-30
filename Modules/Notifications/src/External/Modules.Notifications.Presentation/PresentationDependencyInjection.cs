@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Notifications.Application.Abstractions;
+using Modules.Users.Contracts.IntegrationEvents;
+using Rebus.Handlers;
 
 namespace Modules.Notifications.Presentation
 {
@@ -7,13 +10,25 @@ namespace Modules.Notifications.Presentation
     {
         public static IServiceCollection AddPresentation(this IServiceCollection services)
         {
-
             services.AddHttpLogging(options =>
             {
                 options.LoggingFields = HttpLoggingFields.Request | HttpLoggingFields.Response;
             });
-
+            services
+                .AddTransient<IHandleMessages<UserCreatedIntegrationEvent>, BaseIngtegrationEventHandler<UserCreatedIntegrationEvent>>();
+            services
+                .AddIntegrationEvents();
             return services;
+        }
+
+        private static void AddIntegrationEvents(this IServiceCollection services)
+        {
+            services.Scan(scan => scan
+                .FromAssemblies(AssemblyRefrence.Assembly)
+                .AddClasses(classes => classes.AssignableTo(typeof(IIntegrationEventHandler<>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            );
         }
     }
 }
