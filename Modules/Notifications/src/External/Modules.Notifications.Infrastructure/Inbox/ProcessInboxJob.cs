@@ -10,7 +10,7 @@ using Serilog.Context;
 using Modules.Notifications.Application.Abstractions;
 using Common.Application;
 using Common.Domain;
-using Common.Application.DomainEvents;
+using Common.Application.IntegrationEvents;
 
 namespace Modules.Notifications.Infrastructure.Inbox;
 
@@ -33,7 +33,7 @@ public class ProcessInboxJob(
             Exception? exception = null;
             try
             {
-                DomainEvent domainEvent = JsonConvert.DeserializeObject<DomainEvent>(
+                IntegrationEvent integrationEvent = JsonConvert.DeserializeObject<IntegrationEvent>(
                     inboxMessage.Content, new JsonSerializerSettings
                     {
                         TypeNameHandling = TypeNameHandling.All
@@ -42,8 +42,8 @@ public class ProcessInboxJob(
                 using (LogContext.PushProperty("CorrelationId", inboxMessage.CorrelationId))
                 {
                     using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
-                    IDomainEventDispatcher publisher = serviceScope.ServiceProvider.GetRequiredService<IDomainEventDispatcher>();
-                    await publisher.DispatchAsync(domainEvent);
+                    IIntegrationEventDispatcher publisher = serviceScope.ServiceProvider.GetRequiredService<IIntegrationEventDispatcher>();
+                    await publisher.DispatchAsync(integrationEvent);
                 }
             }
             catch (Exception caughtException)
