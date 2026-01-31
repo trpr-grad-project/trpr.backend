@@ -7,6 +7,7 @@ public class OutboxConsumerMessageConfiguration : IEntityTypeConfiguration<Outbo
 {
     public void Configure(EntityTypeBuilder<OutboxConsumerMessage> builder)
     {
+        builder.ToTable("outbox_consumer_messages");
         builder.HasKey(msg => new { msg.Id, msg.HandlerName });
     }
 }

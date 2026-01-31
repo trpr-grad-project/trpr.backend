@@ -15,20 +15,8 @@ namespace Modules.Notifications.Presentation
             {
                 options.LoggingFields = HttpLoggingFields.Request | HttpLoggingFields.Response;
             });
-
-            services
-                .AddIntegrationEvents();
             return services;
         }
 
-        private static void AddIntegrationEvents(this IServiceCollection services)
-        {
-            services.Scan(scan => scan
-                .FromAssemblies(AssemblyRefrence.Assembly)
-                .AddClasses(classes => classes.AssignableTo(typeof(IIntegrationEventHandler<>)))
-                .AsImplementedInterfaces()
-                .WithScopedLifetime()
-            );
-        }
     }
 }

@@ -18,7 +18,10 @@ namespace Common.Application.DomainEvents.Extensions
                    !t.IsAbstract &&
                    !t.IsInterface &&
                    !t.IsGenericTypeDefinition &&
-                   t.IsAssignableTo(typeof(IDomainEventHandler<>)))
+                   t.GetInterfaces()
+                    .Any(i => i.IsGenericType &&
+                       i.GetGenericTypeDefinition() == typeof(IDomainEventHandler<>))
+                   )
                    .ToList();
                 domainEventHandlers.AddRange(assemblyDomainEventHandlers);
             }
@@ -54,7 +57,10 @@ namespace Common.Application.DomainEvents.Extensions
                    !t.IsAbstract &&
                    !t.IsInterface &&
                    !t.IsGenericTypeDefinition &&
-                   t.IsAssignableTo(typeof(IDomainEventHandler<>)))
+                   t.GetInterfaces()
+                    .Any(i => i.IsGenericType &&
+                       i.GetGenericTypeDefinition() == typeof(IDomainEventHandler<>))
+                   )
                    .ToList();
                 domainEventHandlers.AddRange(assemblyDomainEventHandlers);
             }
@@ -69,6 +75,7 @@ namespace Common.Application.DomainEvents.Extensions
                 Type handlerInterface = typeof(IDomainEventHandler<>)
                     .MakeGenericType(domainEvent);
 
+                services.AddTransient(handlerInterface, domainEventHandler);
             }
         }
     }

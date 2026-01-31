@@ -20,7 +20,10 @@ namespace Common.Application.IntegrationEvents.Extensions
                    !t.IsAbstract &&
                    !t.IsInterface &&
                    !t.IsGenericTypeDefinition &&
-                   t.IsAssignableTo(typeof(IIntegrationEventHandler<>)))
+                   t.GetInterfaces()
+                    .Any(i => i.IsGenericType &&
+                       i.GetGenericTypeDefinition() == typeof(IIntegrationEventHandler<>))
+                   )
                    .ToList();
                 integrationEventHandlers.AddRange(assemblyIntegrationEventHandlers);
             }
@@ -56,7 +59,10 @@ namespace Common.Application.IntegrationEvents.Extensions
                    !t.IsAbstract &&
                    !t.IsInterface &&
                    !t.IsGenericTypeDefinition &&
-                   t.IsAssignableTo(typeof(IIntegrationEventHandler<>)))
+                   t.GetInterfaces()
+                    .Any(i => i.IsGenericType &&
+                       i.GetGenericTypeDefinition() == typeof(IIntegrationEventHandler<>))
+                   )
                    .ToList();
                 integrationEventHandlers.AddRange(assemblyIntegrationEventHandlers);
             }
@@ -71,6 +77,7 @@ namespace Common.Application.IntegrationEvents.Extensions
                 Type handlerInterface = typeof(IIntegrationEventHandler<>)
                     .MakeGenericType(integrationEvent);
 
+                services.AddTransient(handlerInterface, integrationEventHandler);
             }
         }
     }
