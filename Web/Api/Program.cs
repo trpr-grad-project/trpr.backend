@@ -5,6 +5,7 @@ using Modules.Notifications.Infrastructure;
 using Common.Application;
 using Common.Presentation;
 using Common.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureSwagger();
 builder.Services.AddControllers();

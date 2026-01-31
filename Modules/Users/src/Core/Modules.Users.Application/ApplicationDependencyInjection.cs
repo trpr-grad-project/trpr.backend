@@ -1,14 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Modules.Users.Application.Interfaces;
 using Modules.Users.Application.Services;
-using Modules.Users.Application.Pipelines;
 using Modules.Users.Application.Options;
 using Modules.Users.Application.Factories;
 using Modules.Users.Domain.ValueObjects;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Common.Application.DomainEvents;
-using Common.Domain;
 using Common.Application.DomainEvents.Extensions;
+using Common.Application.IntegrationEvents.Extensions;
 
 namespace Modules.Users.Application;
 
@@ -34,14 +31,6 @@ public static class ApplicationDependencyInjection
         services.AddKeyedScoped<ITokenHandler, CreateUserOtpHandler>(TokenType.Otp);
         #endregion
 
-        services.AddDomainEventHandlers(cfg =>
-            cfg
-                .AddAssembly(Application.AssemblyRefrence.Assembly)
-        );
-        services.AddDomainEventHandlerDecorators(cfg =>
-            cfg
-                .AddPipeline(typeof(OutboxIdempotentDomainEventHandlerDecorator<>))
-                .AddAssembly(Application.AssemblyRefrence.Assembly));
         return services;
     }
 
