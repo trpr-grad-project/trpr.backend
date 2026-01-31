@@ -20,6 +20,7 @@ builder.Services.AddCommonPresentation(
 builder.Services.AddCommonInfrastructure(builder.Configuration);
 builder.Services.AddUsersModule(builder.Configuration);
 builder.Services.AddNotificationsModule(builder.Configuration);
+builder.Services.AddIntegrationEvents();
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .WriteTo.Console()

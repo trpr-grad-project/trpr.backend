@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Modules.Notifications.Infrastructure.Data;
 using Modules.Users.Infrastructure.Data;
