@@ -5,7 +5,7 @@ using Modules.Users.Application.Exceptions;
 using Modules.Users.Domain.Events;
 using Modules.Users.Domain.ValueObjects;
 
-namespace Modules.Users.Application.Events.Handlers
+namespace Modules.Users.Application.Projections
 {
     public class OtpTokenCreatedDomainEventHandler(IUsersDbContext appDbContext) : IDomainEventHandler<TokenCreatedDomainEvent>
     {
