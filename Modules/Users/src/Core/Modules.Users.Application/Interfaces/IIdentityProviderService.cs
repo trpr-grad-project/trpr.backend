@@ -8,7 +8,7 @@ public interface IIdentityProviderService
     Task<string> RegisterUserAsync(UserModel user, CancellationToken cancellationToken = default);
     Task RemoveUserAsync(Guid userId, CancellationToken cancellationToken = default);
     Task EnableUserAsync(Guid userId, CancellationToken cancellationToken = default);
-    Task<LoginUserResponseDto> ImpersonateUserAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<LoginUserResponseDto> ImpersonateUserAsync(string username, CancellationToken cancellationToken = default);
     Task<LoginUserResponseDto> RefreshUserAsync(string token, CancellationToken cancellationToken = default);
     Task<LoginUserResponseDto> LoginUserAsync(string username, string password, CancellationToken cancellationToken = default);
 }

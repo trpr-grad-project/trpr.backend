@@ -13,9 +13,9 @@ internal sealed class IdentityProviderService(AdminKeyCloakClient adminKeyCloakC
     : IIdentityProviderService
 {
 
-    public Task<LoginUserResponseDto> ImpersonateUserAsync(Guid userId, CancellationToken cancellationToken = default)
+    public Task<LoginUserResponseDto> ImpersonateUserAsync(string username, CancellationToken cancellationToken = default)
     {
-        var authResponse = adminKeyCloakClient.ImpersonateUserAsync(userId, cancellationToken);
+        var authResponse = tokenKeyCloackCLient.ImpersonateUserAsync(username, cancellationToken);
         return Task.FromResult(new LoginUserResponseDto()
         {
             AccessToken = authResponse.Result.AccessToken,
@@ -67,6 +67,8 @@ internal sealed class IdentityProviderService(AdminKeyCloakClient adminKeyCloakC
         {
             var userRepresentation = new UserRepresentation(
                 user.UserName,
+                user.Email,
+                true,
                 user.FirstName,
                 user.LastName,
                 false,

@@ -8,6 +8,28 @@ namespace Modules.Users.Infrastructure.Clients
     internal class TokenKeyCloackCLient(HttpClient httpClient, IOptions<KeyCloakOptions> options)
     {
         private readonly KeyCloakOptions _options = options.Value;
+        internal async Task<LoginResponseRepresentation> ImpersonateUserAsync(string username, CancellationToken cancellationToken = default)
+        {
+            var loginRepresentation = new KeyValuePair<string, string>[]
+           {
+            new ("client_id", _options.ConfidentialClientId),
+            new ("username", username),
+            new ("client_secret", _options.ConfidentialClientSecret),
+            new ("grant_type", "password"),
+            new ("scope", "openid email"),
+            new ("impersonate" , "true")
+           };
+
+            var authRequestContent = new FormUrlEncodedContent(loginRepresentation);
+            HttpResponseMessage httpResponseMessage = await httpClient.PostAsync(
+                "",
+                authRequestContent,
+                cancellationToken);
+
+            httpResponseMessage.EnsureSuccessStatusCode();
+
+            return await httpResponseMessage.Content.ReadFromJsonAsync<LoginResponseRepresentation>(cancellationToken: cancellationToken) ?? throw new InvalidOperationException("Failed to read authorization token from response.");
+        }
         internal async Task<LoginResponseRepresentation> RefreshTokenAsync(string token, CancellationToken cancellationToken = default)
         {
             var refreshRepresentation = new KeyValuePair<string, string>[]

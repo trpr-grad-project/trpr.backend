@@ -7,17 +7,6 @@ namespace Modules.Users.Infrastructure.Clients;
 
 internal sealed class AdminKeyCloakClient(HttpClient httpClient)
 {
-    internal async Task<LoginResponseRepresentation> ImpersonateUserAsync(Guid userId, CancellationToken cancellationToken = default)
-    {
-        HttpResponseMessage httpResponseMessage = await httpClient.PostAsync(
-            $"users/{userId}/impersonation",
-            null,
-            cancellationToken);
-
-        httpResponseMessage.EnsureSuccessStatusCode();
-
-        return await httpResponseMessage.Content.ReadFromJsonAsync<LoginResponseRepresentation>(cancellationToken: cancellationToken) ?? throw new InvalidOperationException("Failed to read authorization token from response.");
-    }
     internal async Task RemoveUserAsync(Guid identityId, CancellationToken cancellationToken = default)
     {
         HttpResponseMessage httpResponseMessage = await httpClient.DeleteAsync(

@@ -9,6 +9,7 @@ using Modules.Users.Application.Repositories;
 using Modules.Users.Application.Interfaces;
 using Modules.Users.Application.Factories;
 using Modules.Users.Domain.ValueObjects;
+using System.Net.Mail;
 
 namespace Modules.Users.Application.Services;
 
@@ -31,9 +32,11 @@ IUnitOfWork unitOfWork)
             throw new ConflictException("User.Conflict", user.Id);
         }
         await RemoveUnVerifiedUserAsync(user, cancellationToken);
+        var emailAdress = MailAddress.TryCreate(createUserRequestDto.Identifier, out var _) ? createUserRequestDto.Identifier : string.Format("{0}@trpr.com", createUserRequestDto.Identifier);
         string userIdentitfier = await identityProviderService.RegisterUserAsync(
             new UserModel(
                 createUserRequestDto.Identifier,
+                emailAdress,
                 createUserRequestDto.Password,
                 createUserRequestDto.FirstName,
                 createUserRequestDto.LastName),
@@ -85,7 +88,7 @@ IUnitOfWork unitOfWork)
             var otpToken = await TokenRepo.GetByIdForUpdate(verifyOtpRequestDto.Identifier);
             if (
                 otpToken == null ||
-                otpToken.Expiration > DateTime.UtcNow ||
+                otpToken.Expiration < DateTime.UtcNow ||
                 otpToken.IsRevoked)
             {
                 logger.LogWarning(

@@ -11,7 +11,7 @@ namespace Api.Extensions
         {
             foreach (var module in Modules)
             {
-                configuration.AddJsonFile($"appsettings.{module}.Development.json", optional: true, reloadOnChange: true);
+                configuration.AddJsonFile($"appsettings.{module}.Development.json", optional: true, reloadOnChange: true).AddEnvironmentVariables();
             }
             return services;
         }

@@ -17,7 +17,7 @@ public class ForgetPasswordOtpHandler(IGenericRepository<User, Guid> UserRepo, I
         UserRepo.Update(user);
         TokenRepo.Update(token);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        return await identityProviderService.ImpersonateUserAsync(user.Id, cancellationToken);
+        return await identityProviderService.ImpersonateUserAsync(user.UserName, cancellationToken);
     }
 
 }
