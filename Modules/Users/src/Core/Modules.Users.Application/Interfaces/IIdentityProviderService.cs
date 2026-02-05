@@ -11,4 +11,5 @@ public interface IIdentityProviderService
     Task<LoginUserResponseDto> ImpersonateUserAsync(string username, CancellationToken cancellationToken = default);
     Task<LoginUserResponseDto> RefreshUserAsync(string token, CancellationToken cancellationToken = default);
     Task<LoginUserResponseDto> LoginUserAsync(string username, string password, CancellationToken cancellationToken = default);
+    Task UpdatePassword(Guid userId, string password, CancellationToken cancellationToken = default);
 }

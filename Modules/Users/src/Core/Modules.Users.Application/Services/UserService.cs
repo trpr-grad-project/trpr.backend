@@ -10,6 +10,7 @@ using Modules.Users.Application.Interfaces;
 using Modules.Users.Application.Factories;
 using Modules.Users.Domain.ValueObjects;
 using System.Net.Mail;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace Modules.Users.Application.Services;
 
@@ -78,6 +79,11 @@ IUnitOfWork unitOfWork)
         return await identityProviderService.RefreshUserAsync(
             refreshTokenRequestDto.Token,
             cancellationToken);
+    }
+
+    public async Task UpdatePassword(Guid userId, UpdatePasswordRequestDto updatePasswordRequest, CancellationToken cancellationToken = default)
+    {
+        await identityProviderService.UpdatePassword(userId, updatePasswordRequest.Password, cancellationToken);
     }
 
     public async Task<LoginUserResponseDto> VerifyOtpAsync(VerifyOtpRequestDto verifyOtpRequestDto, CancellationToken cancellationToken = default)

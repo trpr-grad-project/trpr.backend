@@ -7,6 +7,15 @@ namespace Modules.Users.Infrastructure.Clients;
 
 internal sealed class AdminKeyCloakClient(HttpClient httpClient)
 {
+    internal async Task ResetPasswordAsync(Guid userId, string password, CancellationToken cancellationToken = default)
+    {
+        HttpResponseMessage httpResponseMessage = await httpClient.PutAsJsonAsync(
+            $"users/{userId}/reset-password ",
+            new ResetPasswordRepresentation("password", false, password),
+            cancellationToken);
+
+        httpResponseMessage.EnsureSuccessStatusCode();
+    }
     internal async Task RemoveUserAsync(Guid identityId, CancellationToken cancellationToken = default)
     {
         HttpResponseMessage httpResponseMessage = await httpClient.DeleteAsync(

@@ -109,4 +109,9 @@ internal sealed class IdentityProviderService(AdminKeyCloakClient adminKeyCloakC
             throw new NotFoundException("User.NotFound", userId);
         }
     }
+
+    public async Task UpdatePassword(Guid userId, string password, CancellationToken cancellationToken = default)
+    {
+        await adminKeyCloakClient.ResetPasswordAsync(userId, password, cancellationToken);
+    }
 }
