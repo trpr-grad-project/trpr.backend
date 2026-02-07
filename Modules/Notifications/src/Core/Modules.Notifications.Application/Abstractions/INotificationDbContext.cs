@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Modules.Notifications.Application.Abstractions;
 
-public interface IAppDbContext
+public interface INotificationDbContext
 {
 
 }

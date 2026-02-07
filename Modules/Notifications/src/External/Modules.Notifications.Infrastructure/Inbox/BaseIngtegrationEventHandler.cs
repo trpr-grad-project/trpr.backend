@@ -5,7 +5,7 @@ using Rebus.Handlers;
 
 namespace Modules.Notifications.Infrastructure.Inbox;
 
-public class BaseIngtegrationEventHandler<T>(AppDbContext context) : IHandleMessages<T> where T : IntegrationEvent
+public class BaseIngtegrationEventHandler<T>(NotificationDbContext context) : IHandleMessages<T> where T : IntegrationEvent
 {
     public async Task Handle(T message)
     {

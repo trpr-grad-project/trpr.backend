@@ -15,7 +15,7 @@ public static class InfrastructureDependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         string dbConnectionString = configuration.GetConnectionString("RommieDb")!;
-        services.AddDbContext<AppDbContext>((sp, options) =>
+        services.AddDbContext<NotificationDbContext>((sp, options) =>
         {
             options
                 .UseNpgsql(dbConnectionString, op =>
@@ -30,8 +30,8 @@ public static class InfrastructureDependencyInjection
         services.Configure<InBoxOptions>(configuration.GetSection("Notifications:Inbox"));
         services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
         services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
-        services.AddScoped<IAppDbContext, AppDbContext>();
-        services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<AppDbContext>());
+        services.AddScoped<INotificationDbContext, NotificationDbContext>();
+        services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<NotificationDbContext>());
         // adding quartz for background jobs 
         services.AddQuartz();
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);

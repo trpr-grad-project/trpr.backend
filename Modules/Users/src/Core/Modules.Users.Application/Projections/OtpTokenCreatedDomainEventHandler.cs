@@ -7,11 +7,11 @@ using Modules.Users.Domain.ValueObjects;
 
 namespace Modules.Users.Application.Projections
 {
-    public class OtpTokenCreatedDomainEventHandler(IUsersDbContext appDbContext) : IDomainEventHandler<TokenCreatedDomainEvent>
+    public class OtpTokenCreatedDomainEventHandler(IUsersDbContext usersDbContext) : IDomainEventHandler<TokenCreatedDomainEvent>
     {
         public async Task HandleAsync(TokenCreatedDomainEvent domainEvent, CancellationToken cancellationToken = default)
         {
-            var token = await appDbContext
+            var token = await usersDbContext
                 .Tokens
                 .Include(x => x.User)
                 .FirstOrDefaultAsync(t => t.Id == domainEvent.TokenId, cancellationToken) ?? throw new NotFoundException("Token.NotFound", domainEvent.TokenId);

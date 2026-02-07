@@ -7,7 +7,7 @@ using Modules.Notifications.Infrastructure.Inbox;
 
 namespace Modules.Notifications.Infrastructure.Data;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IUnitOfWork, IAppDbContext
+public class NotificationDbContext(DbContextOptions<NotificationDbContext> options) : DbContext(options), IUnitOfWork, INotificationDbContext
 {
     public virtual DbSet<OutboxMessage> OutboxMessages { get; set; }
     public virtual DbSet<OutboxConsumerMessage> OutboxConsumerMessages { get; set; }

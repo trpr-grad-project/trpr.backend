@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Modules.Notifications.Infrastructure.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
+    [DbContext(typeof(NotificationDbContext))]
     [Migration("20260131132104_UpdateOutboxNamingConvension")]
     partial class UpdateOutboxNamingConvension
     {

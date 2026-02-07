@@ -13,7 +13,7 @@ public static class MigrationsExtension
         var usersDbContext = scope.ServiceProvider
             .GetRequiredService<UsersDbContext>();
         var notificationsDbContext = scope.ServiceProvider
-            .GetRequiredService<AppDbContext>();
+            .GetRequiredService<NotificationDbContext>();
         usersDbContext.Database.Migrate();
         notificationsDbContext.Database.Migrate();
     }
