@@ -32,7 +32,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.AddMigrations();
+    await app.AddMigrations();
 }
 app.AddMiddlewares();
 app.UseHttpLogging();
