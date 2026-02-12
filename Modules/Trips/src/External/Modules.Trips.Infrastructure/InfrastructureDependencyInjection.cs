@@ -1,0 +1,44 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using Quartz;
+using Modules.Trips.Infrastructure.Repositories;
+using Modules.Trips.Infrastructure.Data;
+using Modules.Trips.Infrastructure.Inbox;
+using Modules.Trips.Infrastructure.Outbox;
+using Modules.Trips.Application.Abstractions;
+
+namespace Modules.Trips.Infrastructure;
+
+public static class InfrastructureDependencyInjection
+{
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    {
+
+        string dbConnectionString = configuration.GetConnectionString("RommieDb")!;
+        services.AddDbContext<TripsDbContext>((sp, options) =>
+        {
+            options
+                .UseNpgsql(dbConnectionString, op =>
+                {
+                    op.MigrationsAssembly(AssemblyRefrence.Assembly);
+                })
+                .UseSnakeCaseNamingConvention()
+                .AddInterceptors(sp.GetRequiredService<PublishOutboxMessagesInterceptor>());
+        });
+        services.AddScoped<PublishOutboxMessagesInterceptor>();
+        services.Configure<OutBoxOptions>(configuration.GetSection("Trips:OutBox"));
+        services.Configure<InBoxOptions>(configuration.GetSection("Trips:InBox"));
+        services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
+        services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
+        services.AddScoped<ITripsDbContext>(x => x.GetRequiredService<TripsDbContext>());
+        services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<TripsDbContext>());
+        // adding quartz for background jobs 
+        services.AddQuartz();
+        services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+        services.ConfigureOptions<ConfigureProcessOutboxJob>();
+        services.ConfigureOptions<ConfigureProcessInboxJob>();
+        return services;
+    }
+}

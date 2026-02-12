@@ -5,21 +5,25 @@ using Modules.Notifications.Infrastructure;
 using Common.Application;
 using Common.Presentation;
 using Common.Infrastructure;
+using Modules.Trips.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureSwagger();
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddConfigurations(builder.Configuration, "Users", "Notifications");
+builder.Services.AddConfigurations(builder.Configuration, "Users", "Notifications", "Trips");
 builder.Services.AddCommonApplication(
     Modules.Users.Application.AssemblyRefrence.Assembly,
-    Modules.Notifications.Application.AssemblyRefrence.Assembly);
+    Modules.Notifications.Application.AssemblyRefrence.Assembly,
+    Modules.Trips.Application.AssemblyRefrence.Assembly);
 builder.Services.AddCommonPresentation(
     Modules.Users.Presentation.AssemblyRefrence.Assembly,
-    Modules.Notifications.Presentation.AssemblyRefrence.Assembly);
+    Modules.Notifications.Presentation.AssemblyRefrence.Assembly,
+    Modules.Trips.Presentation.AssemblyRefrence.Assembly);
 builder.Services.AddCommonInfrastructure(builder.Configuration);
 builder.Services.AddUsersModule(builder.Configuration);
 builder.Services.AddNotificationsModule(builder.Configuration);
+builder.Services.AddTripsModule(builder.Configuration);
 builder.Services.AddIntegrationEvents();
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()

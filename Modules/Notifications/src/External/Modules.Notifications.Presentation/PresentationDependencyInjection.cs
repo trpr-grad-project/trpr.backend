@@ -11,10 +11,6 @@ namespace Modules.Notifications.Presentation
     {
         public static IServiceCollection AddPresentation(this IServiceCollection services)
         {
-            services.AddHttpLogging(options =>
-            {
-                options.LoggingFields = HttpLoggingFields.Request | HttpLoggingFields.Response;
-            });
             return services;
         }
 

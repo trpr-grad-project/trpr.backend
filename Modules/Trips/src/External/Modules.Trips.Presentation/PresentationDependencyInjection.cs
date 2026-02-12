@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Modules.Users.Presentation
+namespace Modules.Trips.Presentation
 {
     public static class PresentationDependencyInjection
     {
