@@ -23,6 +23,79 @@ namespace Modules.Notifications.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Modules.Notifications.Domain.Entities.Template", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean")
+                        .HasColumnName("active");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("content");
+
+                    b.Property<int>("ContentType")
+                        .HasColumnType("integer")
+                        .HasColumnName("content_type");
+
+                    b.Property<int>("TemplateType")
+                        .HasColumnType("integer")
+                        .HasColumnName("template_type");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_templates");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_templates_user_id");
+
+                    b.ToTable("templates", "ntf");
+                });
+
+            modelBuilder.Entity("Modules.Notifications.Domain.Entities.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text")
+                        .HasColumnName("email");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("first_name");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("last_name");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text")
+                        .HasColumnName("phone_number");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_users");
+
+                    b.ToTable("users", "ntf");
+                });
+
             modelBuilder.Entity("Modules.Notifications.Infrastructure.Inbox.InboxConsumerMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -133,6 +206,23 @@ namespace Modules.Notifications.Infrastructure.Migrations
                         .HasName("pk_outbox_messages");
 
                     b.ToTable("outbox_messages", "ntf");
+                });
+
+            modelBuilder.Entity("Modules.Notifications.Domain.Entities.Template", b =>
+                {
+                    b.HasOne("Modules.Notifications.Domain.Entities.User", "User")
+                        .WithMany("Templates")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_templates_users_user_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Modules.Notifications.Domain.Entities.User", b =>
+                {
+                    b.Navigation("Templates");
                 });
 #pragma warning restore 612, 618
         }

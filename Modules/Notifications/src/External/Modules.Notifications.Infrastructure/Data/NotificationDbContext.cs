@@ -4,11 +4,14 @@ using Modules.Notifications.Application.Abstractions;
 using Common.Application;
 using Modules.Notifications.Infrastructure.Outbox;
 using Modules.Notifications.Infrastructure.Inbox;
+using Modules.Notifications.Domain.Entities;
 
 namespace Modules.Notifications.Infrastructure.Data;
 
 public class NotificationDbContext(DbContextOptions<NotificationDbContext> options) : DbContext(options), IUnitOfWork, INotificationDbContext
 {
+    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<Template> Templates { get; set; }
     public virtual DbSet<OutboxMessage> OutboxMessages { get; set; }
     public virtual DbSet<OutboxConsumerMessage> OutboxConsumerMessages { get; set; }
     public virtual DbSet<InboxMessage> InboxMessages { get; set; }

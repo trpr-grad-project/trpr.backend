@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using Common.Application.DomainEvents.Extensions;
-using Common.Application.IntegrationEvents.Extensions;
+using Modules.Notifications.Application.Services;
 
 namespace Modules.Notifications.Application;
 
@@ -15,6 +14,7 @@ public static class ApplicationDependencyInjection
         #endregion
 
         #region  services
+        services.AddScoped<UserService>();
         #endregion
         return services;
     }

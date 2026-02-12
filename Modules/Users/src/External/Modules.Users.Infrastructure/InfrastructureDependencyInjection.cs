@@ -58,7 +58,7 @@ public static class InfrastructureDependencyInjection
         services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
         services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IUsersDbContext, UsersDbContext>();
+        services.AddScoped<IUsersDbContext>(x => x.GetRequiredService<UsersDbContext>());
         services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<UsersDbContext>());
         // adding quartz for background jobs 
         services.AddQuartz();

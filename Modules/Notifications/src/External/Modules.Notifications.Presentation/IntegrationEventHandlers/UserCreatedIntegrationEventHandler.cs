@@ -1,15 +1,15 @@
 using Microsoft.Extensions.Logging;
 using Modules.Notifications.Application.Abstractions;
+using Modules.Notifications.Application.Services;
 using Modules.Users.Contracts.IntegrationEvents;
 
 namespace Modules.Notifications.Presentation.IntegrationEventHandlers;
 
-public class UserCreatedIntegrationEventHandler(ILogger<UserCreatedIntegrationEventHandler> logger) : IIntegrationEventHandler<UserCreatedIntegrationEvent>
+public class UserCreatedIntegrationEventHandler(UserService userService) : IIntegrationEventHandler<UserCreatedIntegrationEvent>
 {
-    public Task HandleAsync(UserCreatedIntegrationEvent domainEvent, CancellationToken cancellationToken = default)
+    public async Task HandleAsync(UserCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("User with identifier recived in the notification module {identifier}", domainEvent.UserName);
-        return Task.CompletedTask;
+        await userService.CreateUser(integrationEvent.UserId, integrationEvent.UserName, integrationEvent.FirstName, integrationEvent.LastName, cancellationToken);
     }
 
 }
