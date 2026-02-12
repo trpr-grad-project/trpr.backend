@@ -15,6 +15,8 @@ public static class ApplicationDependencyInjection
         #endregion
 
         #region  services
+        services.AddScoped<UserService>();
+        services.AddScoped<NotificationService>();
         #endregion
         return services;
     }
