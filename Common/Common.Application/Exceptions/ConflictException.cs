@@ -4,10 +4,10 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using Common.Domain;
 using Microsoft.AspNetCore.Http;
-using Modules.Notifications.Domain.Abstractions;
 
-namespace Modules.Notifications.Application.Exceptions
+namespace Common.Application.Exceptions
 {
     public class ConflictException(string code, params object[] args) : LocalizedHttpException(code, StatusCodes.Status409Conflict, args)
     {

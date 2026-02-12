@@ -1,6 +1,5 @@
 using Modules.Users.Application.Abstractions.Identity;
 using Microsoft.Extensions.Logging;
-using Modules.Users.Application.Exceptions;
 using Modules.Users.Domain.Entities;
 using Modules.Users.Application.Dtos.Responses;
 using Modules.Users.Application.Dtos.Requests;
@@ -11,6 +10,7 @@ using Modules.Users.Application.Factories;
 using Modules.Users.Domain.ValueObjects;
 using System.Net.Mail;
 using Microsoft.AspNetCore.Http.Features;
+using Common.Application.Exceptions;
 
 namespace Modules.Users.Application.Services;
 

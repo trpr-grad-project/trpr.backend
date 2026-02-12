@@ -1,11 +1,11 @@
 ﻿using System.Net;
-using Modules.Users.Application.Exceptions;
 using Microsoft.Extensions.Logging;
 using Modules.Users.Infrastructure.Dtos.Requests;
 using Modules.Users.Application.Dtos.Responses;
 using Modules.Users.Application.Abstractions.Identity;
 using Modules.Users.Application.Interfaces;
 using Modules.Users.Infrastructure.Clients;
+using Common.Application.Exceptions;
 
 namespace Modules.Users.Infrastructure.Services;
 

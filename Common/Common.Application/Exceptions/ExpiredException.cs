@@ -1,7 +1,7 @@
+using Common.Domain;
 using Microsoft.AspNetCore.Http;
-using Modules.Users.Domain.Abstractions;
 
-namespace Modules.Users.Application.Exceptions;
+namespace Common.Application.Exceptions;
 
 public class ExpiredException(string code, params object[] args) : LocalizedHttpException(code, StatusCodes.Status410Gone, args)
 {

@@ -1,6 +1,6 @@
+using Common.Application.Exceptions;
 using Modules.Users.Application.Abstractions;
 using Modules.Users.Application.Dtos.Responses;
-using Modules.Users.Application.Exceptions;
 using Modules.Users.Application.Interfaces;
 using Modules.Users.Domain.Entities;
 

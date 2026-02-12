@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Modules.Notifications.Application.Dtos.Requests;
-using Modules.Notifications.Application.Exceptions;
 using Modules.Notifications.Application.Services;
 using Modules.Notifications.Application.Validators;
 using Modules.Notifications.Domain.Entities;
@@ -27,7 +26,7 @@ namespace Modules.Notifications.Presentation.Controllers.v1
             return Ok(id);
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult<Guid>> UpdateTemplate([FromRoute]Guid id,UpdateTemplateDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<Guid>> UpdateTemplate([FromRoute] Guid id, UpdateTemplateDto dto, CancellationToken cancellationToken)
         {
             var Id = await templateService.UpdateTemplate(id, dto, cancellationToken);
             return Ok(Id);

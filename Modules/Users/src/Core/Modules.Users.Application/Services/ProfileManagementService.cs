@@ -1,9 +1,9 @@
+using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Modules.Users.Application.Abstractions;
 using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Dtos.Responses;
-using Modules.Users.Application.Exceptions;
 using Modules.Users.Application.Helpers;
 using Modules.Users.Domain.Entities;
 

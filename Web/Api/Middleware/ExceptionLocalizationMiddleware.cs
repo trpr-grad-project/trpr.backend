@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Modules.Users.Domain.Abstractions;
+using Common.Domain;
 
 namespace Api.Middleware;
 

@@ -1,6 +1,6 @@
 ﻿using Modules.Notifications.Domain.ValueObjects;
 
-namespace Modules.Notifications.Application.Services
+namespace Modules.Notifications.Application.Dtos.Requests
 {
     public class UpdateTemplateDto
     {

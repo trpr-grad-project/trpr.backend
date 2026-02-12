@@ -1,4 +1,4 @@
-namespace Modules.Notifications.Domain.Abstractions;
+namespace Common.Domain;
 
 public class LocalizedHttpException(string errorCode, int statusCode, params object[] args) : Exception
 {

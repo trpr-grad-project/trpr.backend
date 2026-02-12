@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Common.Application.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Modules.Notifications.Application.Abstractions;
 using Modules.Notifications.Application.Dtos;
 using Modules.Notifications.Application.Dtos.Requests;
-using Modules.Notifications.Application.Exceptions;
 using Modules.Notifications.Domain.Entities;
 using Modules.Notifications.Domain.ValueObjects;
 
@@ -11,8 +11,8 @@ namespace Modules.Notifications.Application.Services
 {
     public class TemplateService(INotificationDbContext notificationDbContext, IUnitOfWork unitOfWork)
     {
-        public async Task<Guid> CreateTemplate(Guid userId,CreateTemplateDto templateDto, CancellationToken cancellationToken = default)
-        { 
+        public async Task<Guid> CreateTemplate(Guid userId, CreateTemplateDto templateDto, CancellationToken cancellationToken = default)
+        {
             User user = await notificationDbContext.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken) ?? throw new NotFoundException("User.NotFound", userId);
             string content = templateDto.Content;
             TemplateType templateType = templateDto.TemplateType;

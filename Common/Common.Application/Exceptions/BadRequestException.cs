@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
+using Common.Domain;
 using Microsoft.AspNetCore.Http;
-using Modules.Notifications.Domain.Abstractions;
 
-namespace Modules.Notifications.Application.Exceptions
+namespace Common.Application.Exceptions
 {
     public class BadRequestException : LocalizedHttpException
     {

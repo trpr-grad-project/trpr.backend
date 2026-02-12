@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Modules.Notifications.Domain.Abstractions;
+﻿using Common.Domain;
+using Microsoft.AspNetCore.Http;
 
-namespace Modules.Notifications.Application.Exceptions
+namespace Common.Application.Exceptions
 {
     public class NotFoundException(string code, params object[] args) : LocalizedHttpException(code, StatusCodes.Status404NotFound, args)
     {

@@ -1,7 +1,7 @@
 using Common.Application.DomainEvents;
+using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Modules.Users.Application.Abstractions;
-using Modules.Users.Application.Exceptions;
 using Modules.Users.Domain.Events;
 using Modules.Users.Domain.ValueObjects;
 
