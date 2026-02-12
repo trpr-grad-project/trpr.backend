@@ -17,16 +17,9 @@ public class MinioFileService(
     {
         return $"http://{_minioSettings.PublicEndpoint}/{_minioSettings.Bucket}/{filePath}";
     }
-
-
-    public Task<string> UploadFileAsync(IFormFile file)
+    public async Task<string> UploadFileAsync(IFormFile file)
     {
-        string accessLevel = true ? "public" : "private";
-        return UploadFileAsync(file, $"{file.ContentType.Split('/')[0]}/{accessLevel}");
-    }
-    private async Task<string> UploadFileAsync(IFormFile file, string prefix)
-    {
-        string objectName = $"{prefix}/{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        string objectName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
 
         using var stream = file.OpenReadStream();
 

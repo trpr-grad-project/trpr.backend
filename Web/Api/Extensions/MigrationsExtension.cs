@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Minio;
 using Minio.DataModel.Args;
 using Modules.Notifications.Infrastructure.Data;
+using Modules.Trips.Infrastructure.Data;
 using Modules.Users.Infrastructure.Data;
 
 namespace Api.Extensions;
@@ -17,8 +18,11 @@ public static class MigrationsExtension
             .GetRequiredService<UsersDbContext>();
         var notificationsDbContext = scope.ServiceProvider
             .GetRequiredService<NotificationDbContext>();
+        var tripsDbContext = scope.ServiceProvider
+            .GetRequiredService<TripsDbContext>();
         usersDbContext.Database.Migrate();
         notificationsDbContext.Database.Migrate();
+        tripsDbContext.Database.Migrate();
         var minioClient = scope.ServiceProvider.GetRequiredService<IMinioClient>();
         await CreateBucketWithPoliciesAsync(minioClient, "uploads");
     }
@@ -55,29 +59,9 @@ public static class MigrationsExtension
                     Action = new[] { "s3:GetObject" },
                     Resource = new[]
                     {
-                        $"arn:aws:s3:::{bucketName}/image/public/*"
+                        $"arn:aws:s3:::{bucketName}/*"
                     }
-                },
-                new
-                {
-                    Effect = "Allow",
-                    Principal = new { AWS = "*" },
-                    Action = new[] { "s3:GetObject" },
-                    Resource = new[]
-                    {
-                        $"arn:aws:s3:::{bucketName}/video/public/*"
-                    }
-                },
-                new
-                {
-                    Effect = "Allow",
-                    Principal = new { AWS = "*" },
-                    Action = new[] { "s3:GetObject" },
-                    Resource = new[]
-                    {
-                        $"arn:aws:s3:::{bucketName}/application/public/*"
-                    }
-                },
+                }
             }
         };
 
