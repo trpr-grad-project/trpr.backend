@@ -15,10 +15,7 @@ public static class ApplicationDependencyInjection
 
         #region  services
         services.AddScoped<UserService>();
-<<<<<<< HEAD
         services.AddScoped<TemplateService>();
-=======
->>>>>>> origin
         #endregion
         return services;
     }
