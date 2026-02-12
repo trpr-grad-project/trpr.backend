@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using Common.Application.DomainEvents.Extensions;
-using Common.Application.IntegrationEvents.Extensions;
+using Modules.Notifications.Application.Services;
 
 namespace Modules.Notifications.Application;
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Modules.Notifications.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class IntialCreate : Migration
+    public partial class addTemplateAndUserToNotificationModule : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -75,6 +75,53 @@ namespace Modules.Notifications.Infrastructure.Migrations
                 {
                     table.PrimaryKey("pk_outbox_messages", x => x.id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "users",
+                schema: "ntf",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    user_name = table.Column<string>(type: "text", nullable: false),
+                    first_name = table.Column<string>(type: "text", nullable: false),
+                    last_name = table.Column<string>(type: "text", nullable: false),
+                    email = table.Column<string>(type: "text", nullable: true),
+                    phone_number = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_users", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "templates",
+                schema: "ntf",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    content = table.Column<string>(type: "text", nullable: false),
+                    active = table.Column<bool>(type: "boolean", nullable: false),
+                    template_type = table.Column<int>(type: "integer", nullable: false),
+                    content_type = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_templates", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_templates_users_user_id",
+                        column: x => x.user_id,
+                        principalSchema: "ntf",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_templates_user_id",
+                schema: "ntf",
+                table: "templates",
+                column: "user_id");
         }
 
         /// <inheritdoc />
@@ -94,6 +141,14 @@ namespace Modules.Notifications.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "outbox_messages",
+                schema: "ntf");
+
+            migrationBuilder.DropTable(
+                name: "templates",
+                schema: "ntf");
+
+            migrationBuilder.DropTable(
+                name: "users",
                 schema: "ntf");
         }
     }

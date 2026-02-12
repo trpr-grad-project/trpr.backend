@@ -75,7 +75,7 @@ public static class MigrationsExtension
                     Action = new[] { "s3:GetObject" },
                     Resource = new[]
                     {
-                        $"arn:aws:s3:::{bucketName}/document/public/*"
+                        $"arn:aws:s3:::{bucketName}/application/public/*"
                     }
                 },
             }
