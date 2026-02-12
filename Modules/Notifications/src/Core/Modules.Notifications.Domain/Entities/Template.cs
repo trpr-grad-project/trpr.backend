@@ -23,4 +23,20 @@ public class Template
             User = user,
         };
     }
+    public Template Update(string? content, TemplateType? templateType, ContentType? contentType)
+    {
+        if (!string.IsNullOrEmpty(content))
+        {
+            Content = content;
+        }
+        if (templateType != null) 
+        {
+            TemplateType = templateType.Value;
+        }
+        if(contentType != null)
+        {
+            ContentType = contentType.Value;
+        }
+        return this;
+    }
 }

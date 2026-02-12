@@ -9,10 +9,8 @@ namespace Modules.Notifications.Application.Dtos.Requests
 {
     public class CreateTemplateDto
     {
-        public Guid Id { get; set; }
         public string Content { get; set; } = string.Empty;
         public TemplateType TemplateType { get; set; }
-
         public ContentType ContentType { get; set; }
     }
 }
