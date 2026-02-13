@@ -72,13 +72,12 @@ public class NotificationDbContext(DbContextOptions<NotificationDbContext> optio
     private void UpdateTimestamps()
     {
         // This tracks all changed entries and updates the timestamps
-        var entries = ChangeTracker.Entries()
-            .Where(e => e.Entity is Entity &&
-                        (e.State == EntityState.Added || e.State == EntityState.Modified));
+        var entries = ChangeTracker.Entries<Entity>()
+            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
 
         foreach (var entry in entries)
         {
-            var entity = (Template)entry.Entity;
+            var entity = entry.Entity;
             if (entry.State == EntityState.Added)
             {
                 entity.CreatedAtUTC = DateTime.UtcNow;

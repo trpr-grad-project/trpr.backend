@@ -6,6 +6,7 @@ using Common.Presentation.AuthenticationHandlers;
 using Common.Application.IntegrationEvents.Extensions;
 using Rebus.Config;
 using Microsoft.AspNetCore.HttpLogging;
+using System.Text.Json.Serialization;
 
 namespace Common.Presentation;
 
@@ -15,6 +16,11 @@ public static class PresentationDependencyInjection
     {
         services
             .AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(
+                    new JsonStringEnumConverter());
+            })
             .AddApplicationParts(assemblies);
         services
             .AddIntegrationEventHandlers(

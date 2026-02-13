@@ -38,8 +38,9 @@ namespace Modules.Notifications.Application.Services
         {
             var query = notificationDbContext.Templates.AsQueryable();
             query = query.OrderByDescending(t => t.UpdatedAtUTC);
-            var totalItems = await query.CountAsync();
-            var items = await query.Skip((dto.Page - 1) * dto.PageSize)
+            var totalItems = await query.CountAsync(cancellationToken);
+            var items = await query
+                .Skip((dto.Page - 1) * dto.PageSize)
                 .Take(dto.PageSize)
                 .ToListAsync(cancellationToken);
             return PaginationDto<Template>.Create(dto.Page, dto.PageSize, totalItems, items);
