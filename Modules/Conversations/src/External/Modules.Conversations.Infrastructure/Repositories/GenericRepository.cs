@@ -2,12 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Common.Application;
-using Modules.Trips.Infrastructure.Data;
-using Modules.Trips.Application.Abstractions;
+using Modules.Conversations.Infrastructure.Data;
+using Modules.Conversations.Application.Abstractions;
 
-namespace Modules.Trips.Infrastructure.Repositories;
+namespace Modules.Conversations.Infrastructure.Repositories;
 
-public class GenericRepository<T, TKey>(TripsDbContext context, ILogger<GenericRepository<T, TKey>> logger) : IGenericRepository<T, TKey> where T : class
+public class GenericRepository<T, TKey>(ConversationsDbContext context, ILogger<GenericRepository<T, TKey>> logger) : IGenericRepository<T, TKey> where T : class
 {
     public async Task<T?> GetById(TKey id)
     {
@@ -31,7 +31,7 @@ public class GenericRepository<T, TKey>(TripsDbContext context, ILogger<GenericR
         var storeObject = StoreObjectIdentifier.Create(entityType, StoreObjectType.Table);
         var keyColumnName = keyProperty!.GetColumnName(storeObject!.Value);
 
-        var sql = $"SELECT * FROM {Schema.Trips}.\"{tableName}\" WHERE \"{keyColumnName}\" = @p0 FOR UPDATE";
+        var sql = $"SELECT * FROM {Schema.Conversations}.\"{tableName}\" WHERE \"{keyColumnName}\" = @p0 FOR UPDATE";
 
         var entity = await context.Set<T>().FromSqlRaw(sql, id).FirstOrDefaultAsync();
 
