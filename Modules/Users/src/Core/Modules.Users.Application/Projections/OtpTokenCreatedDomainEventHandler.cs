@@ -1,5 +1,7 @@
 using Common.Application.DomainEvents;
+using Common.Application.EventBus;
 using Common.Application.Exceptions;
+using Common.Domain.IntragationEvents;
 using Microsoft.EntityFrameworkCore;
 using Modules.Users.Application.Abstractions;
 using Modules.Users.Domain.Events;
@@ -17,6 +19,8 @@ namespace Modules.Users.Application.Projections
                 .FirstOrDefaultAsync(t => t.Id == domainEvent.TokenId, cancellationToken) ?? throw new NotFoundException("Token.NotFound", domainEvent.TokenId);
             if (token.Type == TokenType.Otp || token.Type == TokenType.ForgetPasswordOtp)
             {
+                // TODO : SYKOO
+                // await bus.PublishAsync();
             }
         }
     }

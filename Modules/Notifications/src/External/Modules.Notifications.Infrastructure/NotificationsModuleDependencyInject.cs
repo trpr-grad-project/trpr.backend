@@ -1,12 +1,12 @@
 ﻿using Common.Application.DomainEvents.Extensions;
 using Common.Application.IntegrationEvents.Extensions;
+using Common.Domain.IntragationEvents;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Modules.Notifications.Application;
 using Modules.Notifications.Infrastructure.Inbox;
 using Modules.Notifications.Infrastructure.Outbox;
 using Modules.Notifications.Presentation;
-using Modules.Users.Contracts.IntegrationEvents;
 using Rebus.Handlers;
 
 namespace Modules.Notifications.Infrastructure

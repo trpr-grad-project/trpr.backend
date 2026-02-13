@@ -1,4 +1,4 @@
-using Modules.Users.Contracts.IntegrationEvents;
+using Common.Domain.IntragationEvents;
 using Rebus.Config;
 using Rebus.Routing.TypeBased;
 using Rebus.Transport.InMem;

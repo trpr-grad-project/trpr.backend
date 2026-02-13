@@ -4,7 +4,7 @@ using Modules.Users.Domain.Entities;
 using Modules.Users.Application.Abstractions;
 using Common.Application.DomainEvents;
 using Common.Application.EventBus;
-using Modules.Users.Contracts.IntegrationEvents;
+using Common.Domain.IntragationEvents;
 
 namespace Modules.Users.Application.Projections;
 

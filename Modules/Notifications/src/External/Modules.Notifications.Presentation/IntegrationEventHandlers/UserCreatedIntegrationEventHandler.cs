@@ -1,7 +1,7 @@
+using Common.Domain.IntragationEvents;
 using Microsoft.Extensions.Logging;
 using Modules.Notifications.Application.Abstractions;
 using Modules.Notifications.Application.Services;
-using Modules.Users.Contracts.IntegrationEvents;
 
 namespace Modules.Notifications.Presentation.IntegrationEventHandlers;
 
