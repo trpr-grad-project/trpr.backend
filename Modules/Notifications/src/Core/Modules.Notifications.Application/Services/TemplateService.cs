@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using Modules.Notifications.Application.Abstractions;
 using Modules.Notifications.Application.Dtos;
 using Modules.Notifications.Application.Dtos.Requests;
+using Modules.Notifications.Application.Dtos.Responses;
+using Modules.Notifications.Application.Mappers;
 using Modules.Notifications.Domain.Entities;
 using Modules.Notifications.Domain.ValueObjects;
 
@@ -34,16 +36,18 @@ namespace Modules.Notifications.Application.Services
             return template.Id;
         }
 
-        public async Task<PaginationDto<Template>> TemplatesPagination(PaginateRequestDto dto, CancellationToken cancellationToken = default)
+        public async Task<PaginationDto<TemplateResponseDto>> TemplatesPagination(PaginateRequestDto dto, CancellationToken cancellationToken = default)
         {
             var query = notificationDbContext.Templates.AsQueryable();
             query = query.OrderByDescending(t => t.UpdatedAtUTC);
             var totalItems = await query.CountAsync(cancellationToken);
             var items = await query
+                .Include(x => x.User)
+                .Select(x => x.ToResponseDto())
                 .Skip((dto.Page - 1) * dto.PageSize)
                 .Take(dto.PageSize)
                 .ToListAsync(cancellationToken);
-            return PaginationDto<Template>.Create(dto.Page, dto.PageSize, totalItems, items);
+            return PaginationDto<TemplateResponseDto>.Create(dto.Page, dto.PageSize, totalItems, items);
         }
     }
 }

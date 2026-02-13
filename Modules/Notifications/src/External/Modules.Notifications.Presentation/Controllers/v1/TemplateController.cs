@@ -7,6 +7,7 @@ using Common.Application.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Modules.Notifications.Application.Dtos.Requests;
+using Modules.Notifications.Application.Dtos.Responses;
 using Modules.Notifications.Application.Services;
 using Modules.Notifications.Application.Validators;
 using Modules.Notifications.Domain.Entities;
@@ -37,8 +38,8 @@ namespace Modules.Notifications.Presentation.Controllers.v1
         // add this to the template service and implement the pagination logic 
         // ps. the paginateion dto template has a create method that you can use;
         [HttpGet]
-        public async Task<ActionResult<PaginationDto<Template>>> GetPaginatedTemplates([FromQuery] PaginateRequestDto dto, CancellationToken cancellationToken = default)
-        { 
+        public async Task<ActionResult<PaginationDto<TemplateResponseDto>>> GetPaginatedTemplates([FromQuery] PaginateRequestDto dto, CancellationToken cancellationToken = default)
+        {
             var templatesList = await templateService.TemplatesPagination(dto, cancellationToken);
             return Ok(templatesList);
         }
