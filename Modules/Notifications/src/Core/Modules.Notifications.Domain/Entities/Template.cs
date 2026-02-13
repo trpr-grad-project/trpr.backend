@@ -1,8 +1,9 @@
+using Modules.Notifications.Domain.Abstractions;
 using Modules.Notifications.Domain.ValueObjects;
 
 namespace Modules.Notifications.Domain.Entities;
 
-public class Template
+public class Template : Entity
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
@@ -24,7 +25,7 @@ public class Template
         };
     }
     public Template Update(string? content, TemplateType? templateType, ContentType? contentType)
-    {
+    { 
         if (!string.IsNullOrEmpty(content))
         {
             Content = content;

@@ -14,5 +14,4 @@ public abstract class DomainEvent : IDomainEvent
         Id = id;
         CreatedOnUtc = CreatedOn;
     }
-
 }

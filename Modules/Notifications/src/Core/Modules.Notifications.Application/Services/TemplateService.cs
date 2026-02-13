@@ -34,20 +34,15 @@ namespace Modules.Notifications.Application.Services
             return template.Id;
         }
 
-        public async Task<PaginationDto<Template>> GetTemplatesPagination(int page, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<PaginationDto<Template>> TemplatesPagination(PaginateRequestDto dto, CancellationToken cancellationToken = default)
         {
             var query = notificationDbContext.Templates.AsQueryable();
+            query = query.OrderByDescending(t => t.UpdatedAtUTC);
             var totalItems = await query.CountAsync();
-            var items = await query.Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .Select(t => new Template
-                {
-                    Id = t.Id,
-                    Content = t.Content,
-                    TemplateType = t.TemplateType,
-                    ContentType = t.ContentType,
-                }).ToListAsync(cancellationToken);
-            return PaginationDto<Template>.Create(page, pageSize, totalItems, items);
+            var items = await query.Skip((dto.Page - 1) * dto.PageSize)
+                .Take(dto.PageSize)
+                .ToListAsync(cancellationToken);
+            return PaginationDto<Template>.Create(dto.Page, dto.PageSize, totalItems, items);
         }
     }
 }
