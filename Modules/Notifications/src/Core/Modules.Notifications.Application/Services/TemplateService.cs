@@ -1,4 +1,7 @@
-﻿using Common.Application.Exceptions;
+﻿using System.Linq;
+using Common.Application.Dtos;
+using Common.Application.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Modules.Notifications.Application.Abstractions;
@@ -22,8 +25,6 @@ namespace Modules.Notifications.Application.Services
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return template.Id;
         }
-
-
         public async Task<Guid> UpdateTemplate(Guid templateId, UpdateTemplateDto templateDto, CancellationToken cancellationToken = default)
         {
             Template template = await notificationDbContext.Templates.FirstOrDefaultAsync(t => t.Id == templateId, cancellationToken) ?? throw new NotFoundException("Template.NotFound", templateId);
@@ -31,6 +32,22 @@ namespace Modules.Notifications.Application.Services
             notificationDbContext.Templates.Update(template);
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return template.Id;
+        }
+
+        public async Task<PaginationDto<Template>> GetTemplatesPagination(int page, int pageSize, CancellationToken cancellationToken = default)
+        {
+            var query = notificationDbContext.Templates.AsQueryable();
+            var totalItems = await query.CountAsync();
+            var items = await query.Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(t => new Template
+                {
+                    Id = t.Id,
+                    Content = t.Content,
+                    TemplateType = t.TemplateType,
+                    ContentType = t.ContentType,
+                }).ToListAsync(cancellationToken);
+            return PaginationDto<Template>.Create(page, pageSize, totalItems, items);
         }
     }
 }
