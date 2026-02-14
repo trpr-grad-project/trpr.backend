@@ -25,7 +25,7 @@ public class NotificationDbContext(DbContextOptions<NotificationDbContext> optio
     {
         modelBuilder.HasDefaultSchema(Schema.Notifications);
         modelBuilder.ApplyConfigurationsFromAssembly
-        (AssemblyRefrence.Assembly);
+        (Modules.Notifications.Infrastructure.AssemblyRefrence.Assembly);
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)

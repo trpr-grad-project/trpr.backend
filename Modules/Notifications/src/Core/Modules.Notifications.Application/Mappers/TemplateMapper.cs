@@ -13,9 +13,9 @@ public static class TemplateMapper
         {
             Id = template.Id,
             UserId = template.UserId,
-            Content = template.Content,
+            // Content = template.Content,
             Active = template.Active,
-            TemplateType = template.TemplateType,
+            // TemplateType = template.TemplateType,
             ContentType = template.ContentType,
             User = template.User?.ToResponseDto() ?? new UserResponseDto { Id = template.UserId }
         };
