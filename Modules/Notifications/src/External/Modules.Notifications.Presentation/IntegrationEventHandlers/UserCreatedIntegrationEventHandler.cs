@@ -1,5 +1,4 @@
 using Common.Domain.IntragationEvents;
-using Microsoft.Extensions.Logging;
 using Modules.Notifications.Application.Abstractions;
 using Modules.Notifications.Application.Services;
 

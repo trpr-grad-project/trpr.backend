@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\Modules.Notifications.Domain\Modules.Notifications.Domain.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\Common.Application\Common.Application.csproj" />
+    <ProjectReference Include="..\Modules.Notifications.Domain\Modules.Notifications.Domain.csproj" />
+    <ProjectReference Include="..\..\External\Modules.Notifications.Contracts\Modules.Notifications.Contracts.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>

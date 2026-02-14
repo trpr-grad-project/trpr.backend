@@ -89,6 +89,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules.Conversations.Infra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules.Conversations.Contracts", "Modules\Conversations\src\External\Modules.Conversations.Contracts\Modules.Conversations.Contracts.csproj", "{50F0F679-7D85-4199-90E3-F827B50A4BC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules.Notifications.Contracts", "Modules\Notifications\src\External\Modules.Notifications.Contracts\Modules.Notifications.Contracts.csproj", "{E1E12234-5741-4318-ABBE-24013C57DFDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -194,6 +196,10 @@ Global
 		{50F0F679-7D85-4199-90E3-F827B50A4BC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50F0F679-7D85-4199-90E3-F827B50A4BC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50F0F679-7D85-4199-90E3-F827B50A4BC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1E12234-5741-4318-ABBE-24013C57DFDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1E12234-5741-4318-ABBE-24013C57DFDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1E12234-5741-4318-ABBE-24013C57DFDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1E12234-5741-4318-ABBE-24013C57DFDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{72F64FD0-3201-4209-BA12-D6E5D9D8D826} = {6158C57C-818C-4BFA-A336-8AFA78E8FD13}
@@ -236,5 +242,6 @@ Global
 		{AE4165E3-5E75-4AF5-8700-19E452942B49} = {DFFD1A45-E56D-44D9-88B4-7C661E1CD01A}
 		{9A21DFE5-BD17-4B97-B908-58D116A47BEE} = {DFFD1A45-E56D-44D9-88B4-7C661E1CD01A}
 		{50F0F679-7D85-4199-90E3-F827B50A4BC1} = {DFFD1A45-E56D-44D9-88B4-7C661E1CD01A}
+		{E1E12234-5741-4318-ABBE-24013C57DFDF} = {97CFC87D-C3CB-44A1-8B81-01ACD8492A37}
 	EndGlobalSection
 EndGlobal

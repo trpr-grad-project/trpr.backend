@@ -22,6 +22,10 @@ namespace Modules.Notifications.Infrastructure
             services
                 .AddTransient<IHandleMessages<UserCreatedIntegrationEvent>, BaseIngtegrationEventHandler<UserCreatedIntegrationEvent>>();
 
+            services
+                .AddTransient<IHandleMessages<SendMessageIntegrationEvent>,
+                BaseIngtegrationEventHandler<SendMessageIntegrationEvent>>();
+
             services.AddIntegrationEventHandlerDecorators(
                 cfg =>
                     cfg.AddAssemblies(Presentation.AssemblyRefrence.Assembly)
