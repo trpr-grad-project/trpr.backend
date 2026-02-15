@@ -8,6 +8,12 @@ using Modules.Conversations.Infrastructure.Data;
 using Modules.Conversations.Infrastructure.Inbox;
 using Modules.Conversations.Infrastructure.Outbox;
 using Modules.Conversations.Application.Abstractions;
+using ModelContextProtocol.Client;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Microsoft.Extensions.AI;
+using GeminiDotnet.Extensions.AI;
+using GeminiDotnet;
 
 namespace Modules.Conversations.Infrastructure;
 
@@ -15,7 +21,20 @@ public static class InfrastructureDependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-
+        services.AddSingleton<McpClient>(sp =>
+        {
+            var clientTransport = new StdioClientTransport(new StdioClientTransportOptions
+            {
+                Name = "Everything",
+                Command = "npx",
+                Arguments = ["-y", "@modelcontextprotocol/server-everything"],
+            });
+            return McpClient.CreateAsync(clientTransport).GetAwaiter().GetResult();
+        });
+        services.AddChatClient(new GeminiChatClient(new GeminiClientOptions
+        {
+            ApiKey = configuration["Conversations:Gemini:ApiKey"]!,
+        }));
         string dbConnectionString = configuration.GetConnectionString("RommieDb")!;
         services.AddDbContext<ConversationsDbContext>((sp, options) =>
         {

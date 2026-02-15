@@ -13,15 +13,15 @@ internal sealed class IdentityProviderService(AdminKeyCloakClient adminKeyCloakC
     : IIdentityProviderService
 {
 
-    public Task<LoginUserResponseDto> ImpersonateUserAsync(string username, CancellationToken cancellationToken = default)
+    public async Task<LoginUserResponseDto> ImpersonateUserAsync(string username, CancellationToken cancellationToken = default)
     {
-        var authResponse = tokenKeyCloackCLient.ImpersonateUserAsync(username, cancellationToken);
-        return Task.FromResult(new LoginUserResponseDto()
+        var authResponse = await tokenKeyCloackCLient.ImpersonateUserAsync(username, cancellationToken);
+        return new LoginUserResponseDto()
         {
-            AccessToken = authResponse.Result.AccessToken,
-            RefreshToken = authResponse.Result.RefreshToken,
+            AccessToken = authResponse.AccessToken,
+            RefreshToken = authResponse.RefreshToken,
             ProfileSetupCompleted = false
-        });
+        };
     }
 
     // POST /admin/realms/{realm}/users
