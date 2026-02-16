@@ -12,14 +12,6 @@ namespace Modules.Notifications.Application.Validators
     {
         public CreateTemplateDtoValidator()
         {
-            RuleFor(x => x.Content)
-                .NotEmpty()
-                .WithMessage("Content is required.");
-
-            RuleFor(x => x.TemplateType)
-                .IsInEnum()
-                .WithMessage("Invalid template type.");
-
             RuleFor(x => x.ContentType)
                 .IsInEnum()
                 .WithMessage("Invalid content type.");

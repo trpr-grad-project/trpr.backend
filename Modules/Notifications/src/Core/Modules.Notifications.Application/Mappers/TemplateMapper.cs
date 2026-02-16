@@ -1,3 +1,4 @@
+using Modules.Notifications.Application.Dtos.Requests;
 using Modules.Notifications.Application.Dtos.Responses;
 using Modules.Notifications.Domain.Entities;
 
@@ -8,14 +9,20 @@ public static class TemplateMapper
     public static TemplateResponseDto ToResponseDto(this Template template)
     {
         if (template == null) return null!;
-
+        
         return new TemplateResponseDto()
         {
             Id = template.Id,
             UserId = template.UserId,
-            // Content = template.Content,
             Active = template.Active,
-            // TemplateType = template.TemplateType,
+            Translations = template.TemplateLangs
+                .Select(x => new TemplateTranslationDto()
+                {
+                    LangCode = x.LangCode,
+                    Title = x.Title,
+                    Content = x.Content
+                })
+                .ToList(),
             ContentType = template.ContentType,
             User = template.User?.ToResponseDto() ?? new UserResponseDto { Id = template.UserId }
         };

@@ -41,8 +41,12 @@ public class Template : Entity
     public Template Update(
     ContentType? contentType,
     IDictionary<string, string>? contents,
-    IDictionary<string, string>? titles)
+    IDictionary<string, string>? titles,
+    bool active)
     {
+        if (active)  
+            Active = true;
+
         if (contentType.HasValue)
             ContentType = contentType.Value;
 
