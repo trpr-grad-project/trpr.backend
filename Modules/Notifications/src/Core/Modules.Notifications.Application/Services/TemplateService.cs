@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading;
 using Common.Application.Dtos;
 using Common.Application.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -18,18 +19,26 @@ namespace Modules.Notifications.Application.Services
     {
         public async Task<TemplateResponseDto> CreateTemplate(Guid userId, CreateTemplateDto templateDto, CancellationToken cancellationToken = default)
         {
-            User user = await notificationDbContext.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken) ?? throw new NotFoundException("User.NotFound", userId);
+            User user = await notificationDbContext.Users
+                .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken) 
+                ?? throw new NotFoundException("User.NotFound", userId);
+
             var templateLanguageDict = templateDto.Translations.ToDictionary(m => m.LangCode, x => x);
             var titleLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Title);
             var contentLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Content);
+
             Template template = Template.Create(templateDto.ContentType, user, contentLanguageDict, titleLanguageDict);
             notificationDbContext.Templates.Add(template);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+
             return TemplateMapper.ToResponseDto(template);
         }
         public async Task<TemplateResponseDto> UpdateTemplate(Guid templateId, UpdateTemplateDto templateDto, CancellationToken cancellationToken = default)
         {
-            Template template = await notificationDbContext.Templates.FirstOrDefaultAsync(t => t.Id == templateId, cancellationToken) ?? throw new NotFoundException("Template.NotFound", templateId);
+            Template template = await notificationDbContext.Templates
+                .FirstOrDefaultAsync(t => t.Id == templateId, cancellationToken) 
+                ?? throw new NotFoundException("Template.NotFound", templateId);
+
             if (templateDto.Active && !template.Active)
             {
                 // checks if there are existing and active templates
@@ -44,14 +53,17 @@ namespace Modules.Notifications.Application.Services
                     activeTemplate.Active = false;
                 }
             }
+
             Dictionary<string,string>? titleLanguageDict = null;
             Dictionary<string, string>? contentLanguageDict = null;
+
             if (templateDto.Translations != null) 
             {
                 var templateLanguageDict = templateDto.Translations.ToDictionary(m => m.LangCode, x => x);
                 titleLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Title);
                 contentLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Content);
             }
+
             template.Update(templateDto.ContentType, contentLanguageDict, titleLanguageDict, templateDto.Active);
             notificationDbContext.Templates.Update(template);
             await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -62,14 +74,27 @@ namespace Modules.Notifications.Application.Services
         {
             var query = notificationDbContext.Templates.AsQueryable();
             query = query.OrderByDescending(t => t.UpdatedAtUTC);
+
             var totalItems = await query.CountAsync(cancellationToken);
+
             var items = await query
                 .Include(x => x.User)
                 .Select(x => x.ToPaginationResponseDto())
                 .Skip((dto.Page - 1) * dto.PageSize)
                 .Take(dto.PageSize)
                 .ToListAsync(cancellationToken);
+
             return PaginationDto<TemplatePaginationResponseDto>.Create(dto.Page, dto.PageSize, totalItems, items);
+        }
+
+        public async Task<TemplateResponseDto> TemplateDetails(Guid templateId, Guid userId, CancellationToken cancellationToken)
+        {
+            Template template = await notificationDbContext.Templates
+                .Include(t => t.TemplateLangs)
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(t => t.UserId == userId && t.Id == templateId, cancellationToken)
+                ?? throw new NotFoundException("Template not found");
+            return TemplateMapper.ToResponseDto(template);
         }
     }
 }
