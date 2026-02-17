@@ -9,11 +9,11 @@ using Modules.Conversations.Infrastructure.Inbox;
 using Modules.Conversations.Infrastructure.Outbox;
 using Modules.Conversations.Application.Abstractions;
 using ModelContextProtocol.Client;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using Microsoft.Extensions.AI;
 using GeminiDotnet.Extensions.AI;
 using GeminiDotnet;
+using Modules.Conversations.Application.Interfaces;
+using Modules.Conversations.Infrastructure.Services;
 
 namespace Modules.Conversations.Infrastructure;
 
@@ -21,20 +21,17 @@ public static class InfrastructureDependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<McpClient>(sp =>
+        services.AddSingleton<IChatClient>(sp =>
         {
-            var clientTransport = new StdioClientTransport(new StdioClientTransportOptions
+            var baseClient = new GeminiChatClient(new GeminiClientOptions
             {
-                Name = "Everything",
-                Command = "npx",
-                Arguments = ["-y", "@modelcontextprotocol/server-everything"],
+                ApiKey = configuration["Conversations:Gemini:ApiKey"]!,
             });
-            return McpClient.CreateAsync(clientTransport).GetAwaiter().GetResult();
+            return new ChatClientBuilder(baseClient)
+                .UseFunctionInvocation()
+                .Build();
         });
-        services.AddChatClient(new GeminiChatClient(new GeminiClientOptions
-        {
-            ApiKey = configuration["Conversations:Gemini:ApiKey"]!,
-        }));
+
         string dbConnectionString = configuration.GetConnectionString("RommieDb")!;
         services.AddDbContext<ConversationsDbContext>((sp, options) =>
         {
@@ -53,6 +50,7 @@ public static class InfrastructureDependencyInjection
         services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
         services.AddScoped<IConversationsDbContext>(x => x.GetRequiredService<ConversationsDbContext>());
         services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<ConversationsDbContext>());
+        services.AddScoped<IAiChatService, AiChatService>();
         // adding quartz for background jobs 
         services.AddQuartz();
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);

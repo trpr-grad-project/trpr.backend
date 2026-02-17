@@ -44,7 +44,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    await app.AddMigrations();
+    app.AddMigrations();
 }
 app.AddMiddlewares();
 app.UseHttpLogging();

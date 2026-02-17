@@ -11,20 +11,20 @@ namespace Api.Extensions;
 
 public static class MigrationsExtension
 {
-    public static async Task AddMigrations(this IApplicationBuilder application)
+    public static void AddMigrations(this IApplicationBuilder application)
     {
-        using var scope = application.ApplicationServices.CreateScope();
-        var usersDbContext = scope.ServiceProvider
-            .GetRequiredService<UsersDbContext>();
-        var notificationsDbContext = scope.ServiceProvider
-            .GetRequiredService<NotificationDbContext>();
-        var tripsDbContext = scope.ServiceProvider
-            .GetRequiredService<TripsDbContext>();
-        usersDbContext.Database.Migrate();
-        notificationsDbContext.Database.Migrate();
-        tripsDbContext.Database.Migrate();
-        var minioClient = scope.ServiceProvider.GetRequiredService<IMinioClient>();
-        await CreateBucketWithPoliciesAsync(minioClient, "uploads");
+        // using var scope = application.ApplicationServices.CreateScope();
+        // var usersDbContext = scope.ServiceProvider
+        //     .GetRequiredService<UsersDbContext>();
+        // var notificationsDbContext = scope.ServiceProvider
+        //     .GetRequiredService<NotificationDbContext>();
+        // var tripsDbContext = scope.ServiceProvider
+        //     .GetRequiredService<TripsDbContext>();
+        // usersDbContext.Database.Migrate();
+        // notificationsDbContext.Database.Migrate();
+        // tripsDbContext.Database.Migrate();
+        // var minioClient = scope.ServiceProvider.GetRequiredService<IMinioClient>();
+        // await CreateBucketWithPoliciesAsync(minioClient, "uploads");
     }
 
     public static async Task CreateBucketWithPoliciesAsync(IMinioClient _minio, string bucketName)
