@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Modules.Notifications.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class addTemplateAndUserToNotificationModule : Migration
+    public partial class NotificationsInitalCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -100,10 +100,10 @@ namespace Modules.Notifications.Infrastructure.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    content = table.Column<string>(type: "text", nullable: false),
                     active = table.Column<bool>(type: "boolean", nullable: false),
-                    template_type = table.Column<int>(type: "integer", nullable: false),
-                    content_type = table.Column<int>(type: "integer", nullable: false)
+                    content_type = table.Column<int>(type: "integer", nullable: false),
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -116,6 +116,36 @@ namespace Modules.Notifications.Infrastructure.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "template_lang",
+                schema: "ntf",
+                columns: table => new
+                {
+                    template_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    lang_code = table.Column<string>(type: "text", nullable: false),
+                    title = table.Column<string>(type: "text", nullable: false),
+                    content = table.Column<string>(type: "text", nullable: false),
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_template_lang", x => new { x.template_id, x.lang_code });
+                    table.ForeignKey(
+                        name: "fk_template_lang_templates_template_id",
+                        column: x => x.template_id,
+                        principalSchema: "ntf",
+                        principalTable: "templates",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_templates_active",
+                schema: "ntf",
+                table: "templates",
+                column: "active");
 
             migrationBuilder.CreateIndex(
                 name: "ix_templates_user_id",
@@ -141,6 +171,10 @@ namespace Modules.Notifications.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "outbox_messages",
+                schema: "ntf");
+
+            migrationBuilder.DropTable(
+                name: "template_lang",
                 schema: "ntf");
 
             migrationBuilder.DropTable(

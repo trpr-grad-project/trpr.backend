@@ -14,7 +14,7 @@ using Modules.Notifications.Domain.ValueObjects;
 
 namespace Modules.Notifications.Application.Services
 {
-    public class TemplateService(INotificationDbContext notificationDbContext)
+    public class TemplateService(INotificationsDbContext notificationDbContext)
     {
         public Task<Guid> CreateTemplate(Guid userId, CreateTemplateDto templateDto, CancellationToken cancellationToken = default)
         {

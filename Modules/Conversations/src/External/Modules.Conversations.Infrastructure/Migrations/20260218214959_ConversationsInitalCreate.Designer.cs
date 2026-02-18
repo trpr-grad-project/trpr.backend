@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Conversations.Infrastructure.Migrations
 {
     [DbContext(typeof(ConversationsDbContext))]
-    [Migration("20260213003732_CreateConversationsDb")]
-    partial class CreateConversationsDb
+    [Migration("20260218214959_ConversationsInitalCreate")]
+    partial class ConversationsInitalCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

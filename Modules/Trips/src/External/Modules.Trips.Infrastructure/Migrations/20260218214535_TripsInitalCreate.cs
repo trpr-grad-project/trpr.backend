@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Modules.Trips.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class addTripsModuleDbContext : Migration
+    public partial class TripsInitalCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Users.Infrastructure.Migrations
 {
     [DbContext(typeof(UsersDbContext))]
-    [Migration("20260131132037_UpdateOutboxNamingConvension")]
-    partial class UpdateOutboxNamingConvension
+    [Migration("20260218214605_UsersInitalCreate")]
+    partial class UsersInitalCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

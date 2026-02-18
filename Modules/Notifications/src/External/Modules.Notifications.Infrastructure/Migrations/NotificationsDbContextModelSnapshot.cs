@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Modules.Notifications.Infrastructure.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,12 +10,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Modules.Notifications.Infrastructure.Migrations
 {
-    [DbContext(typeof(NotificationDbContext))]
-    [Migration("20260212132450_addTemplateAndUserToNotificationModule")]
-    partial class addTemplateAndUserToNotificationModule
+    [DbContext(typeof(NotificationsDbContext))]
+    partial class NotificationsDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,18 +34,17 @@ namespace Modules.Notifications.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("active");
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("content");
-
                     b.Property<int>("ContentType")
                         .HasColumnType("integer")
                         .HasColumnName("content_type");
 
-                    b.Property<int>("TemplateType")
-                        .HasColumnType("integer")
-                        .HasColumnName("template_type");
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<DateTime>("UpdatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
@@ -57,10 +53,47 @@ namespace Modules.Notifications.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_templates");
 
+                    b.HasIndex("Active")
+                        .HasDatabaseName("ix_templates_active");
+
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_templates_user_id");
 
                     b.ToTable("templates", "ntf");
+                });
+
+            modelBuilder.Entity("Modules.Notifications.Domain.Entities.TemplateLang", b =>
+                {
+                    b.Property<Guid>("TemplateId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("template_id");
+
+                    b.Property<string>("LangCode")
+                        .HasColumnType("text")
+                        .HasColumnName("lang_code");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("content");
+
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime>("UpdatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
+                    b.HasKey("TemplateId", "LangCode")
+                        .HasName("pk_template_lang");
+
+                    b.ToTable("template_lang", "ntf");
                 });
 
             modelBuilder.Entity("Modules.Notifications.Domain.Entities.User", b =>
@@ -221,6 +254,23 @@ namespace Modules.Notifications.Infrastructure.Migrations
                         .HasConstraintName("fk_templates_users_user_id");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Modules.Notifications.Domain.Entities.TemplateLang", b =>
+                {
+                    b.HasOne("Modules.Notifications.Domain.Entities.Template", "Template")
+                        .WithMany("TemplateLangs")
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_template_lang_templates_template_id");
+
+                    b.Navigation("Template");
+                });
+
+            modelBuilder.Entity("Modules.Notifications.Domain.Entities.Template", b =>
+                {
+                    b.Navigation("TemplateLangs");
                 });
 
             modelBuilder.Entity("Modules.Notifications.Domain.Entities.User", b =>

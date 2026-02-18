@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Trips.Infrastructure.Migrations
 {
     [DbContext(typeof(TripsDbContext))]
-    [Migration("20260212215759_addTripsModuleDbContext")]
-    partial class addTripsModuleDbContext
+    [Migration("20260218214535_TripsInitalCreate")]
+    partial class TripsInitalCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

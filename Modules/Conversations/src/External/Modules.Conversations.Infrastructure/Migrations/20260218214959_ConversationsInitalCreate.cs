@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Modules.Conversations.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateConversationsDb : Migration
+    public partial class ConversationsInitalCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

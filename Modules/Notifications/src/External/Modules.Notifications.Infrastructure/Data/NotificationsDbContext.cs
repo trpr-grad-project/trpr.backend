@@ -11,7 +11,7 @@ using Modules.Notifications.Domain.Abstractions;
 
 namespace Modules.Notifications.Infrastructure.Data;
 
-public class NotificationDbContext(DbContextOptions<NotificationDbContext> options) : DbContext(options), IUnitOfWork, INotificationDbContext
+public class NotificationsDbContext(DbContextOptions<NotificationsDbContext> options) : DbContext(options), IUnitOfWork, INotificationsDbContext
 {
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Template> Templates { get; set; }
