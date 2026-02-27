@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Common.Application;
 using Modules.Trips.Application.Abstractions;
+using Common.Infrastructure.Outbox;
+using Common.Infrastructure.Inbox;
 
 namespace Modules.Trips.Infrastructure.Data;
 
@@ -14,6 +16,11 @@ public class TripsDbContext(DbContextOptions<TripsDbContext> options) : DbContex
         modelBuilder.HasDefaultSchema(Schema.Trips);
         modelBuilder.ApplyConfigurationsFromAssembly
         (AssemblyRefrence.Assembly);
+
+        modelBuilder.ApplyConfiguration(new OutboxMessageConfiguration());
+        modelBuilder.ApplyConfiguration(new OutboxConsumerMessageConfiguration());
+        modelBuilder.ApplyConfiguration(new InboxMessageConfiguration());
+        modelBuilder.ApplyConfiguration(new InboxConsumerMessageConfiguration());
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)

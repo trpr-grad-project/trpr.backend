@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Modules.Users.Domain.Entities;
 using Modules.Users.Application.Abstractions;
 using Common.Application;
+using Common.Infrastructure.Inbox;
+using Common.Infrastructure.Outbox;
 
 namespace Modules.Users.Infrastructure.Data;
 
@@ -24,6 +26,11 @@ public class UsersDbContext(DbContextOptions<UsersDbContext> options) : DbContex
         modelBuilder.HasDefaultSchema(Schema.Users);
         modelBuilder.ApplyConfigurationsFromAssembly
         (AssemblyRefrence.Assembly);
+
+        modelBuilder.ApplyConfiguration(new OutboxMessageConfiguration());
+        modelBuilder.ApplyConfiguration(new OutboxConsumerMessageConfiguration());
+        modelBuilder.ApplyConfiguration(new InboxMessageConfiguration());
+        modelBuilder.ApplyConfiguration(new InboxConsumerMessageConfiguration());
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)

@@ -2,11 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Modules.Notifications.Application.Abstractions;
 using Common.Application;
-using Common.Domain;
-using Modules.Notifications.Infrastructure.Outbox;
-using Modules.Notifications.Infrastructure.Inbox;
 using Modules.Notifications.Domain.Entities;
 using Modules.Notifications.Domain.Abstractions;
+using Common.Infrastructure.Outbox;
+using Common.Infrastructure.Inbox;
 
 
 namespace Modules.Notifications.Infrastructure.Data;
@@ -15,10 +14,6 @@ public class NotificationsDbContext(DbContextOptions<NotificationsDbContext> opt
 {
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Template> Templates { get; set; }
-    public virtual DbSet<OutboxMessage> OutboxMessages { get; set; }
-    public virtual DbSet<OutboxConsumerMessage> OutboxConsumerMessages { get; set; }
-    public virtual DbSet<InboxMessage> InboxMessages { get; set; }
-    public virtual DbSet<InboxConsumerMessage> InboxConsumerMessages { get; set; }
     private IDbContextTransaction? _transaction;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -26,6 +21,10 @@ public class NotificationsDbContext(DbContextOptions<NotificationsDbContext> opt
         modelBuilder.HasDefaultSchema(Schema.Notifications);
         modelBuilder.ApplyConfigurationsFromAssembly
         (Modules.Notifications.Infrastructure.AssemblyRefrence.Assembly);
+        modelBuilder.ApplyConfiguration(new OutboxMessageConfiguration());
+        modelBuilder.ApplyConfiguration(new OutboxConsumerMessageConfiguration());
+        modelBuilder.ApplyConfiguration(new InboxMessageConfiguration());
+        modelBuilder.ApplyConfiguration(new InboxConsumerMessageConfiguration());
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)

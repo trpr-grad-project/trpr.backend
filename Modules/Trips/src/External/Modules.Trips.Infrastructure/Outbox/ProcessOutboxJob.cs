@@ -12,6 +12,7 @@ using Common.Application.Correlation;
 using Common.Application.DomainEvents;
 using Common.Domain;
 using Modules.Trips.Application.Abstractions;
+using Common.Infrastructure.Outbox;
 
 namespace Modules.Trips.Infrastructure.Outbox;
 

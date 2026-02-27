@@ -1,4 +1,5 @@
 using Common.Domain;
+using Common.Infrastructure.Inbox;
 using Modules.Notifications.Infrastructure.Data;
 using Newtonsoft.Json;
 using Rebus.Handlers;
@@ -21,7 +22,7 @@ public class BaseIngtegrationEventHandler<T>(NotificationsDbContext context) : I
             })
         };
 
-        context.InboxMessages.Add(inBoxMessages);
+        context.Set<InboxMessage>().Add(inBoxMessages);
         await context.SaveChangesAsync();
     }
 

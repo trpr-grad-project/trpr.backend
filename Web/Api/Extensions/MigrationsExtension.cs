@@ -11,7 +11,13 @@ namespace Api.Extensions;
 
 public static class MigrationsExtension
 {
-    //dotnet ef migrations add "ConversationsInitalCreate" --project .\Modules\Conversations\src\External\Modules.Conversations.Infrastructure\ --startup-project .\Web\Api\ --context ConversationsDbContext
+    //dotnet ef migrations add "IntialCreate" --project .\Modules\Conversations\src\External\Modules.Conversations.Infrastructure\ --startup-project .\Web\Api\ --context ConversationsDbContext
+
+    //dotnet ef migrations add "IntialCreate" --project .\Modules\Notifications\src\External\Modules.Notifications.Infrastructure\ --startup-project .\Web\Api\ --context NotificationsDbContext
+
+    //dotnet ef migrations add "IntialCreate" --project .\Modules\Trips\src\External\Modules.Trips.Infrastructure\ --startup-project .\Web\Api\ --context TripsDbContext
+
+    //dotnet ef migrations add "IntialCreate" --project .\Modules\Users\src\External\Modules.Users.Infrastructure\ --startup-project .\Web\Api\ --context UsersDbContext
     public static async Task AddMigrations(this IApplicationBuilder application)
     {
         using var scope = application.ApplicationServices.CreateScope();

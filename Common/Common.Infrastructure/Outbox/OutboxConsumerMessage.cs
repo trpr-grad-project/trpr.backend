@@ -1,4 +1,4 @@
-namespace Modules.Trips.Infrastructure.Outbox;
+namespace Common.Infrastructure.Outbox;
 
 public class OutboxConsumerMessage
 {

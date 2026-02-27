@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Modules.Trips.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class TripsInitalCreate : Migration
+    public partial class IntialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,7 +15,7 @@ namespace Modules.Trips.Infrastructure.Migrations
                 name: "trp");
 
             migrationBuilder.CreateTable(
-                name: "inbox_consumer_message",
+                name: "inbox_consumer_messages",
                 schema: "trp",
                 columns: table => new
                 {
@@ -24,7 +24,7 @@ namespace Modules.Trips.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_inbox_consumer_message", x => new { x.id, x.handler_name });
+                    table.PrimaryKey("pk_inbox_consumer_messages", x => new { x.id, x.handler_name });
                 });
 
             migrationBuilder.CreateTable(
@@ -81,7 +81,7 @@ namespace Modules.Trips.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "inbox_consumer_message",
+                name: "inbox_consumer_messages",
                 schema: "trp");
 
             migrationBuilder.DropTable(

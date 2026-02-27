@@ -23,7 +23,7 @@ namespace Modules.Trips.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Modules.Trips.Infrastructure.Inbox.InboxConsumerMessage", b =>
+            modelBuilder.Entity("Common.Infrastructure.Inbox.InboxConsumerMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -34,12 +34,12 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .HasColumnName("handler_name");
 
                     b.HasKey("Id", "HandlerName")
-                        .HasName("pk_inbox_consumer_message");
+                        .HasName("pk_inbox_consumer_messages");
 
-                    b.ToTable("inbox_consumer_message", "trp");
+                    b.ToTable("inbox_consumer_messages", "trp");
                 });
 
-            modelBuilder.Entity("Modules.Trips.Infrastructure.Inbox.InboxMessage", b =>
+            modelBuilder.Entity("Common.Infrastructure.Inbox.InboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -79,7 +79,7 @@ namespace Modules.Trips.Infrastructure.Migrations
                     b.ToTable("inbox_messages", "trp");
                 });
 
-            modelBuilder.Entity("Modules.Trips.Infrastructure.Outbox.OutboxConsumerMessage", b =>
+            modelBuilder.Entity("Common.Infrastructure.Outbox.OutboxConsumerMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -95,7 +95,7 @@ namespace Modules.Trips.Infrastructure.Migrations
                     b.ToTable("outbox_consumer_messages", "trp");
                 });
 
-            modelBuilder.Entity("Modules.Trips.Infrastructure.Outbox.OutboxMessage", b =>
+            modelBuilder.Entity("Common.Infrastructure.Outbox.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()

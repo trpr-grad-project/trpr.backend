@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Modules.Users.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class UsersInitalCreate : Migration
+    public partial class IntialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,7 +15,7 @@ namespace Modules.Users.Infrastructure.Migrations
                 name: "usr");
 
             migrationBuilder.CreateTable(
-                name: "inbox_consumer_message",
+                name: "inbox_consumer_messages",
                 schema: "usr",
                 columns: table => new
                 {
@@ -24,7 +24,7 @@ namespace Modules.Users.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_inbox_consumer_message", x => new { x.id, x.handler_name });
+                    table.PrimaryKey("pk_inbox_consumer_messages", x => new { x.id, x.handler_name });
                 });
 
             migrationBuilder.CreateTable(
@@ -311,7 +311,7 @@ namespace Modules.Users.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "inbox_consumer_message",
+                name: "inbox_consumer_messages",
                 schema: "usr");
 
             migrationBuilder.DropTable(

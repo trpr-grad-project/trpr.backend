@@ -1,4 +1,4 @@
-namespace Modules.Trips.Infrastructure.Inbox;
+namespace Common.Infrastructure.Inbox;
 
 public class InboxConsumerMessage
 {

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Modules.Trips.Infrastructure.Inbox;
+namespace Common.Infrastructure.Inbox;
 
 public class InboxMessageConfiguration : IEntityTypeConfiguration<InboxMessage>
 {

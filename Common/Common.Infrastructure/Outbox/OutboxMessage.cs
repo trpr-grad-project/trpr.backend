@@ -1,6 +1,6 @@
-namespace Modules.Users.Infrastructure.Inbox;
+namespace Common.Infrastructure.Outbox;
 
-public class InboxMessage
+public class OutboxMessage
 {
     public Guid Id { get; init; }
     public string CorrelationId { get; init; } = string.Empty;

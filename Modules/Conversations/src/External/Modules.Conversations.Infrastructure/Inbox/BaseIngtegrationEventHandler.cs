@@ -1,10 +1,10 @@
 using Common.Domain;
+using Common.Infrastructure.Inbox;
 using Modules.Conversations.Infrastructure.Data;
-using Modules.Conversations.Infrastructure.Inbox;
 using Newtonsoft.Json;
 using Rebus.Handlers;
 
-namespace Modules.Notifications.Infrastructure.Inbox;
+namespace Modules.Conversations.Infrastructure.Inbox;
 
 public class BaseIngtegrationEventHandler<T>(ConversationsDbContext context) : IHandleMessages<T> where T : IntegrationEvent
 {
@@ -22,7 +22,7 @@ public class BaseIngtegrationEventHandler<T>(ConversationsDbContext context) : I
             })
         };
 
-        context.InboxMessages.Add(inBoxMessages);
+        context.Set<InboxMessage>().Add(inBoxMessages);
         await context.SaveChangesAsync();
     }
 

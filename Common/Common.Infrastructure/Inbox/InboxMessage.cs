@@ -1,4 +1,4 @@
-namespace Modules.Notifications.Infrastructure.Inbox;
+namespace Common.Infrastructure.Inbox;
 
 public class InboxMessage
 {

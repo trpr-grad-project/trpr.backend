@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Conversations.Infrastructure.Migrations
 {
     [DbContext(typeof(ConversationsDbContext))]
-    [Migration("20260227133746_UpdateTableNames")]
-    partial class UpdateTableNames
+    [Migration("20260227174931_IntialCreate")]
+    partial class IntialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,118 @@ namespace Modules.Conversations.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Common.Infrastructure.Inbox.InboxConsumerMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("HandlerName")
+                        .HasColumnType("text")
+                        .HasColumnName("handler_name");
+
+                    b.HasKey("Id", "HandlerName")
+                        .HasName("pk_inbox_consumer_messages");
+
+                    b.ToTable("inbox_consumer_messages", "cnv");
+                });
+
+            modelBuilder.Entity("Common.Infrastructure.Inbox.InboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("content");
+
+                    b.Property<string>("CorrelationId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("correlation_id");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("text")
+                        .HasColumnName("error");
+
+                    b.Property<DateTime>("OccurredOnUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occurred_on_utc");
+
+                    b.Property<DateTime?>("ProcessedOnUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("processed_on_utc");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id")
+                        .HasName("pk_inbox_messages");
+
+                    b.ToTable("inbox_messages", "cnv");
+                });
+
+            modelBuilder.Entity("Common.Infrastructure.Outbox.OutboxConsumerMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("HandlerName")
+                        .HasColumnType("text")
+                        .HasColumnName("handler_name");
+
+                    b.HasKey("Id", "HandlerName")
+                        .HasName("pk_outbox_consumer_messages");
+
+                    b.ToTable("outbox_consumer_messages", "cnv");
+                });
+
+            modelBuilder.Entity("Common.Infrastructure.Outbox.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("content");
+
+                    b.Property<string>("CorrelationId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("correlation_id");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("text")
+                        .HasColumnName("error");
+
+                    b.Property<DateTime>("OccurredOnUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occurred_on_utc");
+
+                    b.Property<DateTime?>("ProcessedOnUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("processed_on_utc");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id")
+                        .HasName("pk_outbox_messages");
+
+                    b.ToTable("outbox_messages", "cnv");
+                });
 
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.AiConversation", b =>
                 {
@@ -280,118 +392,6 @@ namespace Modules.Conversations.Infrastructure.Migrations
                         .HasName("pk_users");
 
                     b.ToTable("users", "cnv");
-                });
-
-            modelBuilder.Entity("Modules.Conversations.Infrastructure.Inbox.InboxConsumerMessage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("HandlerName")
-                        .HasColumnType("text")
-                        .HasColumnName("handler_name");
-
-                    b.HasKey("Id", "HandlerName")
-                        .HasName("pk_inbox_consumer_messages");
-
-                    b.ToTable("inbox_consumer_messages", "cnv");
-                });
-
-            modelBuilder.Entity("Modules.Conversations.Infrastructure.Inbox.InboxMessage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("content");
-
-                    b.Property<string>("CorrelationId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("correlation_id");
-
-                    b.Property<string>("Error")
-                        .HasColumnType("text")
-                        .HasColumnName("error");
-
-                    b.Property<DateTime>("OccurredOnUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("occurred_on_utc");
-
-                    b.Property<DateTime?>("ProcessedOnUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("processed_on_utc");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("type");
-
-                    b.HasKey("Id")
-                        .HasName("pk_inbox_messages");
-
-                    b.ToTable("inbox_messages", "cnv");
-                });
-
-            modelBuilder.Entity("Modules.Conversations.Infrastructure.Outbox.OutboxConsumerMessage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("HandlerName")
-                        .HasColumnType("text")
-                        .HasColumnName("handler_name");
-
-                    b.HasKey("Id", "HandlerName")
-                        .HasName("pk_outbox_consumer_messages");
-
-                    b.ToTable("outbox_consumer_messages", "cnv");
-                });
-
-            modelBuilder.Entity("Modules.Conversations.Infrastructure.Outbox.OutboxMessage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("content");
-
-                    b.Property<string>("CorrelationId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("correlation_id");
-
-                    b.Property<string>("Error")
-                        .HasColumnType("text")
-                        .HasColumnName("error");
-
-                    b.Property<DateTime>("OccurredOnUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("occurred_on_utc");
-
-                    b.Property<DateTime?>("ProcessedOnUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("processed_on_utc");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("type");
-
-                    b.HasKey("Id")
-                        .HasName("pk_outbox_messages");
-
-                    b.ToTable("outbox_messages", "cnv");
                 });
 
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.AiConversation", b =>

@@ -1,16 +1,16 @@
 using Common.Application.Exceptions;
+using Common.Application.IntegrationEvents;
 using Common.Domain.IntragationEvents;
 using Modules.Conversations.Application.Abstractions;
 using Modules.Conversations.Domain.Entities;
-using Modules.Notifications.Application.Abstractions;
 
 namespace Modules.Conversations.Presentation.IntegrationEventHandlers;
 
 public class UserCreatedIntegrationEventHandler(
     IRepository<User> userRepository,
-    IUnitOfWork unitOfWork) : IIntegrationEventHandler<UserCreatedIntegrationEvent>
+    IUnitOfWork unitOfWork) : IntegrationEventHandler<UserCreatedIntegrationEvent>
 {
-    public async Task HandleAsync(UserCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken = default)
+    public async override Task HandleAsync(UserCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken = default)
     {
         User? user = await userRepository
             .GetFirstOrDefaultByFilter(x =>

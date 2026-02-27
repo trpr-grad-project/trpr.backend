@@ -6,11 +6,76 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Modules.Conversations.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class ConverstationEntities : Migration
+    public partial class IntialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "cnv");
+
+            migrationBuilder.CreateTable(
+                name: "inbox_consumer_messages",
+                schema: "cnv",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    handler_name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_inbox_consumer_messages", x => new { x.id, x.handler_name });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "inbox_messages",
+                schema: "cnv",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    correlation_id = table.Column<string>(type: "text", nullable: false),
+                    type = table.Column<string>(type: "text", nullable: false),
+                    content = table.Column<string>(type: "text", nullable: false),
+                    occurred_on_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    processed_on_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    error = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_inbox_messages", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "outbox_consumer_messages",
+                schema: "cnv",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    handler_name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_outbox_consumer_messages", x => new { x.id, x.handler_name });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "outbox_messages",
+                schema: "cnv",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    correlation_id = table.Column<string>(type: "text", nullable: false),
+                    type = table.Column<string>(type: "text", nullable: false),
+                    content = table.Column<string>(type: "text", nullable: false),
+                    occurred_on_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    processed_on_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    error = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_outbox_messages", x => x.id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "users",
                 schema: "cnv",
@@ -25,6 +90,28 @@ namespace Modules.Conversations.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_users", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ai_conversations",
+                schema: "cnv",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    title = table.Column<string>(type: "text", nullable: true),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    created_on_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_ai_conversations", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_ai_conversations_users_user_id",
+                        column: x => x.user_id,
+                        principalSchema: "cnv",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -52,6 +139,36 @@ namespace Modules.Conversations.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ai_messages",
+                schema: "cnv",
+                columns: table => new
+                {
+                    id = table.Column<string>(type: "text", nullable: false),
+                    parent_message_id = table.Column<string>(type: "text", nullable: true),
+                    conversation_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    contnet = table.Column<string>(type: "text", nullable: false),
+                    created_on_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_ai_messages", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_ai_messages_ai_conversations_conversation_id",
+                        column: x => x.conversation_id,
+                        principalSchema: "cnv",
+                        principalTable: "ai_conversations",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_ai_messages_ai_messages_parent_message_id",
+                        column: x => x.parent_message_id,
+                        principalSchema: "cnv",
+                        principalTable: "ai_messages",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "conversation_participants",
                 schema: "cnv",
                 columns: table => new
@@ -60,8 +177,8 @@ namespace Modules.Conversations.Infrastructure.Migrations
                     conversation_id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     joined_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    is_admin = table.Column<bool>(type: "boolean", nullable: false),
-                    is_archived = table.Column<bool>(type: "boolean", nullable: false)
+                    is_admin = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    is_archived = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
@@ -138,6 +255,24 @@ namespace Modules.Conversations.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "ix_ai_conversations_user_id",
+                schema: "cnv",
+                table: "ai_conversations",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_ai_messages_conversation_id",
+                schema: "cnv",
+                table: "ai_messages",
+                column: "conversation_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_ai_messages_parent_message_id",
+                schema: "cnv",
+                table: "ai_messages",
+                column: "parent_message_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_conversation_participants_conversation_id",
                 schema: "cnv",
                 table: "conversation_participants",
@@ -178,11 +313,35 @@ namespace Modules.Conversations.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ai_messages",
+                schema: "cnv");
+
+            migrationBuilder.DropTable(
                 name: "conversation_participants",
                 schema: "cnv");
 
             migrationBuilder.DropTable(
+                name: "inbox_consumer_messages",
+                schema: "cnv");
+
+            migrationBuilder.DropTable(
+                name: "inbox_messages",
+                schema: "cnv");
+
+            migrationBuilder.DropTable(
                 name: "message_attachments",
+                schema: "cnv");
+
+            migrationBuilder.DropTable(
+                name: "outbox_consumer_messages",
+                schema: "cnv");
+
+            migrationBuilder.DropTable(
+                name: "outbox_messages",
+                schema: "cnv");
+
+            migrationBuilder.DropTable(
+                name: "ai_conversations",
                 schema: "cnv");
 
             migrationBuilder.DropTable(

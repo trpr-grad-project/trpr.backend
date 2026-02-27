@@ -1,10 +1,12 @@
 using Common.Domain;
-using Modules.Notifications.Application.Abstractions;
 
-namespace Common.Application.IntegrationEvents
+namespace Common.Application.IntegrationEvents;
+
+public abstract class IntegrationEventHandler<TIntegrationEvent> : IIntegrationEventHandler<TIntegrationEvent>
+    where TIntegrationEvent : IIntegrationEvent
 {
-    public abstract class IntegrationEventHandler<TEvent> : IIntegrationEventHandler<TEvent> where TEvent : IIntegrationEvent
-    {
-        public abstract Task HandleAsync(TEvent domainEvent, CancellationToken cancellationToken = default);
-    }
+    public abstract Task HandleAsync(TIntegrationEvent integrationEvent, CancellationToken cancellationToken = default);
+
+    public Task HandleAsync(IIntegrationEvent integrationEvent, CancellationToken cancellationToken = default) =>
+        HandleAsync((TIntegrationEvent)integrationEvent, cancellationToken);
 }

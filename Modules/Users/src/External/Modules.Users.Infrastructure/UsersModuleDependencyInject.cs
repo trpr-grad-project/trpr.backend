@@ -1,7 +1,8 @@
 ﻿using Common.Application.DomainEvents.Extensions;
-using Common.Application.IntegrationEvents.Extensions;
+using Common.Application.IntegrationEvents;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Modules.Users.Application;
 using Modules.Users.Infrastructure.Inbox;
 using Modules.Users.Infrastructure.Outbox;
@@ -17,10 +18,7 @@ namespace Modules.Users.Infrastructure
             services.AddInfrastructure(configuration);
             services.AddPresentation();
 
-            services.AddIntegrationEventHandlerDecorators(
-                cfg =>
-                    cfg.AddAssemblies(Presentation.AssemblyRefrence.Assembly)
-                    .AddPipeline(typeof(InboxIdempotentIntegrationEventHandlerDecorator<>)));
+            services.AddIntegrationEventHandlers();
 
             services.AddDomainEventHandlerDecorators(
                 cfg =>
@@ -28,6 +26,29 @@ namespace Modules.Users.Infrastructure
                     .AddPipeline(typeof(OutboxIdempotentDomainEventHandlerDecorator<>)));
 
             return services;
+        }
+        private static void AddIntegrationEventHandlers(this IServiceCollection services)
+        {
+            Type[] integrationEventHandlers = Users.Presentation.AssemblyRefrence.Assembly
+                .GetTypes()
+                .Where(t => t.IsAssignableTo(typeof(IIntegrationEventHandler)))
+                .ToArray();
+
+            foreach (Type integrationEventHandler in integrationEventHandlers)
+            {
+                services.TryAddScoped(integrationEventHandler);
+
+                Type integrationEvent = integrationEventHandler
+                    .GetInterfaces()
+                    .Single(i => i.IsGenericType)
+                    .GetGenericArguments()
+                    .Single();
+
+                Type closedIdempotentHandler =
+                    typeof(InboxIdempotentIntegrationEventHandlerDecorator<>).MakeGenericType(integrationEvent);
+
+                services.Decorate(integrationEventHandler, closedIdempotentHandler);
+            }
         }
     }
 }
