@@ -1,8 +1,8 @@
+using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Modules.Conversations.Application.Dtos.Requests;
 using Modules.Conversations.Application.Interfaces;
-using Modules.Users.Presentation.Extensions;
 
 namespace Modules.Conversations.Presentation.Controllers.v1
 {

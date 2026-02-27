@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Common.Application.Dtos;
+using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Modules.Notifications.Application.Dtos.Requests;
@@ -11,7 +12,6 @@ using Modules.Notifications.Application.Dtos.Responses;
 using Modules.Notifications.Application.Services;
 using Modules.Notifications.Application.Validators;
 using Modules.Notifications.Domain.Entities;
-using Modules.Users.Presentation.Extensions;
 
 namespace Modules.Notifications.Presentation.Controllers.v1
 {
