@@ -8,7 +8,6 @@ using Modules.Conversations.Infrastructure.Data;
 using Modules.Conversations.Infrastructure.Inbox;
 using Modules.Conversations.Infrastructure.Outbox;
 using Modules.Conversations.Application.Abstractions;
-using ModelContextProtocol.Client;
 using Microsoft.Extensions.AI;
 using GeminiDotnet.Extensions.AI;
 using GeminiDotnet;

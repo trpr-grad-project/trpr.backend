@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.OpenApi.Models;
 
 namespace Api.Extensions
 {
@@ -14,29 +11,47 @@ namespace Api.Extensions
             {
                 c.SwaggerDoc("v1", new() { Title = "My API", Version = "v1" });
 
-                // Add Bearer security definition
-                c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                // X-UserId header
+                c.AddSecurityDefinition("X-UserId", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header using the Bearer scheme. Example: `Bearer {your token}`",
-                    Name = "Authorization",
-                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT"
+                    Description = "User Id header",
+                    Name = "X-UserId",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
                 });
 
-                c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+                // X-Roles header
+                c.AddSecurityDefinition("X-Roles", new OpenApiSecurityScheme
+                {
+                    Description = "Comma separated roles (e.g. Admin,User)",
+                    Name = "X-Roles",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
-                        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                        new OpenApiSecurityScheme
                         {
-                            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                            Reference = new OpenApiReference
                             {
-                                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                                Id = "Bearer"
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "X-UserId"
                             }
                         },
-                        new string[] {}
+                        Array.Empty<string>()
+                    },
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "X-Roles"
+                            }
+                        },
+                        Array.Empty<string>()
                     }
                 });
             });

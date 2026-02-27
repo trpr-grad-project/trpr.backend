@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Common.Application.Serialization;
 using Microsoft.Extensions.AI;
 using Modules.Conversations.Domain.Entities;
 using Newtonsoft.Json;
@@ -13,18 +14,12 @@ namespace Modules.Conversations.Infrastructure.Mappers
         public static AiMessage ToAiMessage(this ChatMessage userPrompt, AiConversation conversation, ICollection<ChatMessage>? responses = null)
         {
             responses ??= [];
-            var userPromptContent = JsonConvert.SerializeObject(userPrompt, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.All
-            })!;
+            var userPromptContent = JsonConvert.SerializeObject(userPrompt, SerializerSettings.Instance)!;
 
             ICollection<string> responsesChatContent = [..
                 responses
                 .Select(x =>
-                    JsonConvert.SerializeObject(x, new JsonSerializerSettings
-                    {
-                        TypeNameHandling = TypeNameHandling.All
-                    })!
+                    JsonConvert.SerializeObject(x, SerializerSettings.Instance)!
                 )];
 
             return AiMessage.Create(conversation, userPromptContent, responsesChatContent);
@@ -32,13 +27,15 @@ namespace Modules.Conversations.Infrastructure.Mappers
 
         public static ICollection<ChatMessage> ToChatMessage(this ICollection<AiMessage> aiMessages)
         {
-            return [.. aiMessages
-                .Select(x => x.ToChatMessage())];
+            var chatMessages = new List<ChatMessage>();
+            foreach (var aiMessage in aiMessages)
+                chatMessages.Add(aiMessage.ToChatMessage());
+            return chatMessages;
         }
 
         public static ChatMessage ToChatMessage(this AiMessage aiMessage)
         {
-            return JsonConvert.DeserializeObject<ChatMessage>(aiMessage.Contnet)!;
+            return JsonConvert.DeserializeObject<ChatMessage>(aiMessage.Contnet, SerializerSettings.Instance)!;
         }
     }
 }

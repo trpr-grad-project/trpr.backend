@@ -18,6 +18,11 @@ namespace Modules.Conversations.Infrastructure.Repositories
             context.Set<TEntity>().Remove(entity);
         }
 
+        public void Attach(TEntity entity)
+        {
+            context.Set<TEntity>().Attach(entity);
+        }
+
         public async Task<ICollection<TEntity>> GetByExpWhereAsync(params Expression<Func<TEntity, bool>>[] filters)
         {
             IQueryable<TEntity> query = context.Set<TEntity>();
@@ -32,6 +37,11 @@ namespace Modules.Conversations.Infrastructure.Repositories
             foreach (var include in includes)
                 query = include(query);
             return query.FirstOrDefaultAsync();
+        }
+
+        public IQueryable<TEntity> GetQueryable()
+        {
+            return context.Set<TEntity>().AsQueryable();
         }
 
         public void Update(TEntity entity)

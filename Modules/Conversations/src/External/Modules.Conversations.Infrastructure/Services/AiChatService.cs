@@ -4,7 +4,6 @@ using Common.Application.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
-using ModelContextProtocol.Protocol;
 using Modules.Conversations.Application.Abstractions;
 using Modules.Conversations.Application.Dtos.Requests;
 using Modules.Conversations.Application.Interfaces;
@@ -38,19 +37,32 @@ namespace Modules.Conversations.Infrastructure.Services
 
         public async Task<ICollection<KeyValuePair<string, object?>>> SendMessageAsync(Guid userId, SendAiPromptRequestDto request, CancellationToken cancellationToken = default)
         {
+
             AiConversation conversation =
-                request.ConversationId == null ?
-                AiConversation.Create(userId) :
-                await repositoryFactory
+                request.ConversationId == null ? AiConversation.Create(userId) : await repositoryFactory
                 .Repository<AiConversation>()
-                .GetFirstOrDefaultByFilter(
-                    x => x.Id == request.ConversationId && x.UserId == userId,
-                    c => c.Include(x =>
-                        x.Messages
-                            .Where(m => m.ParentMessageId == null)
-                            .Take(5)
-                            .OrderBy(m => m.Id))
-                        .ThenInclude(xx => xx.SubMessages))
+                .GetQueryable()
+                .Where(x => x.Id == request.ConversationId && x.UserId == userId)
+                .Select(x => new AiConversation
+                {
+                    Id = x.Id,
+                    UserId = x.UserId,
+                    Messages = x.Messages
+                        .Where(m => m.ParentMessageId == null)
+                        .OrderBy(m => m.Id)
+                        .Take(5)
+                        .Select(m => new AiMessage
+                        {
+                            Id = m.Id,
+                            ParentMessageId = m.ParentMessageId,
+                            Contnet = m.Contnet,
+                            SubMessages = m.SubMessages
+                                .OrderBy(sm => sm.CreatedOnUtc)
+                                .ToList()
+                        })
+                        .ToList()
+                })
+                .FirstOrDefaultAsync(cancellationToken: cancellationToken)
                 ?? throw new NotFoundException("Conversation.NotFound");
 
             ICollection<ChatMessage> chatHistory = conversation
@@ -72,12 +84,13 @@ namespace Modules.Conversations.Infrastructure.Services
                 cancellationToken: cancellationToken);
 
             var aiMessage = userPrompt.ToAiMessage(conversation, response.Messages);
-
+            repositoryFactory.Repository<AiConversation>().Attach(conversation);
             repositoryFactory.Repository<AiMessage>().Add(aiMessage);
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return [.. messagesToBeSent.Concat(response.Messages)
                 .Select(m => new KeyValuePair<string, object?>(
                     m.Role.ToString(), m))];
+
         }
         private static ChatOptions GenerateChatOptions()
         {
