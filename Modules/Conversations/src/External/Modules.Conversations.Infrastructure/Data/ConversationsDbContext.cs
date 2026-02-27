@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Common.Application;
 using Modules.Conversations.Application.Abstractions;
 using Modules.Conversations.Domain.Entities;
+using Modules.Conversations.Infrastructure.Outbox;
+using Modules.Conversations.Infrastructure.Inbox;
 
 namespace Modules.Conversations.Infrastructure.Data;
 
@@ -13,6 +15,12 @@ public class ConversationsDbContext(DbContextOptions<ConversationsDbContext> opt
     public DbSet<ConversationParticipant> ConversationParticipants { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<MessageAttachment> MessageAttachments { get; set; }
+    public DbSet<AiConversation> AiConversations { get; set; }
+    public DbSet<AiMessage> AiMessages { get; set; }
+    public DbSet<OutboxMessage> OutboxMessages { get; set; }
+    public DbSet<OutboxConsumerMessage> OutboxConsumerMessages { get; set; }
+    public DbSet<InboxMessage> InboxMessages { get; set; }
+    public DbSet<InboxConsumerMessage> InboxConsumerMessages { get; set; }
     private IDbContextTransaction? _transaction;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

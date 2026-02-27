@@ -19,13 +19,14 @@ namespace Modules.Notifications.Infrastructure
             services.AddInfrastructure(configuration);
             services.AddPresentation();
 
+            #region Integration Events Subscription
             services
                 .AddTransient<IHandleMessages<UserCreatedIntegrationEvent>, BaseIngtegrationEventHandler<UserCreatedIntegrationEvent>>();
 
             services
                 .AddTransient<IHandleMessages<SendMessageIntegrationEvent>,
                 BaseIngtegrationEventHandler<SendMessageIntegrationEvent>>();
-
+            #endregion
             services.AddIntegrationEventHandlerDecorators(
                 cfg =>
                     cfg.AddAssemblies(Presentation.AssemblyRefrence.Assembly)
