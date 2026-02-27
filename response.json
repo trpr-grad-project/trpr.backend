@@ -1,0 +1,86 @@
+[
+    {
+        "key": "assistant",
+        "value": {
+            "authorName": null,
+            "createdAt": null,
+            "role": "assistant",
+            "contents": [
+                {
+                    "$type": "functionCall",
+                    "callId": "get_weather/06c4f967-f86f-40fe-a758-a6b471d57363",
+                    "name": "get_weather",
+                    "arguments": {
+                        "city": "Cairo"
+                    },
+                    "informationalOnly": true,
+                    "annotations": null,
+                    "additionalProperties": null
+                },
+                {
+                    "$type": "functionCall",
+                    "callId": "get_events/665c1919-b9c9-4c1b-9601-b433f03d018f",
+                    "name": "get_events",
+                    "arguments": {
+                        "city": "Cairo"
+                    },
+                    "informationalOnly": true,
+                    "annotations": null,
+                    "additionalProperties": null
+                }
+            ],
+            "messageId": null,
+            "additionalProperties": null
+        }
+    },
+    {
+        "key": "tool",
+        "value": {
+            "authorName": null,
+            "createdAt": null,
+            "role": "tool",
+            "contents": [
+                {
+                    "$type": "functionResult",
+                    "callId": "get_weather/06c4f967-f86f-40fe-a758-a6b471d57363",
+                    "result": "The weather in Cairo is sunny.",
+                    "annotations": null,
+                    "additionalProperties": null
+                },
+                {
+                    "$type": "functionResult",
+                    "callId": "get_events/665c1919-b9c9-4c1b-9601-b433f03d018f",
+                    "result": [
+                        "Tech Conference 2026 in Cairo",
+                        "Music Festival in Cairo Downtown",
+                        "Startup Networking Meetup in Cairo",
+                        "Food Expo at Cairo International Center",
+                        "AI & Cloud Summit in Cairo"
+                    ],
+                    "annotations": null,
+                    "additionalProperties": null
+                }
+            ],
+            "messageId": null,
+            "additionalProperties": null
+        }
+    },
+    {
+        "key": "assistant",
+        "value": {
+            "authorName": null,
+            "createdAt": null,
+            "role": "assistant",
+            "contents": [
+                {
+                    "$type": "text",
+                    "text": "The weather in Cairo is currently sunny. \n\nHere are some upcoming events in the city:\n* Tech Conference 2026\n* Music Festival in Cairo Downtown\n* Startup Networking Meetup\n* Food Expo at Cairo International Center\n* AI & Cloud Summit",
+                    "annotations": null,
+                    "additionalProperties": null
+                }
+            ],
+            "messageId": null,
+            "additionalProperties": null
+        }
+    }
+]

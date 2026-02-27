@@ -12,8 +12,8 @@ using ModelContextProtocol.Client;
 using Microsoft.Extensions.AI;
 using GeminiDotnet.Extensions.AI;
 using GeminiDotnet;
-using Modules.Conversations.Application.Interfaces;
 using Modules.Conversations.Infrastructure.Services;
+using Modules.Conversations.Application.Interfaces;
 
 namespace Modules.Conversations.Infrastructure;
 
@@ -46,11 +46,12 @@ public static class InfrastructureDependencyInjection
         services.AddScoped<PublishOutboxMessagesInterceptor>();
         services.Configure<OutBoxOptions>(configuration.GetSection("Conversations:OutBox"));
         services.Configure<InBoxOptions>(configuration.GetSection("Conversations:InBox"));
-        services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
-        services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
-        services.AddScoped<IConversationsDbContext>(x => x.GetRequiredService<ConversationsDbContext>());
-        services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<ConversationsDbContext>());
+        services.AddScoped<RepositoryFactory>();
         services.AddScoped<IAiChatService, AiChatService>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<ConversationsDbContext>());
+        services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
+        services.AddScoped<IConversationsDbContext>(x => x.GetRequiredService<ConversationsDbContext>());
         // adding quartz for background jobs 
         services.AddQuartz();
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
