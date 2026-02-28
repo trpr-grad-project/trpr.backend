@@ -8,5 +8,5 @@ public class TemplatePaginationResponseDto
     public Guid UserId { get; set; }
     public bool Active { get; set; }
     public ContentType ContentType { get; set; }
-    public UserResponseDto User { get; set; } = default!;
+    public TemplateType TemplateType { get; set; }
 }

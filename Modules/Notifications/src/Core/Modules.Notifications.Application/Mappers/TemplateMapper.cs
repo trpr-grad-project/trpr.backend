@@ -24,6 +24,7 @@ public static class TemplateMapper
                 })
                 .ToList(),
             ContentType = template.ContentType,
+            TemplateType = template.TemplateType,
             User = template.User?.ToResponseDto() ?? new UserResponseDto { Id = template.UserId }
         };
     }

@@ -10,14 +10,16 @@ public class Template : Entity
     public bool Active { get; set; }
     public ContentType ContentType { get; set; } = ContentType.Pure;
     public virtual User User { get; set; } = default!;
+    public TemplateType TemplateType { get; set; }
     public virtual List<TemplateLang> TemplateLangs { get; set; } = [];
-    public static Template Create(ContentType contentType, User user, IDictionary<string, string> Contents, IDictionary<string, string> Titles)
+    public static Template Create(ContentType contentType, TemplateType templateType,User user, IDictionary<string, string> Contents, IDictionary<string, string> Titles)
     {
         var template = new Template
         {
             Id = Guid.NewGuid(),
             UserId = user.Id,
             ContentType = contentType,
+            TemplateType = templateType,
             User = user,
         };
         var langCodes = Contents.Keys.ToHashSet();
@@ -40,16 +42,18 @@ public class Template : Entity
     }
     public Template Update(
     ContentType? contentType,
+    TemplateType? templateType,
     IDictionary<string, string>? contents,
     IDictionary<string, string>? titles,
-    bool active)
+    bool? active)
     {
-        if (active)  
+        if (active == true)  
             Active = true;
 
         if (contentType.HasValue)
             ContentType = contentType.Value;
-
+        if (templateType.HasValue)
+            TemplateType = templateType.Value;
         if (contents is null || titles is null)
             return this;
 

@@ -9,6 +9,7 @@ public class TemplateResponseDto
     public Guid UserId { get; set; }
     public bool Active { get; set; }
     public ContentType ContentType { get; set; }
+    public TemplateType TemplateType { get; set; }
     public ICollection<TemplateTranslationDto> Translations{ get; set; } = [];
     public UserResponseDto User { get; set; } = default!;
 }

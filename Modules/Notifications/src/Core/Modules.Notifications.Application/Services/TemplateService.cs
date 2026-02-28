@@ -27,7 +27,7 @@ namespace Modules.Notifications.Application.Services
             var titleLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Title);
             var contentLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Content);
 
-            Template template = Template.Create(templateDto.ContentType, user, contentLanguageDict, titleLanguageDict);
+            Template template = Template.Create(templateDto.ContentType, templateDto.TemplateType, user, contentLanguageDict, titleLanguageDict);
             notificationDbContext.Templates.Add(template);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -39,7 +39,7 @@ namespace Modules.Notifications.Application.Services
                 .FirstOrDefaultAsync(t => t.Id == templateId, cancellationToken) 
                 ?? throw new NotFoundException("Template.NotFound", templateId);
 
-            if (templateDto.Active && !template.Active)
+            if (templateDto.Active == true && !template.Active)
             {
                 // checks if there are existing and active templates
                 var activeTemplate = await notificationDbContext.Templates
@@ -53,18 +53,19 @@ namespace Modules.Notifications.Application.Services
                     activeTemplate.Active = false;
                 }
             }
-
+            
             Dictionary<string,string>? titleLanguageDict = null;
             Dictionary<string, string>? contentLanguageDict = null;
 
             if (templateDto.Translations != null) 
             {
+                // Replace this part with a helper method 
                 var templateLanguageDict = templateDto.Translations.ToDictionary(m => m.LangCode, x => x);
                 titleLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Title);
                 contentLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Content);
             }
 
-            template.Update(templateDto.ContentType, contentLanguageDict, titleLanguageDict, templateDto.Active);
+            template.Update(templateDto.ContentType, templateDto.TemplateType, contentLanguageDict, titleLanguageDict, templateDto.Active);
             notificationDbContext.Templates.Update(template);
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return TemplateMapper.ToResponseDto(template);
@@ -73,10 +74,32 @@ namespace Modules.Notifications.Application.Services
         public async Task<PaginationDto<TemplatePaginationResponseDto>> TemplatesPagination(PaginateRequestDto dto, CancellationToken cancellationToken = default)
         {
             var query = notificationDbContext.Templates.AsQueryable();
-            query = query.OrderByDescending(t => t.UpdatedAtUTC);
-
+            if (dto.sortBy.HasValue)
+            {
+                query = dto.sortBy.Value switch
+                {
+                    SortBy.CreatedAt => query.OrderBy(t => t.CreatedAtUTC),
+                    SortBy.UpdatedAt => query.OrderBy(t => t.UpdatedAtUTC),
+                    _ => query
+                };
+            }
+            else
+            {
+                query = query.OrderByDescending(t => t.UpdatedAtUTC);
+            }
+            if(dto.IsActive == true)
+            {
+                query = query.Where(t => t.Active);
+            }
+            if (dto.TemplateType.HasValue)
+            {
+                query = query.Where(t => t.TemplateType == dto.TemplateType);
+            }
+            if(!string.IsNullOrEmpty(dto.Search))
+            {
+                query = query.Where(t => t.TemplateLangs.Any(tl => tl.Title.StartsWith(dto.Search)));
+            }
             var totalItems = await query.CountAsync(cancellationToken);
-
             var items = await query
                 .Include(x => x.User)
                 .Select(x => x.ToPaginationResponseDto())

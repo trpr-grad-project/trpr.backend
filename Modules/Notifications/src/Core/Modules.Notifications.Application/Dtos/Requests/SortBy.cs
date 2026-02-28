@@ -1,7 +1,8 @@
 ﻿namespace Modules.Notifications.Application.Dtos.Requests
 {
-    public class TemplateDetailsDto
+    public enum SortBy
     {
-        public Guid Id { get; set; }
+        CreatedAt = 0,
+        UpdatedAt = 1,
     }
 }

@@ -6,6 +6,7 @@ namespace Modules.Notifications.Application.Dtos.Requests
     {
         public ContentType? ContentType { get; set; }
         public ICollection<TemplateTranslationDto>? Translations { get; set; }
-        public bool Active { get; set; } = false;
+        public TemplateType? TemplateType { get; set; }
+        public bool? Active { get; set; }
     }
 }

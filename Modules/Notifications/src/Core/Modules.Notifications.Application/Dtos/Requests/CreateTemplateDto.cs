@@ -10,6 +10,7 @@ namespace Modules.Notifications.Application.Dtos.Requests
     public class CreateTemplateDto
     {
         public ICollection<TemplateTranslationDto> Translations { get; set; } = [];
+        public TemplateType TemplateType { get; set; }
         public ContentType ContentType { get; set; }
     }
 }
