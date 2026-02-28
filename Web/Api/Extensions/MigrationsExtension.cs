@@ -1,8 +1,8 @@
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Minio;
 using Minio.DataModel.Args;
+using Modules.Conversations.Infrastructure.Data;
 using Modules.Notifications.Infrastructure.Data;
 using Modules.Trips.Infrastructure.Data;
 using Modules.Users.Infrastructure.Data;
@@ -11,18 +11,28 @@ namespace Api.Extensions;
 
 public static class MigrationsExtension
 {
+    //dotnet ef migrations add "IntialCreate" --project .\Modules\Conversations\src\External\Modules.Conversations.Infrastructure\ --startup-project .\Web\Api\ --context ConversationsDbContext
+
+    //dotnet ef migrations add "IntialCreate" --project .\Modules\Notifications\src\External\Modules.Notifications.Infrastructure\ --startup-project .\Web\Api\ --context NotificationsDbContext
+
+    //dotnet ef migrations add "IntialCreate" --project .\Modules\Trips\src\External\Modules.Trips.Infrastructure\ --startup-project .\Web\Api\ --context TripsDbContext
+
+    //dotnet ef migrations add "IntialCreate" --project .\Modules\Users\src\External\Modules.Users.Infrastructure\ --startup-project .\Web\Api\ --context UsersDbContext
     public static async Task AddMigrations(this IApplicationBuilder application)
     {
         using var scope = application.ApplicationServices.CreateScope();
         var usersDbContext = scope.ServiceProvider
             .GetRequiredService<UsersDbContext>();
         var notificationsDbContext = scope.ServiceProvider
-            .GetRequiredService<NotificationDbContext>();
+            .GetRequiredService<NotificationsDbContext>();
         var tripsDbContext = scope.ServiceProvider
             .GetRequiredService<TripsDbContext>();
+        var conversationsDbContext = scope.ServiceProvider
+            .GetRequiredService<ConversationsDbContext>();
         usersDbContext.Database.Migrate();
         notificationsDbContext.Database.Migrate();
         tripsDbContext.Database.Migrate();
+        conversationsDbContext.Database.Migrate();
         var minioClient = scope.ServiceProvider.GetRequiredService<IMinioClient>();
         await CreateBucketWithPoliciesAsync(minioClient, "uploads");
     }

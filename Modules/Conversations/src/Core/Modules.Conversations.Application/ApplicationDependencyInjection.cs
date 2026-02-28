@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Common.Application.DomainEvents.Extensions;
-using Common.Application.IntegrationEvents.Extensions;
 
 namespace Modules.Conversations.Application;
 

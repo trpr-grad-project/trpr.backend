@@ -8,6 +8,11 @@ using Modules.Conversations.Infrastructure.Data;
 using Modules.Conversations.Infrastructure.Inbox;
 using Modules.Conversations.Infrastructure.Outbox;
 using Modules.Conversations.Application.Abstractions;
+using Microsoft.Extensions.AI;
+using GeminiDotnet.Extensions.AI;
+using GeminiDotnet;
+using Modules.Conversations.Infrastructure.Services;
+using Modules.Conversations.Application.Interfaces;
 
 namespace Modules.Conversations.Infrastructure;
 
@@ -15,6 +20,16 @@ public static class InfrastructureDependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton<IChatClient>(sp =>
+        {
+            var baseClient = new GeminiChatClient(new GeminiClientOptions
+            {
+                ApiKey = configuration["Conversations:Gemini:ApiKey"]!,
+            });
+            return new ChatClientBuilder(baseClient)
+                .UseFunctionInvocation()
+                .Build();
+        });
 
         string dbConnectionString = configuration.GetConnectionString("RommieDb")!;
         services.AddDbContext<ConversationsDbContext>((sp, options) =>
@@ -30,10 +45,12 @@ public static class InfrastructureDependencyInjection
         services.AddScoped<PublishOutboxMessagesInterceptor>();
         services.Configure<OutBoxOptions>(configuration.GetSection("Conversations:OutBox"));
         services.Configure<InBoxOptions>(configuration.GetSection("Conversations:InBox"));
-        services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
-        services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
-        services.AddScoped<IConversationsDbContext>(x => x.GetRequiredService<ConversationsDbContext>());
+        services.AddScoped<RepositoryFactory>();
+        services.AddScoped<IAiChatService, AiChatService>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<ConversationsDbContext>());
+        services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
+        services.AddScoped<IConversationsDbContext>(x => x.GetRequiredService<ConversationsDbContext>());
         // adding quartz for background jobs 
         services.AddQuartz();
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);

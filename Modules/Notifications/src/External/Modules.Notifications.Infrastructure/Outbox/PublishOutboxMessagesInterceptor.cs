@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Modules.Notifications.Domain.Abstractions;
 using Common.Application.Correlation;
 using Common.Domain;
+using Common.Infrastructure.Outbox;
 
 namespace Modules.Notifications.Infrastructure.Outbox;
 

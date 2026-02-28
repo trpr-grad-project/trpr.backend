@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Common.Application.Correlation;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Modules.Trips.Domain.Abstractions;
+using Common.Infrastructure.Outbox;
 
 namespace Modules.Trips.Infrastructure.Outbox;
 

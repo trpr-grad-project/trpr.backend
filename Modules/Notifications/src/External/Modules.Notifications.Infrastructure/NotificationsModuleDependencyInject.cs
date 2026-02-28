@@ -1,8 +1,9 @@
 ﻿using Common.Application.DomainEvents.Extensions;
-using Common.Application.IntegrationEvents.Extensions;
+using Common.Application.IntegrationEvents;
 using Common.Domain.IntragationEvents;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Modules.Notifications.Application;
 using Modules.Notifications.Infrastructure.Inbox;
 using Modules.Notifications.Infrastructure.Outbox;
@@ -19,23 +20,46 @@ namespace Modules.Notifications.Infrastructure
             services.AddInfrastructure(configuration);
             services.AddPresentation();
 
+            #region Integration Events Subscription
             services
                 .AddTransient<IHandleMessages<UserCreatedIntegrationEvent>, BaseIngtegrationEventHandler<UserCreatedIntegrationEvent>>();
 
             services
                 .AddTransient<IHandleMessages<SendMessageIntegrationEvent>,
                 BaseIngtegrationEventHandler<SendMessageIntegrationEvent>>();
+            #endregion
 
-            services.AddIntegrationEventHandlerDecorators(
-                cfg =>
-                    cfg.AddAssemblies(Presentation.AssemblyRefrence.Assembly)
-                    .AddPipeline(typeof(InboxIdempotentIntegrationEventHandlerDecorator<>)));
+            services.AddIntegrationEventHandlers();
 
             services.AddDomainEventHandlerDecorators(
                 cfg =>
                     cfg.AddAssemblies(Application.AssemblyRefrence.Assembly)
                     .AddPipeline(typeof(OutboxIdempotentDomainEventHandlerDecorator<>)));
             return services;
+        }
+
+        private static void AddIntegrationEventHandlers(this IServiceCollection services)
+        {
+            Type[] integrationEventHandlers = Notifications.Presentation.AssemblyRefrence.Assembly
+                .GetTypes()
+                .Where(t => t.IsAssignableTo(typeof(IIntegrationEventHandler)))
+                .ToArray();
+
+            foreach (Type integrationEventHandler in integrationEventHandlers)
+            {
+                services.TryAddScoped(integrationEventHandler);
+
+                Type integrationEvent = integrationEventHandler
+                    .GetInterfaces()
+                    .Single(i => i.IsGenericType)
+                    .GetGenericArguments()
+                    .Single();
+
+                Type closedIdempotentHandler =
+                    typeof(InboxIdempotentIntegrationEventHandlerDecorator<>).MakeGenericType(integrationEvent);
+
+                services.Decorate(integrationEventHandler, closedIdempotentHandler);
+            }
         }
     }
 }

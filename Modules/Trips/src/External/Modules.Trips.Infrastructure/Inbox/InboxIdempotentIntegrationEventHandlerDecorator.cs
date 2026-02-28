@@ -1,8 +1,8 @@
 using Common.Application;
+using Common.Application.IntegrationEvents;
 using Common.Domain;
 using Dapper;
 using Microsoft.Extensions.Logging;
-using Modules.Notifications.Application.Abstractions;
 using Modules.Trips.Application.Abstractions;
 
 namespace Modules.Trips.Infrastructure.Inbox
@@ -10,10 +10,10 @@ namespace Modules.Trips.Infrastructure.Inbox
     public class InboxIdempotentIntegrationEventHandlerDecorator<TIntegrationEvent>(
     IIntegrationEventHandler<TIntegrationEvent> innerHandler,
     IDbConnectionFactory dbConnectionFactory,
-    ILogger<InboxIdempotentIntegrationEventHandlerDecorator<TIntegrationEvent>> logger) : IIntegrationEventHandler<TIntegrationEvent>
+    ILogger<InboxIdempotentIntegrationEventHandlerDecorator<TIntegrationEvent>> logger) : IntegrationEventHandler<TIntegrationEvent>
     where TIntegrationEvent : IIntegrationEvent
     {
-        public async Task HandleAsync(TIntegrationEvent notification, CancellationToken cancellationToken = default)
+        public async override Task HandleAsync(TIntegrationEvent notification, CancellationToken cancellationToken = default)
         {
             await using var connection = await dbConnectionFactory.CreateSqlConnection();
 

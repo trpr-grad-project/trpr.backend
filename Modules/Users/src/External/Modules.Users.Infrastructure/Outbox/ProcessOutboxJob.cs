@@ -12,6 +12,7 @@ using Common.Application;
 using Common.Application.Correlation;
 using Common.Application.DomainEvents;
 using Common.Domain;
+using Common.Infrastructure.Outbox;
 
 namespace Modules.Users.Infrastructure.Outbox;
 

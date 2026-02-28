@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Common.Application.Correlation;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Modules.Conversations.Domain.Abstractions;
+using Common.Infrastructure.Outbox;
 
 namespace Modules.Conversations.Infrastructure.Outbox;
 

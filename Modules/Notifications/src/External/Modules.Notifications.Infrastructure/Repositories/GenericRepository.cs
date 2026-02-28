@@ -7,7 +7,7 @@ using Modules.Notifications.Infrastructure.Data;
 
 namespace Modules.Notifications.Infrastructure.Repositories;
 
-public class GenericRepository<T, TKey>(NotificationDbContext context, ILogger<GenericRepository<T, TKey>> logger) : IGenericRepository<T, TKey> where T : class
+public class GenericRepository<T, TKey>(NotificationsDbContext context, ILogger<GenericRepository<T, TKey>> logger) : IGenericRepository<T, TKey> where T : class
 {
     public async Task<T?> GetById(TKey id)
     {

@@ -5,7 +5,7 @@ using Modules.Notifications.Domain.Entities;
 
 namespace Modules.Notifications.Application.Services
 {
-    public class UserService(INotificationDbContext notificationDbContext, ILogger<UserService> logger, IUnitOfWork unitOfWork)
+    public class UserService(INotificationsDbContext notificationDbContext, ILogger<UserService> logger, IUnitOfWork unitOfWork)
     {
         public async Task CreateUser(Guid userId, string userName, string firstName, string lastName, CancellationToken cancellationToken)
         {

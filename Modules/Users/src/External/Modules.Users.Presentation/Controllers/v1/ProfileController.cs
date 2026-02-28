@@ -1,9 +1,9 @@
+using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Dtos.Responses;
 using Modules.Users.Application.Services;
-using Modules.Users.Presentation.Extensions;
 
 namespace Modules.Users.Presentation.Controllers.v1
 {

@@ -5,7 +5,6 @@ using Modules.Users.Application.Options;
 using Modules.Users.Application.Factories;
 using Modules.Users.Domain.ValueObjects;
 using Common.Application.DomainEvents.Extensions;
-using Common.Application.IntegrationEvents.Extensions;
 
 namespace Modules.Users.Application;
 

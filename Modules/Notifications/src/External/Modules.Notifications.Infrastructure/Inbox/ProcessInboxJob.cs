@@ -11,6 +11,7 @@ using Modules.Notifications.Application.Abstractions;
 using Common.Application;
 using Common.Domain;
 using Common.Application.IntegrationEvents;
+using Common.Infrastructure.Inbox;
 
 namespace Modules.Notifications.Infrastructure.Inbox;
 
@@ -42,8 +43,15 @@ public class ProcessInboxJob(
                 using (LogContext.PushProperty("CorrelationId", inboxMessage.CorrelationId))
                 {
                     using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
-                    IIntegrationEventDispatcher publisher = serviceScope.ServiceProvider.GetRequiredService<IIntegrationEventDispatcher>();
-                    await publisher.DispatchAsync(integrationEvent);
+                    IEnumerable<IIntegrationEventHandler> handlers = IntegrationEventHandlersFactory.GetHandlers(
+                    integrationEvent.GetType(),
+                    serviceScope.ServiceProvider,
+                    Presentation.AssemblyRefrence.Assembly);
+
+                    foreach (IIntegrationEventHandler integrationEventHandler in handlers)
+                    {
+                        await integrationEventHandler.HandleAsync(integrationEvent, context.CancellationToken);
+                    }
                 }
             }
             catch (Exception caughtException)

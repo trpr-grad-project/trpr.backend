@@ -11,6 +11,7 @@ using Modules.Notifications.Application.Abstractions;
 using Common.Application;
 using Common.Domain;
 using Common.Application.DomainEvents;
+using Common.Infrastructure.Outbox;
 
 namespace Modules.Notifications.Infrastructure.Outbox;
 
