@@ -2,11 +2,12 @@ using Common.Application.Exceptions;
 using Modules.Users.Application.Abstractions;
 using Modules.Users.Application.Dtos.Responses;
 using Modules.Users.Application.Interfaces;
+using Modules.Users.Application.Repositories;
 using Modules.Users.Domain.Entities;
 
 namespace Modules.Users.Application.Services;
 
-public class CreateUserOtpHandler(IGenericRepository<User, Guid> UserRepo, IGenericRepository<Token, Guid> TokenRepo, IUnitOfWork unitOfWork, IIdentityProviderService identityProviderService) : ITokenHandler
+public class CreateUserOtpHandler(IRepository<User> userRepositroy, IRepository<Token> tokenRepository, IUnitOfWork unitOfWork, IIdentityProviderService identityProviderService) : ITokenHandler
 {
     public async Task<LoginUserResponseDto> VerifyOtpAsync(Token token, User user, string value, CancellationToken cancellationToken = default)
     {
@@ -15,8 +16,8 @@ public class CreateUserOtpHandler(IGenericRepository<User, Guid> UserRepo, IGene
 
         token.IsRevoked = true;
         user.IsVerified = true;
-        UserRepo.Update(user);
-        TokenRepo.Update(token);
+        userRepositroy.Update(user);
+        tokenRepository.Update(token);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         await identityProviderService.EnableUserAsync(user.Id, cancellationToken);
         return await identityProviderService.ImpersonateUserAsync(user.UserName, cancellationToken);

@@ -8,6 +8,7 @@ using Modules.Trips.Infrastructure.Data;
 using Modules.Trips.Infrastructure.Inbox;
 using Modules.Trips.Infrastructure.Outbox;
 using Modules.Trips.Application.Abstractions;
+using Modules.Trips.Application.Repositories;
 
 namespace Modules.Trips.Infrastructure;
 
@@ -31,7 +32,7 @@ public static class InfrastructureDependencyInjection
         services.Configure<OutBoxOptions>(configuration.GetSection("Trips:OutBox"));
         services.Configure<InBoxOptions>(configuration.GetSection("Trips:InBox"));
         services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
-        services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<ITripsDbContext>(x => x.GetRequiredService<TripsDbContext>());
         services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<TripsDbContext>());
         // adding quartz for background jobs 

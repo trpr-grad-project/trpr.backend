@@ -15,9 +15,8 @@ using Common.Application.Exceptions;
 namespace Modules.Users.Application.Services;
 
 public class UserService(
-IUserRepository userRepository,
-IGenericRepository<User, Guid> UserRepo,
-IGenericRepository<Token, Guid> TokenRepo,
+IRepository<User> userRepository,
+IRepository<Token> tokenRepository,
 TokenFactory tokenFactory,
 IIdentityProviderService identityProviderService,
 OtpHandlerFactory otpHandlerFactory,
@@ -26,7 +25,7 @@ IUnitOfWork unitOfWork)
 {
     public async Task<OtpResponseDto> CreateUserAsync(CreateUserRequestDto createUserRequestDto, CancellationToken cancellationToken = default)
     {
-        User? user = await userRepository.GetByIdentifier(createUserRequestDto.Identifier);
+        User? user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == createUserRequestDto.Identifier);
         if (user != null && user.IsVerified)
         {
             logger.LogWarning("User creation failed. Identifier already exists: {Identifier}", user.Id);
@@ -47,17 +46,17 @@ IUnitOfWork unitOfWork)
                 createUserRequestDto.FirstName,
                 createUserRequestDto.LastName,
                 userIdentitfier);
-        UserRepo.Add(user);
+        userRepository.Add(user);
         var token = tokenFactory.CreateToken(TokenType.Otp, user);
-        TokenRepo.Add(token);
+        tokenRepository.Add(token);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return new OtpResponseDto { OtpId = token.Id };
     }
     public async Task<OtpResponseDto> ForgetPasswordAsync(ForgetPasswordRequestIdentifierDto forgetPasswordRequestIdentifierDto, CancellationToken cancellationToken = default)
     {
-        var user = await userRepository.GetByIdentifier(forgetPasswordRequestIdentifierDto.Identifier) ?? throw new NotFoundException("User.NotFound", forgetPasswordRequestIdentifierDto.Identifier);
+        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == forgetPasswordRequestIdentifierDto.Identifier) ?? throw new NotFoundException("User.NotFound", forgetPasswordRequestIdentifierDto.Identifier);
         var token = tokenFactory.CreateToken(TokenType.ForgetPasswordOtp, user);
-        TokenRepo.Add(token);
+        tokenRepository.Add(token);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return new OtpResponseDto { OtpId = token.Id };
     }
@@ -65,7 +64,7 @@ IUnitOfWork unitOfWork)
     public async Task<LoginUserResponseDto> LoginUserAsync(LoginUserRequestDto loginUserRequestDto, CancellationToken cancellationToken = default)
     {
 
-        var user = await userRepository.GetByIdentifier(loginUserRequestDto.Identifier) ?? throw new NotFoundException("User.NotFound", loginUserRequestDto.Identifier);
+        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == loginUserRequestDto.Identifier) ?? throw new NotFoundException("User.NotFound", loginUserRequestDto.Identifier);
         var loginResponse = await identityProviderService.LoginUserAsync(
             loginUserRequestDto.Identifier,
             loginUserRequestDto.Password,
@@ -91,7 +90,7 @@ IUnitOfWork unitOfWork)
         try
         {
             await unitOfWork.BeginTransactionAsync(cancellationToken);
-            var otpToken = await TokenRepo.GetByIdForUpdate(verifyOtpRequestDto.Identifier);
+            var otpToken = await tokenRepository.GetByIdForUpdate(verifyOtpRequestDto.Identifier);
             if (
                 otpToken == null ||
                 otpToken.Expiration < DateTime.UtcNow ||
@@ -103,7 +102,7 @@ IUnitOfWork unitOfWork)
                 throw new BadRequestException("Otp.Invalid", verifyOtpRequestDto.Identifier);
             }
             User user =
-                await UserRepo.GetById(otpToken.UserId) ??
+                await userRepository.GetFirstOrDefaultByFilter(x => x.Id == otpToken.UserId) ??
                 throw new NotFoundException("User.NotFound", otpToken.UserId);
             await unitOfWork
                 .SaveChangesAsync(cancellationToken);
@@ -125,7 +124,7 @@ IUnitOfWork unitOfWork)
     {
         if (user == null || user.IsVerified) return;
         logger.LogInformation("User with identifier {Identifier} exists but is not verified. Proceeding to re-register.", user.Id);
-        UserRepo.Remove(user);
+        userRepository.Delete(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         await identityProviderService.RemoveUserAsync(user.Id, cancellationToken);
     }
