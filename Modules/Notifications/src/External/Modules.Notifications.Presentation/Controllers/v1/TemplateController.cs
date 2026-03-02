@@ -34,9 +34,7 @@ namespace Modules.Notifications.Presentation.Controllers.v1
             return Ok(Id);
         }
 
-        // TODO: Youssef 
-        // add this to the template service and implement the pagination logic 
-        // ps. the paginateion dto template has a create method that you can use;
+        
         [HttpGet]
         public async Task<ActionResult<PaginationDto<TemplatePaginationResponseDto>>> GetPaginatedTemplates([FromQuery] PaginateRequestDto dto, CancellationToken cancellationToken = default)
         {
