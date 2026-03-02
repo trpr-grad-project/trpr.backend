@@ -29,7 +29,8 @@ public static class InfrastructureDependencyInjection
         services.Configure<OutBoxOptions>(configuration.GetSection("Notifications:OutBox"));
         services.Configure<InBoxOptions>(configuration.GetSection("Notifications:Inbox"));
         services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
-        services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
+        services.AddScoped<RepositoryFactory>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<INotificationsDbContext>(x => x.GetRequiredService<NotificationsDbContext>());
         services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<NotificationsDbContext>());
         // adding quartz for background jobs 

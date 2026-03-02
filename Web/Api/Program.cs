@@ -33,6 +33,7 @@ builder.Services.AddNotificationsModule(builder.Configuration);
 builder.Services.AddTripsModule(builder.Configuration);
 builder.Services.AddConversationsModule(builder.Configuration);
 builder.Services.AddIntegrationEvents();
+builder.Services.AddLocalizationServices();
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .WriteTo.Console()
@@ -46,6 +47,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     await app.AddMigrations();
 }
+app.UseLocalization();
 app.AddMiddlewares();
 app.UseHttpLogging();
 app.UseHttpsRedirection();

@@ -1,0 +1,2703 @@
+{
+    "Error": null,
+    "Response": {
+        "DataLists": {
+            "BaggageAllowanceList": [
+                {
+                    "AirlineTaxonomy": null,
+                    "ApplicablePartyText": null,
+                    "BaggageAllowanceID": "BA1",
+                    "BDC": null,
+                    "DescText": null,
+                    "MaximumDimensionAllowance": [
+                        {
+                            "HeightMeasure": 45.0,
+                            "HeightMeasureSpecified": true,
+                            "LengthMeasure": 35.0,
+                            "LengthMeasureSpecified": true,
+                            "LengthUnitOfMeasurement": 0,
+                            "LinearMeasure": 0.0,
+                            "LinearMeasureSpecified": true,
+                            "WidthMeasure": 25.0,
+                            "WidthMeasureSpecified": true
+                        }
+                    ],
+                    "MinimumDimensionAllowance": null,
+                    "PieceAllowance": null,
+                    "RFISC": null,
+                    "TypeCode": "CARRY_ON",
+                    "WeightAllowance": [
+                        {
+                            "MaximumWeightMeasure": 5,
+                            "MaximumWeightMeasureSpecified": true,
+                            "MinimumWeightMeasure": 0,
+                            "MinimumWeightMeasureSpecified": true,
+                            "TotalMaximumWeightMeasure": 5,
+                            "TotalMaximumWeightMeasureSpecified": true,
+                            "WeightUnitOfMeasurement": 0
+                        }
+                    ]
+                },
+                {
+                    "AirlineTaxonomy": null,
+                    "ApplicablePartyText": null,
+                    "BaggageAllowanceID": "BA2",
+                    "BDC": null,
+                    "DescText": null,
+                    "MaximumDimensionAllowance": [
+                        {
+                            "HeightMeasure": 150.0,
+                            "HeightMeasureSpecified": true,
+                            "LengthMeasure": 80.0,
+                            "LengthMeasureSpecified": true,
+                            "LengthUnitOfMeasurement": 0,
+                            "LinearMeasure": 0.0,
+                            "LinearMeasureSpecified": true,
+                            "WidthMeasure": 70.0,
+                            "WidthMeasureSpecified": true
+                        }
+                    ],
+                    "MinimumDimensionAllowance": null,
+                    "PieceAllowance": null,
+                    "RFISC": null,
+                    "TypeCode": "CHECKED",
+                    "WeightAllowance": [
+                        {
+                            "MaximumWeightMeasure": 25,
+                            "MaximumWeightMeasureSpecified": true,
+                            "MinimumWeightMeasure": 0,
+                            "MinimumWeightMeasureSpecified": true,
+                            "TotalMaximumWeightMeasure": 25,
+                            "TotalMaximumWeightMeasureSpecified": true,
+                            "WeightUnitOfMeasurement": 0
+                        }
+                    ]
+                },
+                {
+                    "AirlineTaxonomy": null,
+                    "ApplicablePartyText": null,
+                    "BaggageAllowanceID": "BA3",
+                    "BDC": null,
+                    "DescText": null,
+                    "MaximumDimensionAllowance": [
+                        {
+                            "HeightMeasure": 56.0,
+                            "HeightMeasureSpecified": true,
+                            "LengthMeasure": 36.0,
+                            "LengthMeasureSpecified": true,
+                            "LengthUnitOfMeasurement": 0,
+                            "LinearMeasure": 0.0,
+                            "LinearMeasureSpecified": true,
+                            "WidthMeasure": 23.0,
+                            "WidthMeasureSpecified": true
+                        }
+                    ],
+                    "MinimumDimensionAllowance": null,
+                    "PieceAllowance": null,
+                    "RFISC": null,
+                    "TypeCode": "CARRY_ON",
+                    "WeightAllowance": [
+                        {
+                            "MaximumWeightMeasure": 7,
+                            "MaximumWeightMeasureSpecified": true,
+                            "MinimumWeightMeasure": 0,
+                            "MinimumWeightMeasureSpecified": true,
+                            "TotalMaximumWeightMeasure": 7,
+                            "TotalMaximumWeightMeasureSpecified": true,
+                            "WeightUnitOfMeasurement": 0
+                        }
+                    ]
+                }
+            ],
+            "BaggageDisclosureList": null,
+            "ContactInfoList": null,
+            "DatedMarketingSegmentList": [
+                {
+                    "AirlineTaxonomy": null,
+                    "Arrival": {
+                        "AircraftScheduledDateTimeRaw": "2026-03-12T20:45:00",
+                        "AircraftScheduledDateTimeLocal": "2026-03-12T20:45:00",
+                        "AircraftScheduledDateTime": "0001-01-01T00:00:00",
+                        "AircraftScheduledDateTimeSpecified": false,
+                        "BoardingGateID": null,
+                        "IATA_LocationCode": "JED",
+                        "StationName": null,
+                        "TerminalName": null
+                    },
+                    "CarrierDesigCode": "RX",
+                    "CarrierName": null,
+                    "DatedMarketingSegmentId": "3f0f9f0d-04d7-4f74-896a-2719b1fc47a6",
+                    "DatedOperatingSegmentRefId": "3f0f9f0d-04d7-4f74-896a-2719b1fc47a6",
+                    "Dep": {
+                        "AircraftScheduledDateTimeRaw": "2026-03-12T19:00:00",
+                        "AircraftScheduledDateTimeLocal": "2026-03-12T19:00:00",
+                        "AircraftScheduledDateTime": "0001-01-01T00:00:00",
+                        "AircraftScheduledDateTimeSpecified": false,
+                        "BoardingGateID": null,
+                        "IATA_LocationCode": "RUH",
+                        "StationName": null,
+                        "TerminalName": null
+                    },
+                    "MarketingCarrierFlightNumberText": "17",
+                    "OperationalSuffixText": null,
+                    "RichMedia": null,
+                    "TicketlessInd": false,
+                    "TicketlessIndSpecified": false
+                },
+                {
+                    "AirlineTaxonomy": null,
+                    "Arrival": {
+                        "AircraftScheduledDateTimeRaw": "2026-03-12T16:30:00",
+                        "AircraftScheduledDateTimeLocal": "2026-03-12T16:30:00",
+                        "AircraftScheduledDateTime": "0001-01-01T00:00:00",
+                        "AircraftScheduledDateTimeSpecified": false,
+                        "BoardingGateID": null,
+                        "IATA_LocationCode": "RUH",
+                        "StationName": null,
+                        "TerminalName": null
+                    },
+                    "CarrierDesigCode": "RX",
+                    "CarrierName": null,
+                    "DatedMarketingSegmentId": "9e657e76-f4cf-4994-8d89-0b68f816d1b9",
+                    "DatedOperatingSegmentRefId": "9e657e76-f4cf-4994-8d89-0b68f816d1b9",
+                    "Dep": {
+                        "AircraftScheduledDateTimeRaw": "2026-03-12T12:45:00",
+                        "AircraftScheduledDateTimeLocal": "2026-03-12T12:45:00",
+                        "AircraftScheduledDateTime": "0001-01-01T00:00:00",
+                        "AircraftScheduledDateTimeSpecified": false,
+                        "BoardingGateID": null,
+                        "IATA_LocationCode": "CAI",
+                        "StationName": null,
+                        "TerminalName": null
+                    },
+                    "MarketingCarrierFlightNumberText": "26",
+                    "OperationalSuffixText": null,
+                    "RichMedia": null,
+                    "TicketlessInd": false,
+                    "TicketlessIndSpecified": false
+                }
+            ],
+            "DatedOperatingLegList": [
+                {
+                    "AirlineTaxonomy": null,
+                    "Arrival": {
+                        "AircraftScheduledDateTimeRaw": "2026-03-12T20:45:00",
+                        "AircraftScheduledDateTimeLocal": "2026-03-12T20:45:00",
+                        "AircraftScheduledDateTime": "0001-01-01T00:00:00",
+                        "AircraftScheduledDateTimeSpecified": false,
+                        "BoardingGateID": null,
+                        "IATA_LocationCode": "JED",
+                        "StationName": null,
+                        "TerminalName": "1"
+                    },
+                    "CarrierAircraftType": {
+                        "CarrierAircraftTypeCode": "789",
+                        "CarrierAircraftTypeName": null
+                    },
+                    "ChangeofGaugeInd": false,
+                    "ChangeofGaugeIndSpecified": false,
+                    "DatedOperatingLegID": "005c220d-73b0-4f5a-944a-c519ebc2e59d",
+                    "Dep": {
+                        "AircraftScheduledDateTimeRaw": "2026-03-12T19:00:00",
+                        "AircraftScheduledDateTimeLocal": "2026-03-12T19:00:00",
+                        "AircraftScheduledDateTime": "0001-01-01T00:00:00",
+                        "AircraftScheduledDateTimeSpecified": false,
+                        "BoardingGateID": null,
+                        "IATA_LocationCode": "RUH",
+                        "StationName": null,
+                        "TerminalName": "5"
+                    },
+                    "DistanceMeasure": {
+                        "UnitCode": "km",
+                        "Value": 851.83
+                    },
+                    "IATA_AircraftType": null,
+                    "OnGroundDuration": null,
+                    "RichMedia": null
+                },
+                {
+                    "AirlineTaxonomy": null,
+                    "Arrival": {
+                        "AircraftScheduledDateTimeRaw": "2026-03-12T16:30:00",
+                        "AircraftScheduledDateTimeLocal": "2026-03-12T16:30:00",
+                        "AircraftScheduledDateTime": "0001-01-01T00:00:00",
+                        "AircraftScheduledDateTimeSpecified": false,
+                        "BoardingGateID": null,
+                        "IATA_LocationCode": "RUH",
+                        "StationName": null,
+                        "TerminalName": "4"
+                    },
+                    "CarrierAircraftType": {
+                        "CarrierAircraftTypeCode": "789",
+                        "CarrierAircraftTypeName": null
+                    },
+                    "ChangeofGaugeInd": false,
+                    "ChangeofGaugeIndSpecified": false,
+                    "DatedOperatingLegID": "b3d8ba5c-2448-4cb1-b092-61a4c1e00a01",
+                    "Dep": {
+                        "AircraftScheduledDateTimeRaw": "2026-03-12T12:45:00",
+                        "AircraftScheduledDateTimeLocal": "2026-03-12T12:45:00",
+                        "AircraftScheduledDateTime": "0001-01-01T00:00:00",
+                        "AircraftScheduledDateTimeSpecified": false,
+                        "BoardingGateID": null,
+                        "IATA_LocationCode": "CAI",
+                        "StationName": null,
+                        "TerminalName": "1"
+                    },
+                    "DistanceMeasure": {
+                        "UnitCode": "km",
+                        "Value": 1611.72
+                    },
+                    "IATA_AircraftType": null,
+                    "OnGroundDuration": null,
+                    "RichMedia": null
+                }
+            ],
+            "DatedOperatingSegmentList": [
+                {
+                    "CarrierDesigCode": "RX",
+                    "CarrierName": null,
+                    "DatedOperatingLegRefID": [
+                        "005c220d-73b0-4f5a-944a-c519ebc2e59d"
+                    ],
+                    "DatedOperatingSegmentId": "3f0f9f0d-04d7-4f74-896a-2719b1fc47a6",
+                    "DisclosureRefID": null,
+                    "Duration": "PT1H45M0S",
+                    "OperatingCarrierFlightNumberText": "17",
+                    "OperationalSuffixText": null,
+                    "SecureFlightInd": false,
+                    "SecureFlightIndSpecified": false,
+                    "SegmentTypeCode": null
+                },
+                {
+                    "CarrierDesigCode": "RX",
+                    "CarrierName": null,
+                    "DatedOperatingLegRefID": [
+                        "b3d8ba5c-2448-4cb1-b092-61a4c1e00a01"
+                    ],
+                    "DatedOperatingSegmentId": "9e657e76-f4cf-4994-8d89-0b68f816d1b9",
+                    "DisclosureRefID": null,
+                    "Duration": "PT2H45M0S",
+                    "OperatingCarrierFlightNumberText": "26",
+                    "OperationalSuffixText": null,
+                    "SecureFlightInd": false,
+                    "SecureFlightIndSpecified": false,
+                    "SegmentTypeCode": null
+                }
+            ],
+            "DisclosureList": null,
+            "OriginDestList": [
+                {
+                    "DestCode": "JED",
+                    "OriginCode": "CAI",
+                    "OriginDestID": "CAI-JED",
+                    "PaxJourneyRefID": [
+                        "1e9d8bfa-9fd5-43e1-b394-2a5f994d1a06"
+                    ]
+                }
+            ],
+            "PaxJourneyList": [
+                {
+                    "DistanceMeasure": {
+                        "UnitCode": "km",
+                        "Value": 1216.66
+                    },
+                    "Duration": "PT7H0M0S",
+                    "PaxJourneyID": "1e9d8bfa-9fd5-43e1-b394-2a5f994d1a06",
+                    "PaxSegmentRefID": [
+                        "9e657e76-f4cf-4994-8d89-0b68f816d1b9",
+                        "3f0f9f0d-04d7-4f74-896a-2719b1fc47a6"
+                    ],
+                    "SettlementInfo": null
+                }
+            ],
+            "PaxList": [
+                {
+                    "AgeMeasure": null,
+                    "Birthdate": "0001-01-01T00:00:00",
+                    "BirthdateSpecified": false,
+                    "CitizenshipCountryCode": null,
+                    "ContactInfoRefID": null,
+                    "Employer": null,
+                    "FOID": null,
+                    "IdentityDoc": null,
+                    "Individual": null,
+                    "LangUsage": null,
+                    "LoyaltyProgramAccount": null,
+                    "PaxID": "T1",
+                    "PaxRefID": null,
+                    "ProfileConsentInd": false,
+                    "ProfileConsentIndSpecified": false,
+                    "ProfileID_Text": null,
+                    "PTC": "ADT",
+                    "RedressCase": null,
+                    "Remark": null,
+                    "ResidenceCountryCode": null
+                }
+            ],
+            "PaxSegmentList": [
+                {
+                    "CabinTypeAssociationChoice": {
+                        "Item": {
+                            "CabinTypeCode": "5",
+                            "CabinTypeName": "Economy"
+                        }
+                    },
+                    "DatedMarketingSegmentRefId": "3f0f9f0d-04d7-4f74-896a-2719b1fc47a6",
+                    "MarketingCarrierRBD_Code": null,
+                    "OperatingCarrierRBD_Code": null,
+                    "PaxSegmentID": "3f0f9f0d-04d7-4f74-896a-2719b1fc47a6",
+                    "SettlementInfo": null
+                },
+                {
+                    "CabinTypeAssociationChoice": {
+                        "Item": {
+                            "CabinTypeCode": "5",
+                            "CabinTypeName": "Economy"
+                        }
+                    },
+                    "DatedMarketingSegmentRefId": "9e657e76-f4cf-4994-8d89-0b68f816d1b9",
+                    "MarketingCarrierRBD_Code": null,
+                    "OperatingCarrierRBD_Code": null,
+                    "PaxSegmentID": "9e657e76-f4cf-4994-8d89-0b68f816d1b9",
+                    "SettlementInfo": null
+                }
+            ],
+            "PenaltyList": null,
+            "PriceClassList": [
+                {
+                    "CabinType": [
+                        {
+                            "CabinTypeCode": "5",
+                            "CabinTypeName": "Economy"
+                        }
+                    ],
+                    "Code": "4d4a2f20-1c1e-4e3e-a7a3-3e9fb6ee8a53",
+                    "Desc": [
+                        {
+                            "DescText": "Economy Lite - International Economy",
+                            "MarkupStyleText": null,
+                            "URL": null
+                        }
+                    ],
+                    "DisplayOrderText": null,
+                    "FareBasisAppText": null,
+                    "FareBasisCode": null,
+                    "Name": "Lite",
+                    "PriceClassID": "PC1",
+                    "RichMedia": null
+                }
+            ],
+            "SeatProfileList": null,
+            "ServiceDefinitionList": [
+                {
+                    "AirlineTaxonomy": null,
+                    "BilateralTimeLimit": null,
+                    "BookingInstructions": null,
+                    "DepositTimeLimitDateTime": "0001-01-01T00:00:00",
+                    "DepositTimeLimitDateTimeSpecified": false,
+                    "Desc": [
+                        {
+                            "DescText": "Personal item - All cabins(r)",
+                            "MarkupStyleText": null,
+                            "URL": null
+                        }
+                    ],
+                    "Name": "Personal item",
+                    "NamingTimeLimitDateTime": "0001-01-01T00:00:00",
+                    "NamingTimeLimitDateTimeSpecified": false,
+                    "OwnerCode": "RX",
+                    "RFIC": "F",
+                    "RFISC": "090",
+                    "ServiceCode": "C090",
+                    "ServiceDefinitionAssociation": {
+                        "Item": {
+                            "BaggageAllowanceRefID": [
+                                "BA1"
+                            ]
+                        },
+                        "ItemElementName": 0
+                    },
+                    "ServiceDefinitionID": "3722d590-63a1-4fc2-b3cc-141a371e2754"
+                },
+                {
+                    "AirlineTaxonomy": null,
+                    "BilateralTimeLimit": null,
+                    "BookingInstructions": null,
+                    "DepositTimeLimitDateTime": "0001-01-01T00:00:00",
+                    "DepositTimeLimitDateTimeSpecified": false,
+                    "Desc": [
+                        {
+                            "DescText": "Check-in baggage allowance of 25kg(r)",
+                            "MarkupStyleText": null,
+                            "URL": null
+                        }
+                    ],
+                    "Name": "25kg Baggage",
+                    "NamingTimeLimitDateTime": "0001-01-01T00:00:00",
+                    "NamingTimeLimitDateTimeSpecified": false,
+                    "OwnerCode": "RX",
+                    "RFIC": "C",
+                    "RFISC": "0C4",
+                    "ServiceCode": "C0C4",
+                    "ServiceDefinitionAssociation": {
+                        "Item": {
+                            "BaggageAllowanceRefID": [
+                                "BA2"
+                            ]
+                        },
+                        "ItemElementName": 0
+                    },
+                    "ServiceDefinitionID": "3d9e1d99-589a-4db6-bf89-d0a0a51679e4"
+                },
+                {
+                    "AirlineTaxonomy": null,
+                    "BilateralTimeLimit": null,
+                    "BookingInstructions": null,
+                    "DepositTimeLimitDateTime": "0001-01-01T00:00:00",
+                    "DepositTimeLimitDateTimeSpecified": false,
+                    "Desc": [
+                        {
+                            "DescText": "Carry-on Bag - 7kg",
+                            "MarkupStyleText": null,
+                            "URL": null
+                        }
+                    ],
+                    "Name": "Carry-on Bag - 7kg",
+                    "NamingTimeLimitDateTime": "0001-01-01T00:00:00",
+                    "NamingTimeLimitDateTimeSpecified": false,
+                    "OwnerCode": "RX",
+                    "RFIC": "C",
+                    "RFISC": "0M3",
+                    "ServiceCode": "C0M3",
+                    "ServiceDefinitionAssociation": {
+                        "Item": {
+                            "BaggageAllowanceRefID": [
+                                "BA3"
+                            ]
+                        },
+                        "ItemElementName": 0
+                    },
+                    "ServiceDefinitionID": "6c2eab73-4806-4869-8e22-1f95e9e68f13"
+                }
+            ],
+            "TermsList": null
+        },
+        "Metadata": null,
+        "OtherOffers": null,
+        "PaymentFunctions": null,
+        "Policy": null,
+        "PricedOffer": {
+            "BaggageAssociations": null,
+            "BaggageDisclosureRefID": null,
+            "Commission": null,
+            "Desc": null,
+            "DisclosureRefID": null,
+            "JourneyOverview": {
+                "JourneyPriceClass": [
+                    {
+                        "PaxJourneyRefID": "1e9d8bfa-9fd5-43e1-b394-2a5f994d1a06",
+                        "PriceClassRefID": "PC1"
+                    }
+                ],
+                "PriceClassRefID": null
+            },
+            "MatchAppText": null,
+            "MatchPercent": 0,
+            "MatchPercentSpecified": false,
+            "MatchTypeCode": 0,
+            "MatchTypeCodeSpecified": false,
+            "OfferExpirationTimeLimitDateTime": "2026-03-01T10:57:00Z",
+            "OfferExpirationTimeLimitDateTimeSpecified": true,
+            "OfferID": "b780a8e2-4c48-4b2a-a6bb-7508510cd453",
+            "OfferItem": [
+                {
+                    "AirlineTaxonomy": null,
+                    "CancelRestrictions": [
+                        {
+                            "AllowedModificationInd": true,
+                            "AllowedModificationIndSpecified": true,
+                            "DescText": "After booking policy: Cancellation is allowed with a 100% refund at no fee. Valid after booking until 24 hours after booking.",
+                            "EffectiveDateTime": "2026-03-01T10:37:38Z",
+                            "EffectiveDateTimeSpecified": true,
+                            "ExpirationDateTime": "2026-03-02T10:57:38Z",
+                            "ExpirationDateTimeSpecified": true,
+                            "Fee": {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 0.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": "Cancellation fee",
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false
+                            },
+                            "JourneyStageCode": 2,
+                            "JourneyStageCodeSpecified": true,
+                            "PaxRefID": null,
+                            "Refund": {
+                                "DescText": null,
+                                "FixedAmount": null,
+                                "LevelTypeCode": 0,
+                                "LevelTypeCodeSpecified": true,
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "PaymentTypeCode": null,
+                                "Percent": 100,
+                                "PercentSpecified": true
+                            }
+                        },
+                        {
+                            "AllowedModificationInd": true,
+                            "AllowedModificationIndSpecified": true,
+                            "DescText": "Cancellation is allowed with a 100% refund at a fee of 265 SAR. Valid 24 hours after booking until 6 hours before departure.",
+                            "EffectiveDateTime": "2026-03-02T10:57:38Z",
+                            "EffectiveDateTimeSpecified": true,
+                            "ExpirationDateTime": "2026-03-12T04:45:00Z",
+                            "ExpirationDateTimeSpecified": true,
+                            "Fee": {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 265.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": "Cancellation fee",
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false
+                            },
+                            "JourneyStageCode": 2,
+                            "JourneyStageCodeSpecified": true,
+                            "PaxRefID": null,
+                            "Refund": {
+                                "DescText": null,
+                                "FixedAmount": null,
+                                "LevelTypeCode": 0,
+                                "LevelTypeCodeSpecified": true,
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "PaymentTypeCode": null,
+                                "Percent": 100,
+                                "PercentSpecified": true
+                            }
+                        },
+                        {
+                            "AllowedModificationInd": true,
+                            "AllowedModificationIndSpecified": true,
+                            "DescText": "No show policy: Cancellation is allowed with a 0% refund at no fee. Valid 6 hours before departure .",
+                            "EffectiveDateTime": "2026-03-12T04:45:00Z",
+                            "EffectiveDateTimeSpecified": true,
+                            "ExpirationDateTime": "2026-03-12T10:45:00Z",
+                            "ExpirationDateTimeSpecified": true,
+                            "Fee": {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 0.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": "Cancellation fee",
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false
+                            },
+                            "JourneyStageCode": 1,
+                            "JourneyStageCodeSpecified": true,
+                            "PaxRefID": null,
+                            "Refund": {
+                                "DescText": null,
+                                "FixedAmount": null,
+                                "LevelTypeCode": 1,
+                                "LevelTypeCodeSpecified": true,
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "PaymentTypeCode": null,
+                                "Percent": 0,
+                                "PercentSpecified": true
+                            }
+                        },
+                        {
+                            "AllowedModificationInd": true,
+                            "AllowedModificationIndSpecified": true,
+                            "DescText": "After departure policy: Cancellation is allowed with a 0% refund at no fee. ",
+                            "EffectiveDateTime": "2026-03-12T10:45:00Z",
+                            "EffectiveDateTimeSpecified": true,
+                            "ExpirationDateTime": "0001-01-01T00:00:00",
+                            "ExpirationDateTimeSpecified": false,
+                            "Fee": {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 0.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": "Cancellation fee",
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false
+                            },
+                            "JourneyStageCode": 0,
+                            "JourneyStageCodeSpecified": true,
+                            "PaxRefID": null,
+                            "Refund": {
+                                "DescText": null,
+                                "FixedAmount": null,
+                                "LevelTypeCode": 1,
+                                "LevelTypeCodeSpecified": true,
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "PaymentTypeCode": null,
+                                "Percent": 0,
+                                "PercentSpecified": true
+                            }
+                        }
+                    ],
+                    "ChangeRestrictions": [
+                        {
+                            "AllowedModificationInd": true,
+                            "AllowedModificationIndSpecified": true,
+                            "ChangeTypeCode": 0,
+                            "ChangeTypeCodeSpecified": false,
+                            "DescText": "Rebooking allowed with a 0% refund at a fee of 150 SAR allowing for date, flight number, origin, destination, cabin and fare family changes. Valid after booking until 3 hours before departure.",
+                            "EffectiveDateTime": "2026-03-01T10:37:38Z",
+                            "EffectiveDateTimeSpecified": true,
+                            "ExpirationDateTime": "2026-03-12T07:45:00Z",
+                            "ExpirationDateTimeSpecified": true,
+                            "Fee": {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 150.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": "Flight change fee",
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false
+                            },
+                            "JourneyStageCode": 2,
+                            "JourneyStageCodeSpecified": true,
+                            "PaxRefID": null,
+                            "Refund": {
+                                "DescText": null,
+                                "FixedAmount": null,
+                                "LevelTypeCode": 1,
+                                "LevelTypeCodeSpecified": true,
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "PaymentTypeCode": null,
+                                "Percent": 0,
+                                "PercentSpecified": true
+                            }
+                        },
+                        {
+                            "AllowedModificationInd": false,
+                            "AllowedModificationIndSpecified": true,
+                            "ChangeTypeCode": 0,
+                            "ChangeTypeCodeSpecified": false,
+                            "DescText": "Rebooking is not allowed. Valid 3 hours before departure until moment of departure.",
+                            "EffectiveDateTime": "2026-03-12T07:45:00Z",
+                            "EffectiveDateTimeSpecified": true,
+                            "ExpirationDateTime": "2026-03-12T10:45:00Z",
+                            "ExpirationDateTimeSpecified": true,
+                            "Fee": {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 0.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": "Flight change fee",
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false
+                            },
+                            "JourneyStageCode": 2,
+                            "JourneyStageCodeSpecified": true,
+                            "PaxRefID": null,
+                            "Refund": {
+                                "DescText": null,
+                                "FixedAmount": null,
+                                "LevelTypeCode": 1,
+                                "LevelTypeCodeSpecified": true,
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "PaymentTypeCode": null,
+                                "Percent": 0,
+                                "PercentSpecified": true
+                            }
+                        },
+                        {
+                            "AllowedModificationInd": false,
+                            "AllowedModificationIndSpecified": true,
+                            "ChangeTypeCode": 0,
+                            "ChangeTypeCodeSpecified": false,
+                            "DescText": "After departure policy: Rebooking is not allowed. ",
+                            "EffectiveDateTime": "2026-03-12T10:45:00Z",
+                            "EffectiveDateTimeSpecified": true,
+                            "ExpirationDateTime": "0001-01-01T00:00:00",
+                            "ExpirationDateTimeSpecified": false,
+                            "Fee": {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 0.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": "Flight change fee",
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false
+                            },
+                            "JourneyStageCode": 0,
+                            "JourneyStageCodeSpecified": true,
+                            "PaxRefID": null,
+                            "Refund": {
+                                "DescText": null,
+                                "FixedAmount": null,
+                                "LevelTypeCode": 1,
+                                "LevelTypeCodeSpecified": true,
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "PaymentTypeCode": null,
+                                "Percent": 0,
+                                "PercentSpecified": true
+                            }
+                        },
+                        {
+                            "AllowedModificationInd": true,
+                            "AllowedModificationIndSpecified": true,
+                            "ChangeTypeCode": 0,
+                            "ChangeTypeCodeSpecified": false,
+                            "DescText": "Rebooking allowed with a 0% refund at a fee of 150 SAR allowing for date, flight number, origin, destination, cabin and fare family changes. Valid after booking until 3 hours before departure.",
+                            "EffectiveDateTime": "2026-03-01T10:37:38Z",
+                            "EffectiveDateTimeSpecified": true,
+                            "ExpirationDateTime": "2026-03-12T07:45:00Z",
+                            "ExpirationDateTimeSpecified": true,
+                            "Fee": {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 150.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": "Flight change fee",
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false
+                            },
+                            "JourneyStageCode": 2,
+                            "JourneyStageCodeSpecified": true,
+                            "PaxRefID": null,
+                            "Refund": {
+                                "DescText": null,
+                                "FixedAmount": null,
+                                "LevelTypeCode": 1,
+                                "LevelTypeCodeSpecified": true,
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "PaymentTypeCode": null,
+                                "Percent": 0,
+                                "PercentSpecified": true
+                            }
+                        },
+                        {
+                            "AllowedModificationInd": false,
+                            "AllowedModificationIndSpecified": true,
+                            "ChangeTypeCode": 0,
+                            "ChangeTypeCodeSpecified": false,
+                            "DescText": "Rebooking is not allowed. Valid 3 hours before departure until moment of departure.",
+                            "EffectiveDateTime": "2026-03-12T07:45:00Z",
+                            "EffectiveDateTimeSpecified": true,
+                            "ExpirationDateTime": "2026-03-12T10:45:00Z",
+                            "ExpirationDateTimeSpecified": true,
+                            "Fee": {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 0.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": "Flight change fee",
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false
+                            },
+                            "JourneyStageCode": 2,
+                            "JourneyStageCodeSpecified": true,
+                            "PaxRefID": null,
+                            "Refund": {
+                                "DescText": null,
+                                "FixedAmount": null,
+                                "LevelTypeCode": 1,
+                                "LevelTypeCodeSpecified": true,
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "PaymentTypeCode": null,
+                                "Percent": 0,
+                                "PercentSpecified": true
+                            }
+                        },
+                        {
+                            "AllowedModificationInd": false,
+                            "AllowedModificationIndSpecified": true,
+                            "ChangeTypeCode": 0,
+                            "ChangeTypeCodeSpecified": false,
+                            "DescText": "After departure policy: Rebooking is not allowed. ",
+                            "EffectiveDateTime": "2026-03-12T10:45:00Z",
+                            "EffectiveDateTimeSpecified": true,
+                            "ExpirationDateTime": "0001-01-01T00:00:00",
+                            "ExpirationDateTimeSpecified": false,
+                            "Fee": {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 0.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": "Flight change fee",
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false
+                            },
+                            "JourneyStageCode": 0,
+                            "JourneyStageCodeSpecified": true,
+                            "PaxRefID": null,
+                            "Refund": {
+                                "DescText": null,
+                                "FixedAmount": null,
+                                "LevelTypeCode": 1,
+                                "LevelTypeCodeSpecified": true,
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "PaymentTypeCode": null,
+                                "Percent": 0,
+                                "PercentSpecified": true
+                            }
+                        },
+                        {
+                            "AllowedModificationInd": true,
+                            "AllowedModificationIndSpecified": true,
+                            "ChangeTypeCode": 1,
+                            "ChangeTypeCodeSpecified": true,
+                            "DescText": "Name change is allowed 1 time(s) with in total max 20 characters at a fee of 100 SAR. Valid after booking until 1 hour before departure.",
+                            "EffectiveDateTime": "2026-03-01T10:37:38Z",
+                            "EffectiveDateTimeSpecified": true,
+                            "ExpirationDateTime": "2026-03-12T09:45:00Z",
+                            "ExpirationDateTimeSpecified": true,
+                            "Fee": {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 100.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": "Name change fee",
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false
+                            },
+                            "JourneyStageCode": 2,
+                            "JourneyStageCodeSpecified": true,
+                            "PaxRefID": null,
+                            "Refund": null
+                        },
+                        {
+                            "AllowedModificationInd": false,
+                            "AllowedModificationIndSpecified": true,
+                            "ChangeTypeCode": 1,
+                            "ChangeTypeCodeSpecified": true,
+                            "DescText": "Name change is not allowed. Valid 1 hour before departure until moment of departure.",
+                            "EffectiveDateTime": "2026-03-12T09:45:00Z",
+                            "EffectiveDateTimeSpecified": true,
+                            "ExpirationDateTime": "2026-03-12T10:45:00Z",
+                            "ExpirationDateTimeSpecified": true,
+                            "Fee": {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 0.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": "Name change fee",
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false
+                            },
+                            "JourneyStageCode": 2,
+                            "JourneyStageCodeSpecified": true,
+                            "PaxRefID": null,
+                            "Refund": null
+                        },
+                        {
+                            "AllowedModificationInd": true,
+                            "AllowedModificationIndSpecified": true,
+                            "ChangeTypeCode": 1,
+                            "ChangeTypeCodeSpecified": true,
+                            "DescText": "Name change is allowed 1 time(s) with in total max 20 characters at a fee of 100 SAR. Valid after booking until 1 hour before departure.",
+                            "EffectiveDateTime": "2026-03-01T10:37:38Z",
+                            "EffectiveDateTimeSpecified": true,
+                            "ExpirationDateTime": "2026-03-12T09:45:00Z",
+                            "ExpirationDateTimeSpecified": true,
+                            "Fee": {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 100.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": "Name change fee",
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false
+                            },
+                            "JourneyStageCode": 2,
+                            "JourneyStageCodeSpecified": true,
+                            "PaxRefID": null,
+                            "Refund": null
+                        },
+                        {
+                            "AllowedModificationInd": false,
+                            "AllowedModificationIndSpecified": true,
+                            "ChangeTypeCode": 1,
+                            "ChangeTypeCodeSpecified": true,
+                            "DescText": "Name change is not allowed. Valid 1 hour before departure until moment of departure.",
+                            "EffectiveDateTime": "2026-03-12T09:45:00Z",
+                            "EffectiveDateTimeSpecified": true,
+                            "ExpirationDateTime": "2026-03-12T10:45:00Z",
+                            "ExpirationDateTimeSpecified": true,
+                            "Fee": {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 0.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": "Name change fee",
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false
+                            },
+                            "JourneyStageCode": 2,
+                            "JourneyStageCodeSpecified": true,
+                            "PaxRefID": null,
+                            "Refund": null
+                        }
+                    ],
+                    "Commission": null,
+                    "Desc": null,
+                    "FareDetail": [
+                        {
+                            "AccountCode": null,
+                            "FareCalculationInfo": null,
+                            "FareComponent": [
+                                {
+                                    "CabinType": null,
+                                    "CancelRestrictions": null,
+                                    "ChangeRestrictions": null,
+                                    "FareBasisAppCode": null,
+                                    "FareBasisCityPairText": null,
+                                    "FareBasisCode": null,
+                                    "FareRule": null,
+                                    "FareTypeCode": null,
+                                    "NegotiatedCode": null,
+                                    "PaxSegmentRefID": null,
+                                    "Price": null,
+                                    "PriceClassRefID": "PC1",
+                                    "RBD": null,
+                                    "TicketDesigCode": null
+                                }
+                            ],
+                            "FareIndCode": null,
+                            "FarePriceType": null,
+                            "FareRefText": null,
+                            "FareWaiver": null,
+                            "FiledFareInd": false,
+                            "FiledFareIndSpecified": false,
+                            "NetReportingCodeText": null,
+                            "PaxRefID": null,
+                            "PenaltyRefID": null,
+                            "Price": null,
+                            "PricingSystemCodeText": null,
+                            "StatisticalCodeText": null,
+                            "TourCode": null
+                        }
+                    ],
+                    "MandatoryInd": true,
+                    "MandatoryIndSpecified": true,
+                    "ModificationProhibitedInd": false,
+                    "ModificationProhibitedIndSpecified": false,
+                    "OfferItemID": "b780a8e24c484b2aa6bb7508510cd453_OFI001",
+                    "OfferItemTypeCode": null,
+                    "OwnerCode": null,
+                    "PaymentTimeLimit": null,
+                    "Price": {
+                        "BaseAmount": {
+                            "CurCode": "SAR",
+                            "Value": 413.91
+                        },
+                        "BaseAmountGuaranteeTimeLimitDateTime": "0001-01-01T00:00:00",
+                        "BaseAmountGuaranteeTimeLimitDateTimeSpecified": false,
+                        "CurConversion": [
+                            {
+                                "Amount": {
+                                    "CurCode": "SAR",
+                                    "Value": 413.91
+                                },
+                                "ConversionRate": {
+                                    "BaseCurCode": null,
+                                    "BaseMultiplierValue": 0,
+                                    "BaseMultiplierValueSpecified": false,
+                                    "BaseUnitCode": null,
+                                    "CurCode": null,
+                                    "Format": null,
+                                    "MultiplierValue": 0,
+                                    "MultiplierValueSpecified": false,
+                                    "UnitCode": null,
+                                    "Value": 12.785400390625
+                                },
+                                "LocalAmount": {
+                                    "CurCode": "EGP",
+                                    "Value": 5292.00
+                                }
+                            }
+                        ],
+                        "Discount": null,
+                        "EquivAmount": {
+                            "CurCode": "EGP",
+                            "Value": 5292.00
+                        },
+                        "Fee": null,
+                        "LoyaltyUnitAmount": null,
+                        "LoyaltyUnitName": null,
+                        "Markup": null,
+                        "MaskedInd": false,
+                        "MaskedIndSpecified": false,
+                        "Surcharge": [
+                            {
+                                "AllRefundableInd": false,
+                                "AllRefundableIndSpecified": false,
+                                "Breakdown": [
+                                    {
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 0.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "DescText": null,
+                                        "DesigText": "Q",
+                                        "GuaranteeTimeLimitDateTime": "0001-01-01T00:00:00",
+                                        "GuaranteeTimeLimitDateTimeSpecified": false,
+                                        "LocalAmount": null,
+                                        "MaximumAmount": null,
+                                        "MinimumAmount": null,
+                                        "Percent": 0,
+                                        "PercentSpecified": false,
+                                        "RefundInd": false,
+                                        "RefundIndSpecified": false
+                                    }
+                                ],
+                                "TotalAmount": {
+                                    "CurCode": "EGP",
+                                    "Value": 0.00
+                                }
+                            },
+                            {
+                                "AllRefundableInd": false,
+                                "AllRefundableIndSpecified": false,
+                                "Breakdown": [
+                                    {
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 1407.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "DescText": null,
+                                        "DesigText": "YQ",
+                                        "GuaranteeTimeLimitDateTime": "0001-01-01T00:00:00",
+                                        "GuaranteeTimeLimitDateTimeSpecified": false,
+                                        "LocalAmount": null,
+                                        "MaximumAmount": null,
+                                        "MinimumAmount": null,
+                                        "Percent": 0,
+                                        "PercentSpecified": false,
+                                        "RefundInd": false,
+                                        "RefundIndSpecified": false
+                                    }
+                                ],
+                                "TotalAmount": {
+                                    "CurCode": "EGP",
+                                    "Value": 1407.00
+                                }
+                            },
+                            {
+                                "AllRefundableInd": false,
+                                "AllRefundableIndSpecified": false,
+                                "Breakdown": [
+                                    {
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 0.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "DescText": null,
+                                        "DesigText": "YR",
+                                        "GuaranteeTimeLimitDateTime": "0001-01-01T00:00:00",
+                                        "GuaranteeTimeLimitDateTimeSpecified": false,
+                                        "LocalAmount": null,
+                                        "MaximumAmount": null,
+                                        "MinimumAmount": null,
+                                        "Percent": 0,
+                                        "PercentSpecified": false,
+                                        "RefundInd": false,
+                                        "RefundIndSpecified": false
+                                    }
+                                ],
+                                "TotalAmount": {
+                                    "CurCode": "EGP",
+                                    "Value": 0.00
+                                }
+                            }
+                        ],
+                        "TaxSummary": [
+                            {
+                                "AllRefundableInd": false,
+                                "AllRefundableIndSpecified": false,
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "GuaranteeTimeLimitDateTime": "0001-01-01T00:00:00",
+                                "GuaranteeTimeLimitDateTimeSpecified": false,
+                                "RefundMethodText": null,
+                                "Tax": [
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 64.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "SA",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": true,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "T2",
+                                        "TaxName": "GACA SERVICES CHARGE",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 160.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "SA",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": true,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "IO",
+                                        "TaxName": "AIRPORT BUILDING CHARGE FOR  DEPARTURES",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 10.80
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": false,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "XL",
+                                        "TaxName": "STAMP TAX",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 150.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": true,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "XK",
+                                        "TaxName": "DEVELOPMENT FEE",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 96.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": false,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "S4",
+                                        "TaxName": "INTERNATIONAL ADVANCED PASSENGER INFORMATION FEE DEPARTURES",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 1199.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": true,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "QH",
+                                        "TaxName": "EMBARKATION TAX",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 15.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": true,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "O2",
+                                        "TaxName": "DEPARTURE SERVICE FEE",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 2.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": false,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "Q7",
+                                        "TaxName": "DEVELOPMENT STAMP DUTY TAX",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 100.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": true,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "JK",
+                                        "TaxName": "DEPARTURE FEE",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 48.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": true,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "O9",
+                                        "TaxName": "CUTE CUPPS FEE",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 96.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": true,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "EQ",
+                                        "TaxName": "SERVICE CHARGE",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 150.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": true,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "EG",
+                                        "TaxName": "SOLIDARITY TAX",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 103.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "SA",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": false,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "E3",
+                                        "TaxName": "SECURITY CHARGES INTERNATIONAL ARRIVALS",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 150.00
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": true,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "XK",
+                                        "TaxName": "DEVELOPMENT FEE",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 10.80
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": false,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "XL",
+                                        "TaxName": "STAMP TAX",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 10.80
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": false,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "XL",
+                                        "TaxName": "STAMP TAX",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 0.90
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": false,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "XL",
+                                        "TaxName": "STAMP TAX",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 0.90
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": false,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "XL",
+                                        "TaxName": "STAMP TAX",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 0.90
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": false,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "XL",
+                                        "TaxName": "STAMP TAX",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    },
+                                    {
+                                        "AddlFiledTaxCode": null,
+                                        "AddlTaxCode": null,
+                                        "Amount": {
+                                            "CurCode": "EGP",
+                                            "Value": 0.90
+                                        },
+                                        "ApproximateInd": false,
+                                        "ApproximateIndSpecified": false,
+                                        "AppTypeCode": null,
+                                        "CollectionInd": false,
+                                        "CollectionIndSpecified": false,
+                                        "CollectionPointTax": null,
+                                        "Country": {
+                                            "CountryCode": "EG",
+                                            "CountryName": null
+                                        },
+                                        "CountrySubDivision": null,
+                                        "CurConversion": null,
+                                        "DescText": null,
+                                        "FiledAmount": null,
+                                        "FiledTaxCode": null,
+                                        "QualifierCode": null,
+                                        "RefundInd": false,
+                                        "RefundIndSpecified": true,
+                                        "TaxCode": "XL",
+                                        "TaxName": "STAMP TAX",
+                                        "TaxTypeCode": 0,
+                                        "TaxTypeCodeSpecified": false
+                                    }
+                                ],
+                                "TotalRefundableTaxAmount": null,
+                                "TotalTaxAmount": {
+                                    "CurCode": "EGP",
+                                    "Value": 2369.00
+                                }
+                            }
+                        ],
+                        "TotalAmount": {
+                            "CurCode": "EGP",
+                            "Value": 9068.00
+                        }
+                    },
+                    "PriceGuaranteeTimeLimitDateTime": "0001-01-01T00:00:00",
+                    "PriceGuaranteeTimeLimitDateTimeSpecified": false,
+                    "RichMedia": null,
+                    "Service": [
+                        {
+                            "AirlineTaxonomy": null,
+                            "DescText": null,
+                            "InventoryGuaranteeDateTime": "0001-01-01T00:00:00",
+                            "InventoryGuaranteeDateTimeSpecified": false,
+                            "OfferServiceAssociation": {
+                                "Item": {
+                                    "PaxJourneyRefID": [
+                                        "1e9d8bfa-9fd5-43e1-b394-2a5f994d1a06"
+                                    ]
+                                }
+                            },
+                            "PaxRefID": [
+                                "T1"
+                            ],
+                            "RichMedia": null,
+                            "ServiceID": "SV001",
+                            "ServiceRefID": null,
+                            "StatusCode": null,
+                            "ValidatingCarrier": null
+                        },
+                        {
+                            "AirlineTaxonomy": null,
+                            "DescText": null,
+                            "InventoryGuaranteeDateTime": "0001-01-01T00:00:00",
+                            "InventoryGuaranteeDateTimeSpecified": false,
+                            "OfferServiceAssociation": {
+                                "Item": {
+                                    "OfferFlightAssociations": {
+                                        "Item": {
+                                            "PaxJourneyRefID": [
+                                                "1e9d8bfa-9fd5-43e1-b394-2a5f994d1a06"
+                                            ]
+                                        },
+                                        "ItemElementName": 1
+                                    },
+                                    "ServiceDefinitionRefID": "3722d590-63a1-4fc2-b3cc-141a371e2754"
+                                }
+                            },
+                            "PaxRefID": [
+                                "T1"
+                            ],
+                            "RichMedia": null,
+                            "ServiceID": "SV003",
+                            "ServiceRefID": null,
+                            "StatusCode": null,
+                            "ValidatingCarrier": null
+                        },
+                        {
+                            "AirlineTaxonomy": null,
+                            "DescText": null,
+                            "InventoryGuaranteeDateTime": "0001-01-01T00:00:00",
+                            "InventoryGuaranteeDateTimeSpecified": false,
+                            "OfferServiceAssociation": {
+                                "Item": {
+                                    "OfferFlightAssociations": {
+                                        "Item": {
+                                            "PaxJourneyRefID": [
+                                                "1e9d8bfa-9fd5-43e1-b394-2a5f994d1a06"
+                                            ]
+                                        },
+                                        "ItemElementName": 1
+                                    },
+                                    "ServiceDefinitionRefID": "3d9e1d99-589a-4db6-bf89-d0a0a51679e4"
+                                }
+                            },
+                            "PaxRefID": [
+                                "T1"
+                            ],
+                            "RichMedia": null,
+                            "ServiceID": "SV005",
+                            "ServiceRefID": null,
+                            "StatusCode": null,
+                            "ValidatingCarrier": null
+                        },
+                        {
+                            "AirlineTaxonomy": null,
+                            "DescText": null,
+                            "InventoryGuaranteeDateTime": "0001-01-01T00:00:00",
+                            "InventoryGuaranteeDateTimeSpecified": false,
+                            "OfferServiceAssociation": {
+                                "Item": {
+                                    "OfferFlightAssociations": {
+                                        "Item": {
+                                            "PaxJourneyRefID": [
+                                                "1e9d8bfa-9fd5-43e1-b394-2a5f994d1a06"
+                                            ]
+                                        },
+                                        "ItemElementName": 1
+                                    },
+                                    "ServiceDefinitionRefID": "6c2eab73-4806-4869-8e22-1f95e9e68f13"
+                                }
+                            },
+                            "PaxRefID": [
+                                "T1"
+                            ],
+                            "RichMedia": null,
+                            "ServiceID": "SV007",
+                            "ServiceRefID": null,
+                            "StatusCode": null,
+                            "ValidatingCarrier": null
+                        }
+                    ],
+                    "StopOverRestrictions": null,
+                    "WebAddressURI": null
+                }
+            ],
+            "OwnerCode": "RX",
+            "PenaltyRefID": null,
+            "PTC_OfferParameters": null,
+            "RedemptionInd": false,
+            "RedemptionIndSpecified": false,
+            "RequestedDateInd": false,
+            "RequestedDateIndSpecified": false,
+            "RichMedia": null,
+            "TotalPrice": {
+                "BaseAmount": {
+                    "CurCode": "SAR",
+                    "Value": 413.91
+                },
+                "BaseAmountGuaranteeTimeLimitDateTime": "0001-01-01T00:00:00",
+                "BaseAmountGuaranteeTimeLimitDateTimeSpecified": false,
+                "CurConversion": [
+                    {
+                        "Amount": {
+                            "CurCode": "SAR",
+                            "Value": 413.91
+                        },
+                        "ConversionRate": {
+                            "BaseCurCode": null,
+                            "BaseMultiplierValue": 0,
+                            "BaseMultiplierValueSpecified": false,
+                            "BaseUnitCode": null,
+                            "CurCode": null,
+                            "Format": null,
+                            "MultiplierValue": 0,
+                            "MultiplierValueSpecified": false,
+                            "UnitCode": null,
+                            "Value": 12.785400390625
+                        },
+                        "LocalAmount": {
+                            "CurCode": "EGP",
+                            "Value": 5292.00
+                        }
+                    }
+                ],
+                "Discount": null,
+                "EquivAmount": {
+                    "CurCode": "EGP",
+                    "Value": 5292.00
+                },
+                "Fee": null,
+                "LoyaltyUnitAmount": null,
+                "LoyaltyUnitName": null,
+                "Markup": null,
+                "MaskedInd": false,
+                "MaskedIndSpecified": false,
+                "Surcharge": [
+                    {
+                        "AllRefundableInd": false,
+                        "AllRefundableIndSpecified": false,
+                        "Breakdown": [
+                            {
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 0.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": null,
+                                "DesigText": "Q",
+                                "GuaranteeTimeLimitDateTime": "0001-01-01T00:00:00",
+                                "GuaranteeTimeLimitDateTimeSpecified": false,
+                                "LocalAmount": null,
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false,
+                                "RefundInd": false,
+                                "RefundIndSpecified": false
+                            }
+                        ],
+                        "TotalAmount": {
+                            "CurCode": "EGP",
+                            "Value": 0.00
+                        }
+                    },
+                    {
+                        "AllRefundableInd": false,
+                        "AllRefundableIndSpecified": false,
+                        "Breakdown": [
+                            {
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 1407.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": null,
+                                "DesigText": "YQ",
+                                "GuaranteeTimeLimitDateTime": "0001-01-01T00:00:00",
+                                "GuaranteeTimeLimitDateTimeSpecified": false,
+                                "LocalAmount": null,
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false,
+                                "RefundInd": false,
+                                "RefundIndSpecified": false
+                            }
+                        ],
+                        "TotalAmount": {
+                            "CurCode": "EGP",
+                            "Value": 1407.00
+                        }
+                    },
+                    {
+                        "AllRefundableInd": false,
+                        "AllRefundableIndSpecified": false,
+                        "Breakdown": [
+                            {
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 0.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "DescText": null,
+                                "DesigText": "YR",
+                                "GuaranteeTimeLimitDateTime": "0001-01-01T00:00:00",
+                                "GuaranteeTimeLimitDateTimeSpecified": false,
+                                "LocalAmount": null,
+                                "MaximumAmount": null,
+                                "MinimumAmount": null,
+                                "Percent": 0,
+                                "PercentSpecified": false,
+                                "RefundInd": false,
+                                "RefundIndSpecified": false
+                            }
+                        ],
+                        "TotalAmount": {
+                            "CurCode": "EGP",
+                            "Value": 0.00
+                        }
+                    }
+                ],
+                "TaxSummary": [
+                    {
+                        "AllRefundableInd": false,
+                        "AllRefundableIndSpecified": false,
+                        "ApproximateInd": false,
+                        "ApproximateIndSpecified": false,
+                        "CollectionInd": false,
+                        "CollectionIndSpecified": false,
+                        "GuaranteeTimeLimitDateTime": "0001-01-01T00:00:00",
+                        "GuaranteeTimeLimitDateTimeSpecified": false,
+                        "RefundMethodText": null,
+                        "Tax": [
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 64.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "SA",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": true,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "T2",
+                                "TaxName": "GACA SERVICES CHARGE",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 160.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "SA",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": true,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "IO",
+                                "TaxName": "AIRPORT BUILDING CHARGE FOR  DEPARTURES",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 10.80
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": false,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "XL",
+                                "TaxName": "STAMP TAX",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 150.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": true,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "XK",
+                                "TaxName": "DEVELOPMENT FEE",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 96.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": false,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "S4",
+                                "TaxName": "INTERNATIONAL ADVANCED PASSENGER INFORMATION FEE DEPARTURES",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 1199.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": true,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "QH",
+                                "TaxName": "EMBARKATION TAX",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 15.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": true,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "O2",
+                                "TaxName": "DEPARTURE SERVICE FEE",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 2.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": false,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "Q7",
+                                "TaxName": "DEVELOPMENT STAMP DUTY TAX",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 100.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": true,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "JK",
+                                "TaxName": "DEPARTURE FEE",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 48.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": true,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "O9",
+                                "TaxName": "CUTE CUPPS FEE",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 96.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": true,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "EQ",
+                                "TaxName": "SERVICE CHARGE",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 150.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": true,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "EG",
+                                "TaxName": "SOLIDARITY TAX",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 103.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "SA",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": false,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "E3",
+                                "TaxName": "SECURITY CHARGES INTERNATIONAL ARRIVALS",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 150.00
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": true,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "XK",
+                                "TaxName": "DEVELOPMENT FEE",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 10.80
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": false,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "XL",
+                                "TaxName": "STAMP TAX",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 10.80
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": false,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "XL",
+                                "TaxName": "STAMP TAX",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 0.90
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": false,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "XL",
+                                "TaxName": "STAMP TAX",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 0.90
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": false,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "XL",
+                                "TaxName": "STAMP TAX",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 0.90
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": false,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "XL",
+                                "TaxName": "STAMP TAX",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            },
+                            {
+                                "AddlFiledTaxCode": null,
+                                "AddlTaxCode": null,
+                                "Amount": {
+                                    "CurCode": "EGP",
+                                    "Value": 0.90
+                                },
+                                "ApproximateInd": false,
+                                "ApproximateIndSpecified": false,
+                                "AppTypeCode": null,
+                                "CollectionInd": false,
+                                "CollectionIndSpecified": false,
+                                "CollectionPointTax": null,
+                                "Country": {
+                                    "CountryCode": "EG",
+                                    "CountryName": null
+                                },
+                                "CountrySubDivision": null,
+                                "CurConversion": null,
+                                "DescText": null,
+                                "FiledAmount": null,
+                                "FiledTaxCode": null,
+                                "QualifierCode": null,
+                                "RefundInd": false,
+                                "RefundIndSpecified": true,
+                                "TaxCode": "XL",
+                                "TaxName": "STAMP TAX",
+                                "TaxTypeCode": 0,
+                                "TaxTypeCodeSpecified": false
+                            }
+                        ],
+                        "TotalRefundableTaxAmount": null,
+                        "TotalTaxAmount": {
+                            "CurCode": "EGP",
+                            "Value": 2369.00
+                        }
+                    }
+                ],
+                "TotalAmount": {
+                    "CurCode": "EGP",
+                    "Value": 9068.00
+                }
+            },
+            "ValidatingCarrierCode": null
+        },
+        "Processing": null,
+        "Promotion": null,
+        "Warning": null
+    },
+    "AugmentationPoint": null,
+    "PayloadAttributes": {
+        "AltLangID": null,
+        "CorrelationID": null,
+        "PrimaryLangID": null,
+        "RetransmissionInd": false,
+        "RetransmissionIndSpecified": false,
+        "SeqNumber": 0,
+        "SeqNumberSpecified": false,
+        "Timestamp": "2026-03-01T10:37:38.6876156Z",
+        "TimestampSpecified": true,
+        "TrxID": "f420b23c-685e-4970-8c14-4856b434f099",
+        "VersionNumber": 21.3,
+        "VersionNumberSpecified": true
+    }
+}

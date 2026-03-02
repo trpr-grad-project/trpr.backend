@@ -56,8 +56,8 @@ public static class InfrastructureDependencyInjection
         services.Configure<OutBoxOptions>(configuration.GetSection("Users:OutBox"));
         services.Configure<InBoxOptions>(configuration.GetSection("Users:InBox"));
         services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
-        services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
-        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<RepositoryFactory>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IUsersDbContext>(x => x.GetRequiredService<UsersDbContext>());
         services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<UsersDbContext>());
         // adding quartz for background jobs 
