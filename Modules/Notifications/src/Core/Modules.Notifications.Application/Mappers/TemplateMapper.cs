@@ -1,3 +1,4 @@
+using Common.Application.Exceptions;
 using Modules.Notifications.Application.Dtos.Requests;
 using Modules.Notifications.Application.Dtos.Responses;
 using Modules.Notifications.Domain.Entities;
@@ -8,7 +9,7 @@ public static class TemplateMapper
 {
     public static TemplateResponseDto ToResponseDto(this Template template)
     {
-        if (template == null) return null!;
+        if (template == null) throw new NotFoundException("Template.NotFound");
         
         return new TemplateResponseDto()
         {
