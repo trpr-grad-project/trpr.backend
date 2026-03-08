@@ -1,3 +1,4 @@
+using System.Reflection.Emit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Notifications.Domain.Entities;
@@ -12,7 +13,8 @@ public class TemplateConfig : IEntityTypeConfiguration<Template>
         builder.HasIndex(x => x.UserId);
         builder.HasIndex(x => x.Active);
         builder.HasMany(x => x.TemplateLangs)
-            .WithOne(x => x.Template)
-            .HasForeignKey(x => x.TemplateId);
+               .WithOne(x => x.Template)
+               .HasForeignKey(x => x.TemplateId);
+        builder.Property(p => p.RowVersion).IsRowVersion();
     }
 }

@@ -14,7 +14,7 @@ using Modules.Notifications.Domain.Entities;
 using Modules.Notifications.Domain.ValueObjects;
 
 namespace Modules.Notifications.Application.Services
-{   // use IRepository instead of notifdbcontext
+{   
     public class TemplateService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFactory)
     {
         public async Task<TemplateResponseDto> CreateTemplate(Guid userId, CreateTemplateDto templateDto, CancellationToken cancellationToken = default)
@@ -39,10 +39,9 @@ namespace Modules.Notifications.Application.Services
             Template template = await repositoryFactory.Repository<Template>()
                 .GetFirstOrDefaultByFilter(t => t.Id == templateId && t.UserId == userId) 
                 ?? throw new NotFoundException("Template.NotFound", templateId);
-            // each user updates only his own templates, thus optimistic lock is useless here, there are no concurrent actions (wna mksl)
             if (templateDto.Active == true && !template.Active)
             {
-                // checks if there are existing and active templates
+                // checks if there are other active templates
                 var activeTemplate = await repositoryFactory.Repository<Template>()
                     .GetFirstOrDefaultByFilter(x =>
                         x.UserId == template.UserId &&
@@ -66,8 +65,16 @@ namespace Modules.Notifications.Application.Services
 
             template.Update(templateDto.ContentType, templateDto.TemplateType, contentLanguageDict, titleLanguageDict, templateDto.Active);
             repositoryFactory.Repository<Template>().Update(template);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
+            try
+            {
+                await unitOfWork.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new ConflictException("Template.Conflict", template.Id);
+            }
             return template.ToResponseDto();
+
         }
 
         public async Task<PaginationDto<TemplatePaginationResponseDto>> TemplatesPagination(PaginateRequestDto dto, Guid userId,string LangCode,CancellationToken cancellationToken = default)

@@ -9,7 +9,6 @@ public static class TemplateMapper
 {
     public static TemplateResponseDto ToResponseDto(this Template template)
     {
-        if (template == null) throw new NotFoundException("Template.NotFound");
         
         return new TemplateResponseDto()
         {

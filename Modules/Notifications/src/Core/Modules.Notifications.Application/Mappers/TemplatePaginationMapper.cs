@@ -9,7 +9,6 @@ public static class TemplatePaginationMapper
 {
     public static TemplatePaginationResponseDto ToPaginationResponseDto(this Template template)
     {
-        if (template == null) throw new NotFoundException("Template.NotFound");
 
         return new TemplatePaginationResponseDto()
         {

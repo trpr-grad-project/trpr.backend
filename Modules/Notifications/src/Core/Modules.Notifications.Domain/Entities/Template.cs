@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Modules.Notifications.Domain.Abstractions;
 using Modules.Notifications.Domain.ValueObjects;
 
@@ -10,6 +11,8 @@ public class Template : Entity
     public bool Active { get; set; }
     public ContentType ContentType { get; set; } = ContentType.Pure;
     public virtual User User { get; set; } = default!;
+    [Timestamp]
+    public byte[]? RowVersion { get; set; }
     public TemplateType TemplateType { get; set; }
     public virtual List<TemplateLang> TemplateLangs { get; set; } = [];
     public static Template Create(ContentType contentType, TemplateType templateType,User user, IDictionary<string, string> Contents, IDictionary<string, string> Titles)
