@@ -65,14 +65,7 @@ namespace Modules.Notifications.Application.Services
 
             template.Update(templateDto.ContentType, templateDto.TemplateType, contentLanguageDict, titleLanguageDict, templateDto.Active);
             repositoryFactory.Repository<Template>().Update(template);
-            try
-            {
-                await unitOfWork.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw new ConflictException("Template.Conflict", template.Id);
-            }
+            await unitOfWork.SaveChangesAsync(cancellationToken);
             return template.ToResponseDto();
 
         }
