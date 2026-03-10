@@ -22,26 +22,31 @@ namespace Modules.Notifications.Presentation.Controllers.v1
     {
         public Guid UserId => User.GetUserId();
         [HttpPost]
-        public async Task<ActionResult<Guid>> CreateTemplate(CreateTemplateDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<TemplateResponseDto>> CreateTemplate(CreateTemplateDto dto, CancellationToken cancellationToken)
         {
             var id = await templateService.CreateTemplate(UserId, dto, cancellationToken);
             return Ok(id);
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult<Guid>> UpdateTemplate([FromRoute] Guid id, UpdateTemplateDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<TemplateResponseDto>> UpdateTemplate([FromRoute] Guid id, UpdateTemplateDto dto, CancellationToken cancellationToken)
         {
-            var Id = await templateService.UpdateTemplate(id, dto, cancellationToken);
+            var Id = await templateService.UpdateTemplate(id, UserId,dto, cancellationToken);
             return Ok(Id);
         }
 
-        // TODO: Youssef 
-        // add this to the template service and implement the pagination logic 
-        // ps. the paginateion dto template has a create method that you can use;
+        
         [HttpGet]
-        public async Task<ActionResult<PaginationDto<TemplateResponseDto>>> GetPaginatedTemplates([FromQuery] PaginateRequestDto dto, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<PaginationDto<TemplatePaginationResponseDto>>> GetPaginatedTemplates([FromQuery] PaginateRequestDto dto, [FromHeader (Name = "X-Language")] string LangCode, CancellationToken cancellationToken = default)
         {
-            var templatesList = await templateService.TemplatesPagination(dto, cancellationToken);
+            var templatesList = await templateService.TemplatesPagination(dto, UserId, LangCode,cancellationToken);
             return Ok(templatesList);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TemplateResponseDto>> GetTemplateDetails([FromRoute] Guid templateId, CancellationToken cancellationToken = default)
+        {
+            var template = await templateService.TemplateDetails(templateId, UserId, cancellationToken);
+            return Ok(template);
         }
     }
 }

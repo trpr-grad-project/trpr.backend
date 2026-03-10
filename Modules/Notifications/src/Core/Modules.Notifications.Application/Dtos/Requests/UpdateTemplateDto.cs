@@ -4,8 +4,9 @@ namespace Modules.Notifications.Application.Dtos.Requests
 {
     public class UpdateTemplateDto
     {
-        public string? Content { get; set; } = null;
-        public TemplateType? TemplateType { get; set; }
         public ContentType? ContentType { get; set; }
+        public ICollection<TemplateTranslationDto>? Translations { get; set; }
+        public TemplateType? TemplateType { get; set; }
+        public bool? Active { get; set; }
     }
 }

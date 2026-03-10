@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading;
 using Common.Application.Dtos;
 using Common.Application.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -13,44 +14,110 @@ using Modules.Notifications.Domain.Entities;
 using Modules.Notifications.Domain.ValueObjects;
 
 namespace Modules.Notifications.Application.Services
-{
-    public class TemplateService(INotificationsDbContext notificationDbContext)
+{   
+    public class TemplateService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFactory)
     {
-        public Task<Guid> CreateTemplate(Guid userId, CreateTemplateDto templateDto, CancellationToken cancellationToken = default)
+        public async Task<TemplateResponseDto> CreateTemplate(Guid userId, CreateTemplateDto templateDto, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
-            // User user = await notificationDbContext.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken) ?? throw new NotFoundException("User.NotFound", userId);
-            // string content = templateDto.Content;
-            // TemplateType templateType = templateDto.TemplateType;
-            // ContentType contentType = templateDto.ContentType;
-            // Template template = Template.Create(content, templateType, contentType, user);
-            // notificationDbContext.Templates.Add(template);
-            // await unitOfWork.SaveChangesAsync(cancellationToken);
-            // return template.Id;
-        }
-        public Task<Guid> UpdateTemplate(Guid templateId, UpdateTemplateDto templateDto, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
+            User user = await repositoryFactory
+                        .Repository<User>()
+                        .GetFirstOrDefaultByFilter(u => u.Id == userId)
+                        ?? throw new NotFoundException("User.NotFound", userId);
 
-            // Template template = await notificationDbContext.Templates.FirstOrDefaultAsync(t => t.Id == templateId, cancellationToken) ?? throw new NotFoundException("Template.NotFound", templateId);
-            // template.Update(templateDto.Content, templateDto.TemplateType, templateDto.ContentType);
-            // notificationDbContext.Templates.Update(template);
-            // await unitOfWork.SaveChangesAsync(cancellationToken);
-            // return template.Id;
+            var templateLanguageDict = templateDto.Translations.ToDictionary(m => m.LangCode, x => x);
+            var titleLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Title);
+            var contentLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Content);
+
+            Template template = Template.Create(templateDto.ContentType, templateDto.TemplateType, user, contentLanguageDict, titleLanguageDict);
+            repositoryFactory.Repository<Template>().Add(template);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return template.ToResponseDto();
+        }
+        public async Task<TemplateResponseDto> UpdateTemplate(Guid templateId, Guid userId,UpdateTemplateDto templateDto, CancellationToken cancellationToken = default)
+        {
+            Template template = await repositoryFactory.Repository<Template>()
+                .GetFirstOrDefaultByFilter(t => t.Id == templateId && t.UserId == userId) 
+                ?? throw new NotFoundException("Template.NotFound", templateId);
+            if (templateDto.Active == true && !template.Active)
+            {
+                // checks if there are other active templates
+                var activeTemplate = await repositoryFactory.Repository<Template>()
+                    .GetFirstOrDefaultByFilter(x =>
+                        x.UserId == template.UserId &&
+                        x.Active &&
+                        x.Id != templateId);
+                if (activeTemplate != null)
+                {
+                    activeTemplate.Active = false;
+                }
+            }
+            
+            Dictionary<string,string>? titleLanguageDict = null;
+            Dictionary<string, string>? contentLanguageDict = null;
+
+            if (templateDto.Translations != null) 
+            {
+                var templateLanguageDict = templateDto.Translations.ToDictionary(m => m.LangCode, x => x);
+                titleLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Title);
+                contentLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Content);
+            }
+
+            template.Update(templateDto.ContentType, templateDto.TemplateType, contentLanguageDict, titleLanguageDict, templateDto.Active);
+            repositoryFactory.Repository<Template>().Update(template);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+            return template.ToResponseDto();
+
         }
 
-        public async Task<PaginationDto<TemplateResponseDto>> TemplatesPagination(PaginateRequestDto dto, CancellationToken cancellationToken = default)
+        public async Task<PaginationDto<TemplatePaginationResponseDto>> TemplatesPagination(PaginateRequestDto dto, Guid userId,string LangCode,CancellationToken cancellationToken = default)
         {
-            var query = notificationDbContext.Templates.AsQueryable();
-            query = query.OrderByDescending(t => t.UpdatedAtUTC);
+            var query = repositoryFactory.Repository<Template>().GetQueryable();
+            // using GetByExpWhere here makes it ineffecient
+            // as it returns a tolist which materializes the query 
+            // and makes the skip and take happen inmemory instead of them being a query in the database
+            query = query.Where(t => t.UserId == userId);
+            query = query.Where(t => t.TemplateLangs.Any(tl => tl.LangCode.Equals(LangCode)));
+            if(dto.IsActive != null)
+            {
+                query = query.Where(t => t.Active == dto.IsActive);
+            }
+            if (dto.TemplateType.HasValue)
+            {
+                query = query.Where(t => t.TemplateType == dto.TemplateType);
+            }
+            if(!string.IsNullOrEmpty(dto.Search))
+            {
+                query = query.Where(t => t.TemplateLangs.Any(tl => tl.Title.StartsWith(dto.Search)));
+            }
+            if (dto.sortBy.HasValue)
+            {
+                query = dto.sortBy.Value switch
+                {
+                    SortBy.CreatedAt => query.OrderByDescending(t => t.CreatedAtUTC),
+                    SortBy.UpdatedAt => query.OrderByDescending(t => t.UpdatedAtUTC),
+                    _ => query.OrderByDescending(t => t.UpdatedAtUTC)
+                };
+            }
             var totalItems = await query.CountAsync(cancellationToken);
             var items = await query
                 .Include(x => x.User)
-                .Select(x => x.ToResponseDto())
+                .Include(t => t.TemplateLangs.Where(tl => tl.LangCode == LangCode))
+                .Select(x => x.ToPaginationResponseDto())
                 .Skip((dto.Page - 1) * dto.PageSize)
                 .Take(dto.PageSize)
                 .ToListAsync(cancellationToken);
-            return PaginationDto<TemplateResponseDto>.Create(dto.Page, dto.PageSize, totalItems, items);
+            return PaginationDto<TemplatePaginationResponseDto>.Create(dto.Page, dto.PageSize, totalItems, items);
+        }
+        public async Task<TemplateResponseDto> TemplateDetails(Guid templateId, Guid userId, CancellationToken cancellationToken)
+        {
+            Template template = await repositoryFactory.Repository<Template>()
+                    .GetFirstOrDefaultByFilter(
+                        t => t.UserId == userId && t.Id == templateId,
+                        q => q.Include(t => t.TemplateLangs),
+                        q => q.Include(t => t.User)
+                    ) ?? throw new NotFoundException("Template.NotFound");
+            return template.ToResponseDto();
         }
     }
 }

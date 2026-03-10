@@ -1,15 +1,15 @@
-using Modules.Notifications.Application.Dtos.Requests;
+﻿using Microsoft.Extensions.Primitives;
 using Modules.Notifications.Domain.ValueObjects;
 
 namespace Modules.Notifications.Application.Dtos.Responses;
 
-public class TemplateResponseDto
+public class TemplatePaginationResponseDto 
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
     public bool Active { get; set; }
     public ContentType ContentType { get; set; }
     public TemplateType TemplateType { get; set; }
-    public ICollection<TemplateTranslationDto> Translations{ get; set; } = [];
-    public UserResponseDto User { get; set; } = default!;
+    public string Content { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
 }

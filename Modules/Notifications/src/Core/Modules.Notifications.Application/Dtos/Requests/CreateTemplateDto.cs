@@ -9,7 +9,7 @@ namespace Modules.Notifications.Application.Dtos.Requests
 {
     public class CreateTemplateDto
     {
-        public string Content { get; set; } = string.Empty;
+        public ICollection<TemplateTranslationDto> Translations { get; set; } = [];
         public TemplateType TemplateType { get; set; }
         public ContentType ContentType { get; set; }
     }
