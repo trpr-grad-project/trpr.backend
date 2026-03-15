@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
 using Modules.Trips.Infrastructure.Repositories;
@@ -24,6 +23,7 @@ public static class InfrastructureDependencyInjection
                 .UseNpgsql(dbConnectionString, op =>
                 {
                     op.MigrationsAssembly(AssemblyRefrence.Assembly);
+                    op.UseNetTopologySuite();
                 })
                 .UseSnakeCaseNamingConvention()
                 .AddInterceptors(sp.GetRequiredService<PublishOutboxMessagesInterceptor>());

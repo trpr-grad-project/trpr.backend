@@ -4,12 +4,21 @@ using Common.Application;
 using Modules.Trips.Application.Abstractions;
 using Common.Infrastructure.Outbox;
 using Common.Infrastructure.Inbox;
+using Modules.Trips.Domain.Entities;
 
 namespace Modules.Trips.Infrastructure.Data;
 
 public class TripsDbContext(DbContextOptions<TripsDbContext> options) : DbContext(options), IUnitOfWork, ITripsDbContext
 {
     private IDbContextTransaction? _transaction;
+    public virtual DbSet<Category> Categories { get; set; }
+    public virtual DbSet<Governorate> Governorates { get; set; }
+    public virtual DbSet<Place> Places { get; set; }
+    public virtual DbSet<Tag> Tags { get; set; }
+    public virtual DbSet<PlaceTag> PlaceTags { get; set; }
+    public virtual DbSet<Theme> Themes { get; set; }
+    public virtual DbSet<ThemeTag> ThemeTags { get; set; }
+    public virtual DbSet<ThemeCategory> ThemeCategories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

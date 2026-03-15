@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Modules.Trips.Infrastructure.Data;
 using NetTopologySuite.Geometries;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Trips.Infrastructure.Migrations
 {
     [DbContext(typeof(TripsDbContext))]
-    partial class TripsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260311192623_AddPostGis")]
+    partial class AddPostGis
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -167,9 +170,9 @@ namespace Modules.Trips.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<MultiPolygon>("Boundary")
+                    b.Property<Polygon>("Boundary")
                         .IsRequired()
-                        .HasColumnType("geometry(MultiPolygon,3857)")
+                        .HasColumnType("geometry(Polygon,4326)")
                         .HasColumnName("boundary");
 
                     b.Property<string>("Name")
@@ -220,11 +223,6 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("geometry (Point, 3857)")
                         .HasColumnName("location");
-
-                    b.Property<string>("OsrmId")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("osrm_id");
 
                     b.Property<int>("RateCount")
                         .ValueGeneratedOnAdd()
