@@ -1,6 +1,8 @@
 using Common.Application.Buckets;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Modules.Users.Application.Dtos.Requests;
+using Modules.Users.Domain.Entities;
 
 namespace Modules.Users.Presentation.Controllers.v1
 {
@@ -18,6 +20,13 @@ namespace Modules.Users.Presentation.Controllers.v1
             var path = await fileService.UploadFileAsync(request.File);
             var imageUrl = fileService.ResolveUrl(path);
             return Ok(new { Path = imageUrl });
+        }
+
+        [HttpPost("request")]
+        public async Task<IActionResult> UpgradeRequest(GuideUpgradeRequestDto dto)
+        {
+
+            return Ok(dto);
         }
     }
 }
