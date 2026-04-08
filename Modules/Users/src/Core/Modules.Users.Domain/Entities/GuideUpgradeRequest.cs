@@ -12,7 +12,7 @@ namespace Modules.Users.Domain.Entities
         public DateTime? ReviewedAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        // nav property
+        public ICollection<Document> Documents { get; set; } = [];
         public User user { get; set; } = null!;
     }
 }
