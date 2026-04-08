@@ -18,6 +18,12 @@ public static class ApplicationDependencyInjection
         services.AddDomainEventHandlers(x => x.AddAssemblies(assemblies));
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddSingleton<ICorrelationIdAccessor, CorrelationIdAccessor>();
+        services.Scan(
+            scan =>
+            scan.FromAssemblies(assemblies)
+                .AddClasses(c => c.AssignableTo(typeof(IMapper<,>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
         return services;
     }
 }

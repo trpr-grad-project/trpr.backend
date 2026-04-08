@@ -27,7 +27,11 @@ builder.Services.AddCommonPresentation(
     Modules.Notifications.Presentation.AssemblyRefrence.Assembly,
     Modules.Trips.Presentation.AssemblyRefrence.Assembly,
     Modules.Conversations.Presentation.AssemblyRefrence.Assembly);
-builder.Services.AddCommonInfrastructure(builder.Configuration);
+builder.Services.AddCommonInfrastructure(builder.Configuration,
+    Modules.Users.Infrastructure.AssemblyRefrence.Assembly,
+    Modules.Notifications.Infrastructure.AssemblyRefrence.Assembly,
+    Modules.Trips.Infrastructure.AssemblyRefrence.Assembly,
+    Modules.Conversations.Infrastructure.AssemblyRefrence.Assembly);
 builder.Services.AddUsersModule(builder.Configuration);
 builder.Services.AddNotificationsModule(builder.Configuration);
 builder.Services.AddTripsModule(builder.Configuration);
