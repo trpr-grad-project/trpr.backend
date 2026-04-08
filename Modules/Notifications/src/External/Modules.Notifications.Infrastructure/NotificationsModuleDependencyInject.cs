@@ -27,6 +27,9 @@ namespace Modules.Notifications.Infrastructure
             services
                 .AddTransient<IHandleMessages<SendMessageIntegrationEvent>,
                 BaseIngtegrationEventHandler<SendMessageIntegrationEvent>>();
+            services
+                .AddTransient<IHandleMessages<SendSystemMessageIntegrationEvent>,
+                BaseIngtegrationEventHandler<SendSystemMessageIntegrationEvent>>();
             #endregion
 
             services.AddIntegrationEventHandlers();

@@ -18,6 +18,8 @@ public static class IntegrationEventsExtensions
             onCreated: async bus =>
             {
                 await bus.Subscribe<UserCreatedIntegrationEvent>();
+                await bus.Subscribe<SendMessageIntegrationEvent>();
+                await bus.Subscribe<SendSystemMessageIntegrationEvent>();
             }
         );
     }

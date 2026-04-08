@@ -10,13 +10,11 @@ using Modules.Users.Domain.Entities;
 
 namespace Modules.Users.Application.Services
 {
-    public class GuideService(IUnitOfWork unitOfWork, 
-        IRepository<GuideUpgradeRequest> guideRepository, 
-        IRepository<Document> documentRepository)
+    public class GuideService()
     {
         public async Task<ActionResult> UpgradeToGuide(Guid userId, GuideUpgradeRequest request)
         {
-            var user = 
+            throw new NotImplementedException();
         }
     }
 }
