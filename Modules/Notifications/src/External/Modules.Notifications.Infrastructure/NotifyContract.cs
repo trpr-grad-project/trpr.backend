@@ -26,15 +26,31 @@ public class NotifyContract(
             .TemplateLangs
             .FirstOrDefault(x => x.LangCode == "en") ??
             throw new NotFoundException("Template.Lang.NotFound", templateType, request.LangCode);
-        foreach (var userId in request.ToUserIds)
+        ICollection<User> users =
+            repositoryFactory.Repository<User>().GetQueryable()
+            .Where(x => request.ToUserIds.Contains(x.Id))
+            .ToList();
+        foreach (var user in users)
         {
+            var paredTemplate = Scriban.Template.Parse(templateLange.Content);
+            IEnumerable<KeyValuePair<string, string>> newKeyValuePairs = new Dictionary<string, string>(request.KeyValuePairs)
+            {
+                ["FirstName"] = user.FirstName,
+                ["LastName"] = user.LastName,
+                ["UserName"] = user.UserName,
+                ["Email"] = user.Email ?? string.Empty,
+                ["PhoneNumber"] = user.PhoneNumber ?? string.Empty
+            };
+            newKeyValuePairs = newKeyValuePairs.Union(request.KeyValuePairs);
+            var renderedContent = paredTemplate.Render(newKeyValuePairs);
+
             var notification = Notification.Create(
-                templateLange.Content,
+                renderedContent,
                 template.ContentType,
                 request.NotifyEmail,
                 request.NotifyPhone,
                 request.NotifySystem,
-                userId
+                user.Id
             );
             repositoryFactory.Repository<Notification>().Add(notification);
         }
