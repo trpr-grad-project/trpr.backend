@@ -1,3 +1,5 @@
+using System.Reflection;
+using Common.Application;
 using Common.Application.Buckets;
 using Common.Application.EventBus;
 using Common.Infrastructure.Buckets;
@@ -12,7 +14,7 @@ namespace Common.Infrastructure;
 public static class InfrastructureDependencyInjection
 {
     public static IServiceCollection AddCommonInfrastructure(this IServiceCollection services,
-    IConfiguration configuration)
+    IConfiguration configuration, params Assembly[] assemblies)
     {
         services.TryAddSingleton<IEventBus, EventBus.EventBus>();
         services.Configure<MinioSettings>(configuration.GetSection("Minio"));
@@ -26,6 +28,12 @@ public static class InfrastructureDependencyInjection
                 .Build();
         });
         services.AddSingleton<IFileService, MinioFileService>();
+        services.Scan(
+            scan =>
+            scan.FromAssemblies(assemblies)
+                .AddClasses(c => c.AssignableTo(typeof(IMapper<,>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
         return services;
     }
 }
