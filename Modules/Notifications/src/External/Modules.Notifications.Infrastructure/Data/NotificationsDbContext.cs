@@ -14,6 +14,8 @@ public class NotificationsDbContext(DbContextOptions<NotificationsDbContext> opt
 {
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Template> Templates { get; set; }
+    public virtual DbSet<TemplateLang> TemplateLangs { get; set; }
+    public virtual DbSet<Notification> Notifications { get; set; }
     private IDbContextTransaction? _transaction;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

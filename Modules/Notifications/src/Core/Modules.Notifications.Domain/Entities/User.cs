@@ -1,8 +1,9 @@
 using System.Net.Mail;
+using Modules.Notifications.Domain.Abstractions;
 
 namespace Modules.Notifications.Domain.Entities;
 
-public class User
+public class User : Entity
 {
     public Guid Id { get; set; }
     public string UserName { get; set; } = string.Empty;
@@ -11,6 +12,7 @@ public class User
     public string? Email { get; set; }
     public string? PhoneNumber { get; set; }
     public virtual ICollection<Template> Templates { get; set; } = [];
+    public virtual ICollection<Notification> Notifications { get; set; } = [];
     public static User Create(Guid Id, string UserName, string FirstName, string LastName)
     {
         return new User

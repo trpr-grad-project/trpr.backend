@@ -12,7 +12,7 @@ namespace Modules.Users.Application.Services
 {
     public class GuideService()
     {
-        public async Task<ActionResult> UpgradeToGuide(Guid userId, GuideUpgradeRequest request)
+        public Task<ActionResult> UpgradeToGuide(Guid userId, GuideUpgradeRequest request)
         {
             throw new NotImplementedException();
         }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Modules.Notifications.Application;
+using Modules.Notifications.Contracts.Contracts;
 using Modules.Notifications.Infrastructure.Inbox;
 using Modules.Notifications.Infrastructure.Outbox;
 using Modules.Notifications.Presentation;
@@ -38,6 +39,9 @@ namespace Modules.Notifications.Infrastructure
                 cfg =>
                     cfg.AddAssemblies(Application.AssemblyRefrence.Assembly)
                     .AddPipeline(typeof(OutboxIdempotentDomainEventHandlerDecorator<>)));
+            #region Contracts
+            services.AddScoped<INotifiyContract, NotifyContract>();
+            #endregion
             return services;
         }
 

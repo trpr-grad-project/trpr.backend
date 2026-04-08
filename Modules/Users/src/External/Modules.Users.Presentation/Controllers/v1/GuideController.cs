@@ -23,10 +23,9 @@ namespace Modules.Users.Presentation.Controllers.v1
         }
 
         [HttpPost("request")]
-        public async Task<IActionResult> UpgradeRequest(GuideUpgradeRequestDto dto)
+        public Task<IActionResult> UpgradeRequest(GuideUpgradeRequestDto dto)
         {
-
-            return Ok(dto);
+            throw new NotImplementedException();
         }
     }
 }
