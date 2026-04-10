@@ -11,14 +11,14 @@ public class PlaceTagConfig : IEntityTypeConfiguration<PlaceTag>
         builder.HasKey(pt => new { pt.PlaceId, pt.TagId });
 
         builder
-            .HasOne<Place>()
-            .WithMany()
+            .HasOne(x => x.Place)
+            .WithMany(x => x.PlaceTags)
             .HasForeignKey(pt => pt.PlaceId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
-            .HasOne<Tag>()
-            .WithMany()
+            .HasOne(x => x.Tag)
+            .WithMany(x => x.PlaceTags)
             .HasForeignKey(pt => pt.TagId)
             .OnDelete(DeleteBehavior.Cascade);
     }

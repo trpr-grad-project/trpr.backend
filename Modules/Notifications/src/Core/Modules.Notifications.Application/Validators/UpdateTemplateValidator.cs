@@ -28,6 +28,11 @@ namespace Modules.Notifications.Application.Validators
                 .When(x => x.Translations is not null)
                 .WithMessage("Translations cannot be empty if provided.");
 
+            RuleFor(x => x.Translations)
+                .NotEmpty()
+                .Must(y => y != null && y.Any(z => z.LangCode == "en"))
+                .WithMessage("At least one translation must be in English.");
+
             // Validate elements inside collection
             RuleForEach(x => x.Translations!).ChildRules(lang =>
             {

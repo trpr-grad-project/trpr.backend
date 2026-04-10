@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using NetTopologySuite.Geometries;
 
 namespace Modules.Trips.Domain.Entities
@@ -21,5 +17,26 @@ namespace Modules.Trips.Domain.Entities
         public Point Location { get; set; } = default!;
         public Governorate Governorate { get; set; } = default!;
         public Category Category { get; set; } = default!;
+        public ICollection<PlaceTag> PlaceTags { get; set; } = [];
+        public static Place Create(
+            string title,
+            string description,
+            int categoryId,
+            int governorateId,
+            double longitude,
+            double latitude)
+        {
+            return new Place
+            {
+                Title = title,
+                Description = description,
+                CategoryId = categoryId,
+                GovernorateId = governorateId,
+                Location = new Point(longitude, latitude) { SRID = 4326 }
+            };
+        }
+
     }
+
+
 }

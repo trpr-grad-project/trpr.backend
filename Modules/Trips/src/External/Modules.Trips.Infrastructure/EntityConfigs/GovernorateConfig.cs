@@ -13,11 +13,5 @@ public class GovernorateConfig : IEntityTypeConfiguration<Governorate>
         builder.Property(g => g.Name)
             .IsRequired()
             .HasMaxLength(100);
-
-        builder.Property(g => g.Boundary)
-            .HasColumnType("geometry(MultiPolygon,3857)");
-
-        builder.HasIndex(g => g.Boundary)
-            .HasMethod("GIST");
     }
 }

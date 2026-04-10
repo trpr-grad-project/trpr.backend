@@ -34,7 +34,7 @@ public class PlaceConfig : IEntityTypeConfiguration<Place>
             .HasDefaultValue(0);
 
         builder.Property(p => p.Location)
-            .HasColumnType("geometry (Point, 3857)");
+            .HasColumnType("geography (Point, 4326)");
 
         builder.HasIndex(p => p.Location)
             .HasMethod("GIST");

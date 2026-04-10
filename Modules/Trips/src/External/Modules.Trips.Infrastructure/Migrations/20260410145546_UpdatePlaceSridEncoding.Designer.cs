@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Modules.Trips.Infrastructure.Data;
 using NetTopologySuite.Geometries;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Trips.Infrastructure.Migrations
 {
     [DbContext(typeof(TripsDbContext))]
-    partial class TripsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260410145546_UpdatePlaceSridEncoding")]
+    partial class UpdatePlaceSridEncoding
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -208,7 +211,7 @@ namespace Modules.Trips.Infrastructure.Migrations
 
                     b.Property<Point>("Location")
                         .IsRequired()
-                        .HasColumnType("geography (Point, 4326)")
+                        .HasColumnType("geometry (Point, 4326)")
                         .HasColumnName("location");
 
                     b.Property<string>("OsrmId")
@@ -405,23 +408,19 @@ namespace Modules.Trips.Infrastructure.Migrations
 
             modelBuilder.Entity("Modules.Trips.Domain.Entities.PlaceTag", b =>
                 {
-                    b.HasOne("Modules.Trips.Domain.Entities.Place", "Place")
-                        .WithMany("PlaceTags")
+                    b.HasOne("Modules.Trips.Domain.Entities.Place", null)
+                        .WithMany()
                         .HasForeignKey("PlaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_place_tags_places_place_id");
 
-                    b.HasOne("Modules.Trips.Domain.Entities.Tag", "Tag")
-                        .WithMany("PlaceTags")
+                    b.HasOne("Modules.Trips.Domain.Entities.Tag", null)
+                        .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_place_tags_tags_tag_id");
-
-                    b.Navigation("Place");
-
-                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("Modules.Trips.Domain.Entities.ThemeCategory", b =>
@@ -456,16 +455,6 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_theme_tags_themes_theme_id");
-                });
-
-            modelBuilder.Entity("Modules.Trips.Domain.Entities.Place", b =>
-                {
-                    b.Navigation("PlaceTags");
-                });
-
-            modelBuilder.Entity("Modules.Trips.Domain.Entities.Tag", b =>
-                {
-                    b.Navigation("PlaceTags");
                 });
 #pragma warning restore 612, 618
         }

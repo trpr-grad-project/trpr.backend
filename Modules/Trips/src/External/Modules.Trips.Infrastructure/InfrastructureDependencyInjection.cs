@@ -32,6 +32,7 @@ public static class InfrastructureDependencyInjection
         services.Configure<OutBoxOptions>(configuration.GetSection("Trips:OutBox"));
         services.Configure<InBoxOptions>(configuration.GetSection("Trips:InBox"));
         services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
+        services.AddScoped<RepositoryFactory>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<ITripsDbContext>(x => x.GetRequiredService<TripsDbContext>());
         services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<TripsDbContext>());
