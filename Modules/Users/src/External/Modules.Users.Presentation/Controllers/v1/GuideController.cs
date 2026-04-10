@@ -1,7 +1,10 @@
 using Common.Application.Buckets;
+using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Modules.Users.Application.Dtos.Requests;
+using Modules.Users.Application.Dtos.Responses;
+using Modules.Users.Application.Services;
 using Modules.Users.Domain.Entities;
 
 namespace Modules.Users.Presentation.Controllers.v1
@@ -12,8 +15,9 @@ namespace Modules.Users.Presentation.Controllers.v1
     }
     [ApiController]
     [Route("api/v1/guide")]
-    public class GuideController(IFileService fileService) : ControllerBase
+    public class GuideController(IFileService fileService, GuideService GuideService) : ControllerBase
     {
+        public Guid UserId => User.GetUserId();
         [HttpPost("upload-image")]
         public async Task<IActionResult> UploadImage([FromForm] UploadFileDto request)
         {
@@ -23,9 +27,10 @@ namespace Modules.Users.Presentation.Controllers.v1
         }
 
         [HttpPost("request")]
-        public Task<IActionResult> UpgradeRequest(GuideUpgradeRequestDto dto)
+        public async Task<ActionResult<GuideUpgradeResponseDto>> UpgradeRequest(GuideUpgradeRequestDto dto, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            ActionResult<GuideUpgradeResponseDto> request = await GuideService.UpgradeToGuide(UserId, dto, cancellationToken);
+            return Ok(request);
         }
     }
 }
