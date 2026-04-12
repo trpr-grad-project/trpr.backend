@@ -5,11 +5,11 @@ namespace Modules.Notifications.Application.Mappers;
 
 public static class UserMapper
 {
-    public static UserResponseDto ToResponseDto(this User user)
+    public static NotificationUserResponseDto ToResponseDto(this User user)
     {
         if (user == null) return null!;
 
-        return new UserResponseDto
+        return new NotificationUserResponseDto
         {
             Id = user.Id,
             UserName = user.UserName,

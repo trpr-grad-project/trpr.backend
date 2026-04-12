@@ -1,6 +1,6 @@
 namespace Modules.Notifications.Application.Dtos.Responses;
 
-public class UserResponseDto
+public class NotificationUserResponseDto
 {
     public Guid Id { get; set; }
     public string UserName { get; set; } = string.Empty;

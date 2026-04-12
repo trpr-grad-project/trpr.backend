@@ -9,7 +9,7 @@ public static class TemplateMapper
 {
     public static TemplateResponseDto ToResponseDto(this Template template)
     {
-        
+
         return new TemplateResponseDto()
         {
             Id = template.Id,
@@ -25,7 +25,7 @@ public static class TemplateMapper
                 .ToList(),
             ContentType = template.ContentType,
             TemplateType = template.TemplateType,
-            User = template.User?.ToResponseDto() ?? new UserResponseDto { Id = template.UserId }
+            User = template.User?.ToResponseDto() ?? new NotificationUserResponseDto { Id = template.UserId }
         };
     }
 }
