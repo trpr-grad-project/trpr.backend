@@ -1,5 +1,7 @@
 using Common.Application.Buckets;
+using Common.Application.Exceptions;
 using Common.Presentation.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Modules.Users.Application.Dtos.Requests;
@@ -26,11 +28,25 @@ namespace Modules.Users.Presentation.Controllers.v1
             return Ok(new { Path = imageUrl });
         }
 
-        [HttpPost("request")]
+        [HttpPost("upgrade-request")]
         public async Task<ActionResult<GuideUpgradeResponseDto>> UpgradeRequest(GuideUpgradeRequestDto dto, CancellationToken cancellationToken)
         {
+            var roles = User.GetRoles();
+            foreach(var role in roles)
+            {
+                if(role == "Guide")
+                {
+                    throw new NotAuthorizedException("User.AlreadyGuide", UserId);
+                }
+            }
             ActionResult<GuideUpgradeResponseDto> request = await GuideService.UpgradeToGuide(UserId, dto, cancellationToken);
             return Ok(request);
         }
+        //[Authorize(Roles = "Admin")]
+        //[HttpGet("requests")]
+        //public async Task<IActionResult> ViewUpgradeRequests(CancellationToken cancellationToken)
+        //{
+        //    var requests = await GuideService.AllUpgradeRequests(cancellationToken);
+        //}
     }
 }

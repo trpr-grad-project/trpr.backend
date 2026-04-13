@@ -27,11 +27,6 @@ namespace Modules.Users.Application.Services
         {
             var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(u => u.Id == userId)
                 ?? throw new NotFoundException("User.NotFound", userId);
-            var query = repositoryFactory.Repository<GuideUpgradeRequest>().GetQueryable();
-            query = query.Where(t => t.userId == userId && t.Status.Equals(ApproveStatus.Approved));
-            var result = await query.FirstOrDefaultAsync(cancellationToken);
-
-            if (result == null) throw new NotAuthorizedException("User.AlreadyGuide", userId);
             
             ICollection<Document> docs = [];
             foreach(var doc in request.Documents)
@@ -43,5 +38,18 @@ namespace Modules.Users.Application.Services
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return upgradeRequest.ToResponseDto(request.Documents);
         }
+        //public async Task<ActionResult> AllUpgradeRequests(CancellationToken cancellationToken)
+        //{
+        //    var query = repositoryFactory.Repository<GuideUpgradeRequest>().GetQueryable();
+            
+        //    var requests = query.Select(x => new
+        //    {
+        //        x.Id,
+        //        x.Subject,
+        //        x.Status,
+        //        UserResponseDto = x.user.ToResponseDto(),
+        //    });
+        //}
+
     }
 }

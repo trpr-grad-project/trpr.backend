@@ -9,7 +9,8 @@ namespace Modules.Users.Application.Dtos.Requests
 {
     public class GuideUpgradeRequestDto
     {
-        public Guid Id { get; set; }
-        public ICollection<DocumentDto> Documents { get; set; } = new List<DocumentDto>();
+        public string? Subject { get; set; }
+        public string Description { get; set; } = string.Empty;
+        public ICollection<DocumentDto> Documents { get; set; } = [];
     }
 }

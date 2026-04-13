@@ -12,6 +12,8 @@ public interface IEntity
 public abstract class Entity : IEntity
 {
     private readonly List<IDomainEvent> domainEvents = [];
+    public DateTime CreatedAtUTC { get; set; }
+    public DateTime UpdatedAtUTC { get; set; }
     public IReadOnlyCollection<IDomainEvent> DomainEvents => domainEvents.ToList();
     public void ClearDomainEvents()
     {

@@ -11,7 +11,7 @@ using Modules.Notifications.Application.Dtos.Requests;
 using Modules.Notifications.Application.Dtos.Responses;
 using Modules.Notifications.Application.Mappers;
 using Modules.Notifications.Domain.Entities;
-using Modules.Notifications.Domain.ValueObjects;
+
 
 namespace Modules.Notifications.Application.Services
 {   
@@ -41,7 +41,6 @@ namespace Modules.Notifications.Application.Services
                 ?? throw new NotFoundException("Template.NotFound", templateId);
             if (templateDto.Active == true && !template.Active)
             {
-                // checks if there are other active templates
                 var activeTemplate = await repositoryFactory.Repository<Template>()
                     .GetFirstOrDefaultByFilter(x =>
                         x.UserId == template.UserId &&
@@ -73,9 +72,6 @@ namespace Modules.Notifications.Application.Services
         public async Task<PaginationDto<TemplatePaginationResponseDto>> TemplatesPagination(PaginateRequestDto dto, Guid userId,string LangCode,CancellationToken cancellationToken = default)
         {
             var query = repositoryFactory.Repository<Template>().GetQueryable();
-            // using GetByExpWhere here makes it ineffecient
-            // as it returns a tolist which materializes the query 
-            // and makes the skip and take happen inmemory instead of them being a query in the database
             query = query.Where(t => t.UserId == userId);
             query = query.Where(t => t.TemplateLangs.Any(tl => tl.LangCode.Equals(LangCode)));
             if(dto.IsActive != null)

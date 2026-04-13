@@ -10,6 +10,5 @@ namespace Modules.Users.Domain.Entities
         public Guid GuideRequestId { get; set; }
         public DocumentType Type { get; set; }
         public string FileUrl { get; set; } = null!;
-        public DateTime UploadedAt { get; set; }
     }
 }
