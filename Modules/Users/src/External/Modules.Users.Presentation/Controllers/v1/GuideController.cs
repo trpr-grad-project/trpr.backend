@@ -1,4 +1,5 @@
 using Common.Application.Buckets;
+using Common.Application.Dtos;
 using Common.Application.Exceptions;
 using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -8,6 +9,7 @@ using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Dtos.Responses;
 using Modules.Users.Application.Services;
 using Modules.Users.Domain.Entities;
+using Modules.Users.Domain.ValueObjects;
 
 namespace Modules.Users.Presentation.Controllers.v1
 {
@@ -42,11 +44,12 @@ namespace Modules.Users.Presentation.Controllers.v1
             ActionResult<GuideUpgradeResponseDto> request = await GuideService.UpgradeToGuide(UserId, dto, cancellationToken);
             return Ok(request);
         }
-        //[Authorize(Roles = "Admin")]
-        //[HttpGet("requests")]
-        //public async Task<IActionResult> ViewUpgradeRequests(CancellationToken cancellationToken)
-        //{
-        //    var requests = await GuideService.AllUpgradeRequests(cancellationToken);
-        //}
+        [Authorize(Roles = "Admin")]
+        [HttpGet("requests")]
+        public async Task<ActionResult<PaginationDto<UpgradePaginationResponseDto>>> GetUpgradeRequests([FromQuery] UpgradePaginationRequestDto dto, CancellationToken cancellationToken)
+        {
+            var requests = await GuideService.AllUpgradeRequests(dto, cancellationToken);
+            return Ok(requests);
+        }
     }
 }

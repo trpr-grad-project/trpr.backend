@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Application;
+using Common.Application.Dtos;
 using Common.Application.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,25 +34,30 @@ namespace Modules.Users.Application.Services
             ICollection<Document> docs = [];
             foreach(var doc in request.Documents)
             {
-                docs.Append(await mapper.Map(doc));
+                docs.Add(await mapper.Map(doc));
             }
             GuideUpgradeRequest upgradeRequest = GuideUpgradeRequest.Create(userId, docs);
             repositoryFactory.Repository<GuideUpgradeRequest>().Add(upgradeRequest);
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return upgradeRequest.ToResponseDto(request.Documents);
         }
-        //public async Task<ActionResult> AllUpgradeRequests(CancellationToken cancellationToken)
-        //{
-        //    var query = repositoryFactory.Repository<GuideUpgradeRequest>().GetQueryable();
-            
-        //    var requests = query.Select(x => new
-        //    {
-        //        x.Id,
-        //        x.Subject,
-        //        x.Status,
-        //        UserResponseDto = x.user.ToResponseDto(),
-        //    });
-        //}
+        public async Task<PaginationDto<UpgradePaginationResponseDto>> AllUpgradeRequests(UpgradePaginationRequestDto dto,CancellationToken cancellationToken)
+        {
+            var query = repositoryFactory.Repository<GuideUpgradeRequest>().GetQueryable();
+            query = query.Where(x => x.Status == dto.status);
+            if(dto.sortByUpdatedate)
+                query = query.OrderByDescending(x => x.UpdatedAtUTC);
+            else 
+                query = query.OrderByDescending(x => x.CreatedAtUTC);
+            int TotalItems = await query.CountAsync();
 
+            List<UpgradePaginationResponseDto> items = await query.Include(x => x.user)
+                .Select(x => x.ToResponseDto())
+                .Skip((dto.Page - 1) * dto.PageSize)
+                .Take(dto.PageSize)
+                .ToListAsync(cancellationToken);
+            return PaginationDto<UpgradePaginationResponseDto>.Create(dto.Page, dto.PageSize, TotalItems, items);
+        } 
+        
     }
 }
