@@ -3,6 +3,7 @@
     <ProjectReference Include="..\Modules.Users.Domain\Modules.Users.Domain.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\Common.Application\Common.Application.csproj" />
     <ProjectReference Include="..\..\External\Modules.Users.Contracts\Modules.Users.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\..\Notifications\src\External\Modules.Notifications.Contracts\Modules.Notifications.Contracts.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>

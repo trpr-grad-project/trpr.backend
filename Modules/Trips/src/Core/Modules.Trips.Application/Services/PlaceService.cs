@@ -164,7 +164,6 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
 
         return place.ToPlaceDto();
     }
-
     public async Task<ICollection<PlaceDto>> GetPlacesAsync(GetPlacesQueryDto query, CancellationToken cancellationToken = default)
     {
         var queryable = repositoryFactory
@@ -192,6 +191,4 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
             .Select(x => x.ToPlaceDto())
             .ToListAsync(cancellationToken);
     }
-
-
 }
