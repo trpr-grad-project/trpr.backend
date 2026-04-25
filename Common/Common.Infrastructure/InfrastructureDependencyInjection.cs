@@ -17,7 +17,6 @@ public static class InfrastructureDependencyInjection
     IConfiguration configuration, params Assembly[] assemblies)
     {
         services.TryAddSingleton<IEventBus, EventBus.EventBus>();
-        services.AddSignalR();
         services.Configure<MinioSettings>(configuration.GetSection("Minio"));
         services.AddSingleton<IMinioClient>(sp =>
         {

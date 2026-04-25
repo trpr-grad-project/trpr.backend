@@ -13,6 +13,7 @@ public class ChatHub(RepositoryFactory repositoryFactory) : Hub
     public Guid UserId => Context.User!.GetUserId();
     public async override Task OnConnectedAsync()
     {
+        await Clients.All.SendAsync("UserConnected", $"user id : {UserId}");
         var conversations = (await repositoryFactory
             .Repository<ConversationParticipant>()
             .GetByExpWhereAsync(x => x.UserId == UserId))
@@ -23,6 +24,12 @@ public class ChatHub(RepositoryFactory repositoryFactory) : Hub
             await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
 
         await base.OnConnectedAsync();
+    }
+
+    public async override Task OnDisconnectedAsync(Exception? exception)
+    {
+        await Clients.All.SendAsync("UserDisconnected", $"user id : {UserId}");
+        await base.OnDisconnectedAsync(exception);
     }
 
     public Task Typing(Guid conversationId)

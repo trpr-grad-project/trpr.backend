@@ -12,6 +12,7 @@ using Modules.Conversations.Presentation.Hubs;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureSwagger();
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddConfigurations(builder.Configuration,
     "Users",
@@ -52,7 +53,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     await app.AddMigrations();
 }
-app.MapHub<ChatHub>("/hubs/chat");
+app.MapHub<ChatHub>("chat-hub");
 app.UseLocalization();
 app.AddMiddlewares();
 app.UseHttpLogging();
