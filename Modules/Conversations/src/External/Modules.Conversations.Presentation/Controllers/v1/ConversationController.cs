@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Modules.Conversations.Application.Dtos.Requests;
 using Modules.Conversations.Application.Interfaces;
+using Modules.Conversations.Application.Services;
+using Modules.Conversations.Domain.Entities;
 
 namespace Modules.Conversations.Presentation.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/conversation")]
-    public class ConversationController(IAiChatService aiChatService) : ControllerBase
+    public class ConversationController(IAiChatService aiChatService, ChatService chatService) : ControllerBase
     {
         public Guid UserId => User.GetUserId();
 
@@ -20,16 +22,38 @@ namespace Modules.Conversations.Presentation.Controllers.v1
             return Ok(result);
         }
         [HttpPost("direct")]
-        public Task<IActionResult> SendDirectMessage(SendDirectMessageRequestDto request)
+        public async Task<IActionResult> SendDirectMessage(SendMessageRequestDto request)
         {
-            // var result = await aiChatService.SendDirectMessageAsync(request);
-            // return Ok(result);
-            throw new NotImplementedException("Direct messaging is not implemented yet.");
+            await chatService.StartDirectMessage(UserId, request);
+            return Ok();
         }
-        [HttpPost("{Id}")]
-        public Task<IActionResult> SendMessageToConversation(Guid Id, string message)
+        [HttpPost("conversation")]
+        public async Task<IActionResult> SendMessageToConversation(SendMessageRequestDto request)
         {
-            throw new NotImplementedException("Sending messages to existing conversations is not implemented yet.");
+            await chatService.SendMessage(UserId, request);
+            return Ok();
         }
+
+        [HttpGet("{Id}/messages")]
+        public async Task<ActionResult<ICollection<Message>>> GetMessages([FromRoute] Guid Id, [FromQuery] Guid? LastMessageId, [FromQuery] DateTime? lastSentAt, [FromQuery] bool older = true)
+        {
+            var messages = await chatService.GetMessagesAsync(Id, LastMessageId, lastSentAt, older);
+            return Ok(messages);
+        }
+
+        [HttpPost("relay")]
+        public async Task<ActionResult<ICollection<Message>>> GetRelayMessage([FromBody] GetRelayMessageRequestDto request)
+        {
+            var messages = await chatService.GetRelayMessagesAsync(request.LastConversationsMessages);
+            return Ok(messages);
+        }
+
+        [HttpGet("")]
+        public async Task<ActionResult<ICollection<Conversation>>> GetUserConversations()
+        {
+            var conversations = await chatService.GetUserConversationsAsync(UserId);
+            return Ok(conversations);
+        }
+
     }
 }

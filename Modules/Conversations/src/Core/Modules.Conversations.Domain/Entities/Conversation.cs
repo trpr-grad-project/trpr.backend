@@ -12,5 +12,6 @@ namespace Modules.Conversations.Domain.Entities
         public Guid CreateByUserId { get; set; }
         public virtual User CreateByUser { get; set; } = default!;
         public Guid? LastMessageId { get; set; }
+        public virtual ICollection<ConversationParticipant> Participants { get; set; } = [];
     }
 }

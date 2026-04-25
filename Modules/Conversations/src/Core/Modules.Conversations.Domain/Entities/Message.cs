@@ -11,8 +11,8 @@ namespace Modules.Conversations.Domain.Entities
         public Guid? SenderUserId { get; set; }
         public virtual User? SenderUser { get; set; } = default!;
         public string Content { get; set; } = string.Empty;
-        public DateTime SentAtUtc { get; set; }
-        public MessageType Type { get; set; }
-        public DateTime CreatedAtUtc { get; set; }
+        public DateTime SentAtUtc { get; set; } = DateTime.UtcNow;
+        public MessageType Type { get; set; } = MessageType.Text;
+        public ICollection<MessageAttachment> Attachments { get; set; } = [];
     }
 }

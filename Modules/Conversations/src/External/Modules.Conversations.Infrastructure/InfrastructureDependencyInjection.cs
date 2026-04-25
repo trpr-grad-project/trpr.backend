@@ -42,6 +42,7 @@ public static class InfrastructureDependencyInjection
                 .UseSnakeCaseNamingConvention()
                 .AddInterceptors(sp.GetRequiredService<PublishOutboxMessagesInterceptor>());
         });
+        services.AddScoped<INotificationSender, NotificationSender>();
         services.AddScoped<PublishOutboxMessagesInterceptor>();
         services.Configure<OutBoxOptions>(configuration.GetSection("Conversations:OutBox"));
         services.Configure<InBoxOptions>(configuration.GetSection("Conversations:InBox"));

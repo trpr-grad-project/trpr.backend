@@ -7,6 +7,7 @@ using Common.Presentation;
 using Common.Infrastructure;
 using Modules.Trips.Infrastructure;
 using Modules.Conversations.Infrastructure;
+using Modules.Conversations.Presentation.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureSwagger();
@@ -51,6 +52,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     await app.AddMigrations();
 }
+app.MapHub<ChatHub>("/hubs/chat");
 app.UseLocalization();
 app.AddMiddlewares();
 app.UseHttpLogging();

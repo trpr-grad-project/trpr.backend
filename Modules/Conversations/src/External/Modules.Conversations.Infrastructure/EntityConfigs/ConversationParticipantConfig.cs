@@ -24,13 +24,13 @@ public class ConversationParticipantConfig : IEntityTypeConfiguration<Conversati
 
         builder
             .HasOne(cp => cp.Conversation)
-            .WithMany()
+            .WithMany(c => c.Participants)
             .HasForeignKey(cp => cp.ConversationId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasOne(cp => cp.User)
-            .WithMany()
+            .WithMany(u => u.ConversationParticipants)
             .HasForeignKey(cp => cp.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }

@@ -9,7 +9,7 @@ namespace Modules.Conversations.Domain.Entities
         public virtual Conversation Conversation { get; set; } = default!;
         public Guid UserId { get; set; }
         public virtual User User { get; set; } = default!;
-        public DateTime JoinedAtUtc { get; set; }
+        public DateTime JoinedAtUtc { get; set; } = DateTime.UtcNow;
         public bool IsAdmin { get; set; } = false;
         public bool IsArchived { get; set; } = false;
     }

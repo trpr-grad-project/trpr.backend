@@ -19,9 +19,6 @@ public class MessageConfig : IEntityTypeConfiguration<Message>
         builder.Property(m => m.SentAtUtc)
             .IsRequired();
 
-        builder.Property(m => m.CreatedAtUtc)
-            .IsRequired();
-
         builder.Property(m => m.Type)
             .IsRequired();
 

@@ -22,17 +22,17 @@ using Modules.Users.Domain.ValueObjects;
 namespace Modules.Users.Application.Services
 {
     public class GuideService(
-        RepositoryFactory repositoryFactory, 
-        IUnitOfWork unitOfWork, IMapper<DocumentDto, 
+        RepositoryFactory repositoryFactory,
+        IUnitOfWork unitOfWork, IMapper<DocumentDto,
         Task<Document>> mapper)
     {
         public async Task<ActionResult<GuideUpgradeResponseDto>> UpgradeToGuide(Guid userId, GuideUpgradeRequestDto request, CancellationToken cancellationToken)
         {
             var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(u => u.Id == userId)
                 ?? throw new NotFoundException("User.NotFound", userId);
-            
+
             ICollection<Document> docs = [];
-            foreach(var doc in request.Documents)
+            foreach (var doc in request.Documents)
             {
                 docs.Add(await mapper.Map(doc));
             }
@@ -41,15 +41,15 @@ namespace Modules.Users.Application.Services
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return upgradeRequest.ToResponseDto(request.Documents);
         }
-        public async Task<PaginationDto<UpgradePaginationResponseDto>> AllUpgradeRequests(UpgradePaginationRequestDto dto,CancellationToken cancellationToken)
+        public async Task<PaginationDto<UpgradePaginationResponseDto>> AllUpgradeRequests(UpgradePaginationRequestDto dto, CancellationToken cancellationToken)
         {
             var query = repositoryFactory.Repository<GuideUpgradeRequest>().GetQueryable();
             query = query.Where(x => x.Status == dto.status);
-            if(dto.sortByUpdatedate)
+            if (dto.sortByUpdatedate)
                 query = query.OrderByDescending(x => x.UpdatedAtUTC);
-            else 
+            else
                 query = query.OrderByDescending(x => x.CreatedAtUTC);
-            int TotalItems = await query.CountAsync();
+            int TotalItems = await query.CountAsync(cancellationToken);
 
             List<UpgradePaginationResponseDto> items = await query.Include(x => x.user)
                 .Select(x => x.ToResponseDto())
@@ -57,7 +57,7 @@ namespace Modules.Users.Application.Services
                 .Take(dto.PageSize)
                 .ToListAsync(cancellationToken);
             return PaginationDto<UpgradePaginationResponseDto>.Create(dto.Page, dto.PageSize, TotalItems, items);
-        } 
-        
+        }
+
     }
 }

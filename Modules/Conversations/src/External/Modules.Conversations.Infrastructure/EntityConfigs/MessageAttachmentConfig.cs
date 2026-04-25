@@ -20,7 +20,7 @@ public class MessageAttachmentConfig : IEntityTypeConfiguration<MessageAttachmen
 
         builder
             .HasOne(ma => ma.Message)
-            .WithMany()
+            .WithMany(m => m.Attachments)
             .HasForeignKey(ma => ma.MessageId)
             .OnDelete(DeleteBehavior.Cascade);
     }
