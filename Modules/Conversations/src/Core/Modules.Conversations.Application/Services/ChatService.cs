@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Modules.Conversations.Application.Abstractions;
@@ -168,4 +169,37 @@ public class ChatService(
         return conversations;
     }
 
+    // TODO : FINSIH LATER
+    public async Task<Dictionary<Conversation, ICollection<Message>>>
+    GetRelayAsync(Guid userId, FetchMissingMessagesRequestDto request, CancellationToken cancellationToken = default)
+    {
+        ICollection<Conversation> conversations = await repositoryFactory.Repository<ConversationParticipant>()
+            .GetQueryable()
+            .Where(x => x.UserId == userId)
+            .Include(x => x.Conversation)
+            .Select(x => x.Conversation)
+            .DistinctBy(x => x.Id)
+            .ToListAsync(cancellationToken);
+        Dictionary<Guid, Guid?> ConvLastMessageIds = request.Messages.ToDictionary(x => x.ConversationId, x => x.LastMessageId);
+        Dictionary<Conversation, ICollection<Message>> result = new();
+        foreach (Conversation conversation in conversations)
+        {
+            Guid? lastMessageId = ConvLastMessageIds.ContainsKey(conversation.Id) ? ConvLastMessageIds[conversation.Id] : null;
+            var messagesQuery = repositoryFactory.Repository<Message>()
+                .GetQueryable()
+                .Where(m => m.ConversationId == conversation.Id);
+
+            if (lastMessageId.HasValue)
+            {
+                messagesQuery = messagesQuery.Where(m => m.Id > lastMessageId.Value);
+            }
+
+            var messages = await messagesQuery
+                .OrderBy(m => m.SentAtUtc)
+                .ToListAsync(cancellationToken);
+
+            result[conversation] = messages;
+        }
+        return result;
+    }
 }
