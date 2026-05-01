@@ -12,19 +12,19 @@ namespace Api.Extensions
                 c.SwaggerDoc("v1", new() { Title = "My API", Version = "v1" });
 
                 // X-UserId header
-                c.AddSecurityDefinition("X-UserId", new OpenApiSecurityScheme
+                c.AddSecurityDefinition("X-User-Id", new OpenApiSecurityScheme
                 {
                     Description = "User Id header",
-                    Name = "X-UserId",
+                    Name = "X-User-Id",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey
                 });
 
                 // X-Roles header
-                c.AddSecurityDefinition("X-Roles", new OpenApiSecurityScheme
+                c.AddSecurityDefinition("X-User-Role", new OpenApiSecurityScheme
                 {
                     Description = "Comma separated roles (e.g. Admin,User)",
-                    Name = "X-Roles",
+                    Name = "X-User-Role",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey
                 });

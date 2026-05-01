@@ -3,6 +3,7 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace Common.Presentation.AuthenticationHandlers;
 
@@ -21,11 +22,12 @@ public class ForwardedClaimsAuthenticationHandler : AuthenticationHandler<Authen
         }
         var claims = new List<Claim>();
         claims.Add(new Claim(ClaimTypes.NameIdentifier, userIdValue.ToString()));
-        Request.Headers.TryGetValue("X-Roles", out var rolesValue);
+        Request.Headers.TryGetValue("X-User-Role", out var rolesValue);
         if (!string.IsNullOrEmpty(rolesValue))
         {
-            var roles = rolesValue.ToString().Split(',');
-            foreach (var role in roles)
+            string[] deserialized = JsonSerializer.Deserialize<string[]>(rolesValue.ToString()) ?? Array.Empty<string>();
+
+            foreach (var role in deserialized)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role.Trim()));
             }

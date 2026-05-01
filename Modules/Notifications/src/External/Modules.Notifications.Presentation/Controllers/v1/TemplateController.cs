@@ -15,7 +15,7 @@ using Modules.Notifications.Domain.Entities;
 
 namespace Modules.Notifications.Presentation.Controllers.v1
 {
-    [Authorize]
+    [Authorize("Admin")]
     [ApiController]
     [Route("api/v1/template")]
     public class TemplateController(TemplateService templateService) : ControllerBase
@@ -30,15 +30,15 @@ namespace Modules.Notifications.Presentation.Controllers.v1
         [HttpPut("{id}")]
         public async Task<ActionResult<TemplateResponseDto>> UpdateTemplate([FromRoute] Guid id, UpdateTemplateDto dto, CancellationToken cancellationToken)
         {
-            var Id = await templateService.UpdateTemplate(id, UserId,dto, cancellationToken);
+            var Id = await templateService.UpdateTemplate(id, UserId, dto, cancellationToken);
             return Ok(Id);
         }
 
-        
+
         [HttpGet]
-        public async Task<ActionResult<PaginationDto<TemplatePaginationResponseDto>>> GetPaginatedTemplates([FromQuery] PaginateRequestDto dto, [FromHeader (Name = "X-Language")] string LangCode, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<PaginationDto<TemplatePaginationResponseDto>>> GetPaginatedTemplates([FromQuery] PaginateRequestDto dto, [FromHeader(Name = "X-Language")] string LangCode, CancellationToken cancellationToken = default)
         {
-            var templatesList = await templateService.TemplatesPagination(dto, UserId, LangCode,cancellationToken);
+            var templatesList = await templateService.TemplatesPagination(dto, UserId, LangCode, cancellationToken);
             return Ok(templatesList);
         }
 
