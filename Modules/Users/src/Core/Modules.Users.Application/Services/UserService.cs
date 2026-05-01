@@ -64,7 +64,7 @@ IUnitOfWork unitOfWork)
     public async Task<LoginUserResponseDto> LoginUserAsync(LoginUserRequestDto loginUserRequestDto, CancellationToken cancellationToken = default)
     {
 
-        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == loginUserRequestDto.Identifier) ?? throw new NotFoundException("User.NotFound", loginUserRequestDto.Identifier);
+        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == loginUserRequestDto.Identifier && x.IsVerified) ?? throw new NotFoundException("User.NotFound", loginUserRequestDto.Identifier);
         var loginResponse = await identityProviderService.LoginUserAsync(
             loginUserRequestDto.Identifier,
             loginUserRequestDto.Password,
