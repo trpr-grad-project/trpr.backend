@@ -37,7 +37,7 @@ namespace Api.Extensions
                             Reference = new OpenApiReference
                             {
                                 Type = ReferenceType.SecurityScheme,
-                                Id = "X-UserId"
+                                Id = "X-User-Id"
                             }
                         },
                         Array.Empty<string>()
@@ -48,7 +48,7 @@ namespace Api.Extensions
                             Reference = new OpenApiReference
                             {
                                 Type = ReferenceType.SecurityScheme,
-                                Id = "X-Roles"
+                                Id = "X-User-Role"
                             }
                         },
                         Array.Empty<string>()

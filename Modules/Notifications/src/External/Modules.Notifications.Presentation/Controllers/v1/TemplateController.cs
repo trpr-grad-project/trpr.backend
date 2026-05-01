@@ -15,7 +15,7 @@ using Modules.Notifications.Domain.Entities;
 
 namespace Modules.Notifications.Presentation.Controllers.v1
 {
-    [Authorize("Admin")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/v1/template")]
     public class TemplateController(TemplateService templateService) : ControllerBase
