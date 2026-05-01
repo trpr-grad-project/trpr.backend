@@ -58,6 +58,11 @@ namespace Modules.Users.Presentation.Controllers.v1
             await userService.UpdatePassword(UserId, request);
             return NoContent();
         }
+        /// <summary>
+        /// Get profile form data for dropdowns and selections (languages, interests, vibes)
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpGet("form-data")]
         public async Task<ActionResult<ProfileLookupResponseDto>> GetProfileFormData(CancellationToken cancellationToken)
