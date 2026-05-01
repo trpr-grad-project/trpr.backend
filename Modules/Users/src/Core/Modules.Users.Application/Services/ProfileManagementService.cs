@@ -157,26 +157,24 @@ public class ProfileManagementService(
 
     public async Task<ProfileLookupResponseDto> GetProfileMetaDataAsync(CancellationToken cancellationToken = default)
     {
-        var vibesTask = context.Vibes
+        var vibesTask = await context.Vibes
             .AsNoTracking()
             .Select(v => v.ToVibeResponseDto())
             .ToListAsync(cancellationToken);
-        var interestsTask = context.Interests
+        var interestsTask = await context.Interests
             .AsNoTracking()
             .Select(i => i.ToInterestResponseDto())
             .ToListAsync(cancellationToken);
-        var languagesTask = context.Languages
+        var languagesTask = await context.Languages
             .AsNoTracking()
             .Select(l => l.ToLanguageResponseDto())
             .ToListAsync(cancellationToken);
 
-        await Task.WhenAll(vibesTask, interestsTask, languagesTask);
-
         return new ProfileLookupResponseDto
         {
-            Vibes = await vibesTask,
-            Interests = await interestsTask,
-            Languages = await languagesTask
+            Vibes = vibesTask,
+            Interests = interestsTask,
+            Languages = languagesTask
         };
     }
 }
