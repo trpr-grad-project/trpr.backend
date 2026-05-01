@@ -14,10 +14,10 @@ public class ForwardedClaimsAuthenticationHandler : AuthenticationHandler<Authen
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        Request.Headers.TryGetValue("X-UserId", out var userIdValue);
-        if(string.IsNullOrEmpty(userIdValue))
+        Request.Headers.TryGetValue("X-User-Id", out var userIdValue);
+        if (string.IsNullOrEmpty(userIdValue))
         {
-            return Task.FromResult(AuthenticateResult.Fail("X-UserId header is missing"));
+            return Task.FromResult(AuthenticateResult.Fail("X-User-Id header is missing"));
         }
         var claims = new List<Claim>();
         claims.Add(new Claim(ClaimTypes.NameIdentifier, userIdValue.ToString()));

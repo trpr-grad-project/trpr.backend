@@ -1,6 +1,8 @@
+using System.Text.Json;
 using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Dtos.Responses;
 using Modules.Users.Application.Services;
@@ -10,7 +12,7 @@ namespace Modules.Users.Presentation.Controllers.v1
     [ApiController]
     [Authorize]
     [Route("api/v1/[controller]")]
-    public class ProfileController(ProfileManagementService profileManagementService, UserService userService) : ControllerBase
+    public class ProfileController(ProfileManagementService profileManagementService, UserService userService, ILogger<ProfileController> logger) : ControllerBase
     {
         public Guid UserId => User.GetUserId();
         /// <summary>
@@ -63,10 +65,10 @@ namespace Modules.Users.Presentation.Controllers.v1
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [Authorize]
         [HttpGet("form-data")]
         public async Task<ActionResult<ProfileLookupResponseDto>> GetProfileFormData(CancellationToken cancellationToken)
         {
+            logger.LogInformation("log headers {0}", JsonSerializer.Serialize(Request.Headers));
             var formData = await profileManagementService.GetProfileMetaDataAsync(cancellationToken);
             return Ok(formData);
         }
