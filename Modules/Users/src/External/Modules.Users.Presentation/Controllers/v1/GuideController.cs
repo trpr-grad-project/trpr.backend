@@ -3,20 +3,13 @@ using Common.Application.Dtos;
 using Common.Application.Exceptions;
 using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Dtos.Responses;
 using Modules.Users.Application.Services;
-using Modules.Users.Domain.Entities;
-using Modules.Users.Domain.ValueObjects;
 
 namespace Modules.Users.Presentation.Controllers.v1
 {
-    public class UploadFileDto
-    {
-        public IFormFile File { get; set; } = default!;
-    }
     [ApiController]
     [Route("api/v1/guide")]
     public class GuideController(IFileService fileService, GuideService GuideService) : ControllerBase
@@ -30,13 +23,14 @@ namespace Modules.Users.Presentation.Controllers.v1
             return Ok(new { Path = imageUrl });
         }
 
+        [Authorize]
         [HttpPost("upgrade-request")]
         public async Task<ActionResult<GuideUpgradeResponseDto>> UpgradeRequest(GuideUpgradeRequestDto dto, CancellationToken cancellationToken)
         {
             var roles = User.GetRoles();
-            foreach(var role in roles)
+            foreach (var role in roles)
             {
-                if(role == "Guide")
+                if (role == "Guide")
                 {
                     throw new NotAuthorizedException("User.AlreadyGuide", UserId);
                 }
