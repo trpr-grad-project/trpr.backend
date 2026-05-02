@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Conversations.Infrastructure.Migrations
 {
     [DbContext(typeof(ConversationsDbContext))]
-    [Migration("20260425161309_UpdateConversationEntity")]
-    partial class UpdateConversationEntity
+    [Migration("20260502122822_IntialCreate")]
+    partial class IntialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -248,10 +248,6 @@ namespace Modules.Conversations.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("conversation_id");
 
-                    b.Property<Guid?>("ConversationId1")
-                        .HasColumnType("uuid")
-                        .HasColumnName("conversation_id1");
-
                     b.Property<bool>("IsAdmin")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -277,9 +273,6 @@ namespace Modules.Conversations.Infrastructure.Migrations
 
                     b.HasIndex("ConversationId")
                         .HasDatabaseName("ix_conversation_participants_conversation_id");
-
-                    b.HasIndex("ConversationId1")
-                        .HasDatabaseName("ix_conversation_participants_conversation_id1");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_conversation_participants_user_id");
@@ -444,19 +437,14 @@ namespace Modules.Conversations.Infrastructure.Migrations
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.ConversationParticipant", b =>
                 {
                     b.HasOne("Modules.Conversations.Domain.Entities.Conversation", "Conversation")
-                        .WithMany()
+                        .WithMany("Participants")
                         .HasForeignKey("ConversationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_conversation_participants_conversations_conversation_id");
 
-                    b.HasOne("Modules.Conversations.Domain.Entities.Conversation", null)
-                        .WithMany("Participants")
-                        .HasForeignKey("ConversationId1")
-                        .HasConstraintName("fk_conversation_participants_conversations_conversation_id1");
-
                     b.HasOne("Modules.Conversations.Domain.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("ConversationParticipants")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -517,6 +505,11 @@ namespace Modules.Conversations.Infrastructure.Migrations
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.Message", b =>
                 {
                     b.Navigation("Attachments");
+                });
+
+            modelBuilder.Entity("Modules.Conversations.Domain.Entities.User", b =>
+                {
+                    b.Navigation("ConversationParticipants");
                 });
 #pragma warning restore 612, 618
         }

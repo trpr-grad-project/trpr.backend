@@ -209,8 +209,7 @@ namespace Modules.Conversations.Infrastructure.Migrations
                     sender_user_id = table.Column<Guid>(type: "uuid", nullable: true),
                     content = table.Column<string>(type: "text", nullable: false),
                     sent_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    type = table.Column<int>(type: "integer", nullable: false),
-                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    type = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

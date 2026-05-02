@@ -46,7 +46,6 @@ public static class ProfileMapper
             Thumbnail = vibe.Thumbnail,
             Description = vibe.Description,
             Name = vibe.Name,
-            IsActive = vibe.IsActive
         };
     }
 

@@ -92,7 +92,7 @@ public class ProfileManagementService(
         return await GetProfileByUserIdAsync(userId, cancellationToken);
     }
 
-    private static void UpdateProfileLanguages(Profile profile, List<Guid>? languageIds)
+    private static void UpdateProfileLanguages(Profile profile, List<int>? languageIds)
     {
         if (languageIds != null)
         {
@@ -104,7 +104,7 @@ public class ProfileManagementService(
         }
     }
 
-    private static void UpdateProfileInterests(Profile profile, List<Guid>? interestIds)
+    private static void UpdateProfileInterests(Profile profile, List<int>? interestIds)
     {
         if (interestIds != null)
         {
@@ -116,7 +116,7 @@ public class ProfileManagementService(
         }
     }
 
-    private static void UpdateProfileVibes(Profile profile, List<Guid>? vibeIds)
+    private static void UpdateProfileVibes(Profile profile, List<int>? vibeIds)
     {
         if (vibeIds != null)
         {

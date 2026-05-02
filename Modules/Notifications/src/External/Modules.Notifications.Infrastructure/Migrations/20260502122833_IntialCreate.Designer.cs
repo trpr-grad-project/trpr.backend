@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Notifications.Infrastructure.Migrations
 {
     [DbContext(typeof(NotificationsDbContext))]
-    [Migration("20260308125017_AddRowVersionToTemplate")]
-    partial class AddRowVersionToTemplate
+    [Migration("20260502122833_IntialCreate")]
+    partial class IntialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -138,6 +138,55 @@ namespace Modules.Notifications.Infrastructure.Migrations
                     b.ToTable("outbox_messages", "ntf");
                 });
 
+            modelBuilder.Entity("Modules.Notifications.Domain.Entities.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("ContentType")
+                        .HasColumnType("integer")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("message");
+
+                    b.Property<bool>("NotifyEmail")
+                        .HasColumnType("boolean")
+                        .HasColumnName("notify_email");
+
+                    b.Property<bool>("NotifyPhone")
+                        .HasColumnType("boolean")
+                        .HasColumnName("notify_phone");
+
+                    b.Property<bool>("NotifySystem")
+                        .HasColumnType("boolean")
+                        .HasColumnName("notify_system");
+
+                    b.Property<DateTime>("UpdatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_notifications");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_notifications_user_id");
+
+                    b.ToTable("notifications", "ntf");
+                });
+
             modelBuilder.Entity("Modules.Notifications.Domain.Entities.Template", b =>
                 {
                     b.Property<Guid>("Id")
@@ -216,9 +265,9 @@ namespace Modules.Notifications.Infrastructure.Migrations
                         .HasColumnName("updated_at_utc");
 
                     b.HasKey("TemplateId", "LangCode")
-                        .HasName("pk_template_lang");
+                        .HasName("pk_template_langs");
 
-                    b.ToTable("template_lang", "ntf");
+                    b.ToTable("template_langs", "ntf");
                 });
 
             modelBuilder.Entity("Modules.Notifications.Domain.Entities.User", b =>
@@ -227,6 +276,10 @@ namespace Modules.Notifications.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
 
                     b.Property<string>("Email")
                         .HasColumnType("text")
@@ -246,6 +299,10 @@ namespace Modules.Notifications.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("phone_number");
 
+                    b.Property<DateTime>("UpdatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("text")
@@ -255,6 +312,18 @@ namespace Modules.Notifications.Infrastructure.Migrations
                         .HasName("pk_users");
 
                     b.ToTable("users", "ntf");
+                });
+
+            modelBuilder.Entity("Modules.Notifications.Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("Modules.Notifications.Domain.Entities.User", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_notifications_users_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Modules.Notifications.Domain.Entities.Template", b =>
@@ -276,7 +345,7 @@ namespace Modules.Notifications.Infrastructure.Migrations
                         .HasForeignKey("TemplateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_template_lang_templates_template_id");
+                        .HasConstraintName("fk_template_langs_templates_template_id");
 
                     b.Navigation("Template");
                 });
@@ -288,6 +357,8 @@ namespace Modules.Notifications.Infrastructure.Migrations
 
             modelBuilder.Entity("Modules.Notifications.Domain.Entities.User", b =>
                 {
+                    b.Navigation("Notifications");
+
                     b.Navigation("Templates");
                 });
 #pragma warning restore 612, 618

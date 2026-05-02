@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -7,11 +8,14 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Trips.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddPostGis : Migration
+    public partial class IntialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "trp");
+
             migrationBuilder.AlterDatabase()
                 .Annotation("Npgsql:PostgresExtension:postgis", ",,");
 
@@ -36,12 +40,73 @@ namespace Modules.Trips.Infrastructure.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    boundary = table.Column<Polygon>(type: "geometry(Polygon,4326)", nullable: false)
+                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_governorates", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "inbox_consumer_messages",
+                schema: "trp",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    handler_name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_inbox_consumer_messages", x => new { x.id, x.handler_name });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "inbox_messages",
+                schema: "trp",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    correlation_id = table.Column<string>(type: "text", nullable: false),
+                    type = table.Column<string>(type: "text", nullable: false),
+                    content = table.Column<string>(type: "text", nullable: false),
+                    occurred_on_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    processed_on_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    error = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_inbox_messages", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "outbox_consumer_messages",
+                schema: "trp",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    handler_name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_outbox_consumer_messages", x => new { x.id, x.handler_name });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "outbox_messages",
+                schema: "trp",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    correlation_id = table.Column<string>(type: "text", nullable: false),
+                    type = table.Column<string>(type: "text", nullable: false),
+                    content = table.Column<string>(type: "text", nullable: false),
+                    occurred_on_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    processed_on_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    error = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_outbox_messages", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -83,11 +148,12 @@ namespace Modules.Trips.Infrastructure.Migrations
                     description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
                     rating = table.Column<double>(type: "double precision", nullable: true),
                     average_visit_time = table.Column<double>(type: "double precision", nullable: true),
+                    osrm_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     visit_count = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     rate_count = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     category_id = table.Column<int>(type: "integer", nullable: false),
                     governorate_id = table.Column<int>(type: "integer", nullable: false),
-                    location = table.Column<Point>(type: "geometry (Point, 3857)", nullable: false)
+                    location = table.Column<Point>(type: "geography (Point, 4326)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -196,13 +262,6 @@ namespace Modules.Trips.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_governorates_boundary",
-                schema: "trp",
-                table: "governorates",
-                column: "boundary")
-                .Annotation("Npgsql:IndexMethod", "GIST");
-
-            migrationBuilder.CreateIndex(
                 name: "ix_place_tags_tag_id",
                 schema: "trp",
                 table: "place_tags",
@@ -256,6 +315,22 @@ namespace Modules.Trips.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "inbox_consumer_messages",
+                schema: "trp");
+
+            migrationBuilder.DropTable(
+                name: "inbox_messages",
+                schema: "trp");
+
+            migrationBuilder.DropTable(
+                name: "outbox_consumer_messages",
+                schema: "trp");
+
+            migrationBuilder.DropTable(
+                name: "outbox_messages",
+                schema: "trp");
+
+            migrationBuilder.DropTable(
                 name: "place_tags",
                 schema: "trp");
 
@@ -286,9 +361,6 @@ namespace Modules.Trips.Infrastructure.Migrations
             migrationBuilder.DropTable(
                 name: "governorates",
                 schema: "trp");
-
-            migrationBuilder.AlterDatabase()
-                .OldAnnotation("Npgsql:PostgresExtension:postgis", ",,");
         }
     }
 }

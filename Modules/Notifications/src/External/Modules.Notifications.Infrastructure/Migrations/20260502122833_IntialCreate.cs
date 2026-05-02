@@ -86,11 +86,40 @@ namespace Modules.Notifications.Infrastructure.Migrations
                     first_name = table.Column<string>(type: "text", nullable: false),
                     last_name = table.Column<string>(type: "text", nullable: false),
                     email = table.Column<string>(type: "text", nullable: true),
-                    phone_number = table.Column<string>(type: "text", nullable: true)
+                    phone_number = table.Column<string>(type: "text", nullable: true),
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_users", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "notifications",
+                schema: "ntf",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    message = table.Column<string>(type: "text", nullable: false),
+                    content_type = table.Column<int>(type: "integer", nullable: false),
+                    notify_email = table.Column<bool>(type: "boolean", nullable: false),
+                    notify_phone = table.Column<bool>(type: "boolean", nullable: false),
+                    notify_system = table.Column<bool>(type: "boolean", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_notifications", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_notifications_users_user_id",
+                        column: x => x.user_id,
+                        principalSchema: "ntf",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -102,6 +131,8 @@ namespace Modules.Notifications.Infrastructure.Migrations
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     active = table.Column<bool>(type: "boolean", nullable: false),
                     content_type = table.Column<int>(type: "integer", nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true),
+                    template_type = table.Column<int>(type: "integer", nullable: false),
                     created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -118,7 +149,7 @@ namespace Modules.Notifications.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "template_lang",
+                name: "template_langs",
                 schema: "ntf",
                 columns: table => new
                 {
@@ -131,15 +162,21 @@ namespace Modules.Notifications.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_template_lang", x => new { x.template_id, x.lang_code });
+                    table.PrimaryKey("pk_template_langs", x => new { x.template_id, x.lang_code });
                     table.ForeignKey(
-                        name: "fk_template_lang_templates_template_id",
+                        name: "fk_template_langs_templates_template_id",
                         column: x => x.template_id,
                         principalSchema: "ntf",
                         principalTable: "templates",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_notifications_user_id",
+                schema: "ntf",
+                table: "notifications",
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_templates_active",
@@ -166,6 +203,10 @@ namespace Modules.Notifications.Infrastructure.Migrations
                 schema: "ntf");
 
             migrationBuilder.DropTable(
+                name: "notifications",
+                schema: "ntf");
+
+            migrationBuilder.DropTable(
                 name: "outbox_consumer_messages",
                 schema: "ntf");
 
@@ -174,7 +215,7 @@ namespace Modules.Notifications.Infrastructure.Migrations
                 schema: "ntf");
 
             migrationBuilder.DropTable(
-                name: "template_lang",
+                name: "template_langs",
                 schema: "ntf");
 
             migrationBuilder.DropTable(

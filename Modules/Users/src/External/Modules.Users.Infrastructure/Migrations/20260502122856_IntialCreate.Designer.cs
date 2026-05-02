@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Users.Infrastructure.Migrations
 {
     [DbContext(typeof(UsersDbContext))]
-    [Migration("20260227175009_IntialCreate")]
+    [Migration("20260502122856_IntialCreate")]
     partial class IntialCreate
     {
         /// <inheritdoc />
@@ -138,12 +138,106 @@ namespace Modules.Users.Infrastructure.Migrations
                     b.ToTable("outbox_messages", "usr");
                 });
 
-            modelBuilder.Entity("Modules.Users.Domain.Entities.Interest", b =>
+            modelBuilder.Entity("Modules.Users.Domain.Entities.Document", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<string>("FileUrl")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("file_url");
+
+                    b.Property<Guid>("GuideRequestId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("guide_request_id");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
+
+                    b.Property<DateTime>("UpdatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
+                    b.HasKey("Id")
+                        .HasName("pk_document");
+
+                    b.HasIndex("GuideRequestId")
+                        .HasDatabaseName("ix_document_guide_request_id");
+
+                    b.ToTable("document", "usr");
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.GuideUpgradeRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("rejection_reason");
+
+                    b.Property<DateTime?>("ReviewedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("reviewed_at_utc");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("text")
+                        .HasColumnName("subject");
+
+                    b.Property<DateTime>("UpdatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
+                    b.Property<int?>("adminId")
+                        .HasColumnType("integer")
+                        .HasColumnName("admin_id");
+
+                    b.Property<Guid>("userId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_guide_upgrade_request");
+
+                    b.HasIndex("userId")
+                        .HasDatabaseName("ix_guide_upgrade_request_user_id");
+
+                    b.ToTable("guide_upgrade_request", "usr");
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.Interest", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
 
                     b.Property<string>("Icon")
                         .IsRequired()
@@ -155,23 +249,88 @@ namespace Modules.Users.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
+                    b.Property<DateTime>("UpdatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
                     b.HasKey("Id")
                         .HasName("pk_interests");
 
                     b.ToTable("interests", "usr");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/interests/history.png",
+                            Name = "History",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/interests/adventure.png",
+                            Name = "Adventure",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/interests/nature.png",
+                            Name = "Nature",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/interests/culture.png",
+                            Name = "Culture",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/interests/foodie.png",
+                            Name = "Foodie",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/interests/wellness.png",
+                            Name = "Wellness",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/interests/romantic.png",
+                            Name = "Romantic",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Language", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
 
                     b.Property<string>("Icon")
                         .IsRequired()
@@ -188,10 +347,116 @@ namespace Modules.Users.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("native_name");
 
+                    b.Property<DateTime>("UpdatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
                     b.HasKey("Id")
                         .HasName("pk_languages");
 
                     b.ToTable("languages", "usr");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "en",
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/languages/english.png",
+                            Name = "English",
+                            NativeName = "English",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "es",
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/languages/spanish.png",
+                            Name = "Spanish",
+                            NativeName = "Español",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "fr",
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/languages/french.png",
+                            Name = "French",
+                            NativeName = "Français",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Code = "de",
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/languages/german.png",
+                            Name = "German",
+                            NativeName = "Deutsch",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Code = "zh",
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/languages/chinese.png",
+                            Name = "Chinese",
+                            NativeName = "中文",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Code = "ja",
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/languages/japanese.png",
+                            Name = "Japanese",
+                            NativeName = "日本語",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Code = "ko",
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/languages/korean.png",
+                            Name = "Korean",
+                            NativeName = "한국어",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Code = "pt",
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/languages/portuguese.png",
+                            Name = "Portuguese",
+                            NativeName = "Português",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Code = "ru",
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/languages/russian.png",
+                            Name = "Russian",
+                            NativeName = "Русский",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Code = "ar",
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Icon = "@/assets/languages/arabic.png",
+                            Name = "Arabic",
+                            NativeName = "العربية",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Profile", b =>
@@ -210,6 +475,10 @@ namespace Modules.Users.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("bio");
 
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
                     b.Property<string>("Email")
                         .HasColumnType("text")
                         .HasColumnName("email");
@@ -217,6 +486,10 @@ namespace Modules.Users.Infrastructure.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text")
                         .HasColumnName("phone_number");
+
+                    b.Property<DateTime>("UpdatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
 
                     b.HasKey("Id")
                         .HasName("pk_profiles");
@@ -230,8 +503,8 @@ namespace Modules.Users.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("profile_id");
 
-                    b.Property<Guid>("InterestId")
-                        .HasColumnType("uuid")
+                    b.Property<int>("InterestId")
+                        .HasColumnType("integer")
                         .HasColumnName("interest_id");
 
                     b.HasKey("ProfileId", "InterestId")
@@ -249,8 +522,8 @@ namespace Modules.Users.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("profile_id");
 
-                    b.Property<Guid>("LanguageId")
-                        .HasColumnType("uuid")
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("integer")
                         .HasColumnName("language_id");
 
                     b.HasKey("ProfileId", "LanguageId")
@@ -268,8 +541,8 @@ namespace Modules.Users.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("profile_id");
 
-                    b.Property<Guid>("VibeId")
-                        .HasColumnType("uuid")
+                    b.Property<int>("VibeId")
+                        .HasColumnType("integer")
                         .HasColumnName("vibe_id");
 
                     b.HasKey("ProfileId", "VibeId")
@@ -288,6 +561,10 @@ namespace Modules.Users.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
                     b.Property<DateTime>("Expiration")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("expiration");
@@ -299,6 +576,10 @@ namespace Modules.Users.Infrastructure.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("integer")
                         .HasColumnName("type");
+
+                    b.Property<DateTime>("UpdatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
@@ -325,6 +606,10 @@ namespace Modules.Users.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -353,6 +638,10 @@ namespace Modules.Users.Infrastructure.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("two_factor_enabled");
 
+                    b.Property<DateTime>("UpdatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -375,19 +664,18 @@ namespace Modules.Users.Infrastructure.Migrations
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Vibe", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("description");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -399,10 +687,74 @@ namespace Modules.Users.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("thumbnail");
 
+                    b.Property<DateTime>("UpdatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
                     b.HasKey("Id")
                         .HasName("pk_vibes");
 
                     b.ToTable("vibes", "usr");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Self Discovery and Personal Growth.",
+                            Name = "Solo",
+                            Thumbnail = "@/assets/vibes/solo.png",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Night out with friends and socializing.",
+                            Name = "Friends",
+                            Thumbnail = "@/assets/vibes/friends.png",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Intimate and romantic setting.",
+                            Name = "Romantic",
+                            Thumbnail = "@/assets/vibes/romantic.png",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Kid friendly and family-oriented atmosphere.",
+                            Name = "Family",
+                            Thumbnail = "@/assets/vibes/family.png",
+                            UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.Document", b =>
+                {
+                    b.HasOne("Modules.Users.Domain.Entities.GuideUpgradeRequest", null)
+                        .WithMany("Documents")
+                        .HasForeignKey("GuideRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_document_guide_upgrade_request_guide_request_id");
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.GuideUpgradeRequest", b =>
+                {
+                    b.HasOne("Modules.Users.Domain.Entities.User", "user")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_guide_upgrade_request_users_user_id");
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Profile", b =>
@@ -490,6 +842,11 @@ namespace Modules.Users.Infrastructure.Migrations
                         .HasConstraintName("fk_tokens_users_user_id");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.GuideUpgradeRequest", b =>
+                {
+                    b.Navigation("Documents");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Profile", b =>

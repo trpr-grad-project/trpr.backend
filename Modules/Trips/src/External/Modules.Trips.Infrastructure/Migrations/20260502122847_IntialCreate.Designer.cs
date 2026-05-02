@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Trips.Infrastructure.Migrations
 {
     [DbContext(typeof(TripsDbContext))]
-    [Migration("20260315025627_AddOsrmIdToPlace")]
-    partial class AddOsrmIdToPlace
+    [Migration("20260502122847_IntialCreate")]
+    partial class IntialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -170,11 +170,6 @@ namespace Modules.Trips.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<MultiPolygon>("Boundary")
-                        .IsRequired()
-                        .HasColumnType("geometry(MultiPolygon,3857)")
-                        .HasColumnName("boundary");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -183,11 +178,6 @@ namespace Modules.Trips.Infrastructure.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_governorates");
-
-                    b.HasIndex("Boundary")
-                        .HasDatabaseName("ix_governorates_boundary");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Boundary"), "GIST");
 
                     b.ToTable("governorates", "trp");
                 });
@@ -221,7 +211,7 @@ namespace Modules.Trips.Infrastructure.Migrations
 
                     b.Property<Point>("Location")
                         .IsRequired()
-                        .HasColumnType("geometry (Point, 3857)")
+                        .HasColumnType("geography (Point, 4326)")
                         .HasColumnName("location");
 
                     b.Property<string>("OsrmId")
@@ -418,19 +408,23 @@ namespace Modules.Trips.Infrastructure.Migrations
 
             modelBuilder.Entity("Modules.Trips.Domain.Entities.PlaceTag", b =>
                 {
-                    b.HasOne("Modules.Trips.Domain.Entities.Place", null)
-                        .WithMany()
+                    b.HasOne("Modules.Trips.Domain.Entities.Place", "Place")
+                        .WithMany("PlaceTags")
                         .HasForeignKey("PlaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_place_tags_places_place_id");
 
-                    b.HasOne("Modules.Trips.Domain.Entities.Tag", null)
-                        .WithMany()
+                    b.HasOne("Modules.Trips.Domain.Entities.Tag", "Tag")
+                        .WithMany("PlaceTags")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_place_tags_tags_tag_id");
+
+                    b.Navigation("Place");
+
+                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("Modules.Trips.Domain.Entities.ThemeCategory", b =>
@@ -465,6 +459,16 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_theme_tags_themes_theme_id");
+                });
+
+            modelBuilder.Entity("Modules.Trips.Domain.Entities.Place", b =>
+                {
+                    b.Navigation("PlaceTags");
+                });
+
+            modelBuilder.Entity("Modules.Trips.Domain.Entities.Tag", b =>
+                {
+                    b.Navigation("PlaceTags");
                 });
 #pragma warning restore 612, 618
         }
