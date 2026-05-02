@@ -7,15 +7,15 @@ namespace Modules.Notifications.Domain.Entities;
 public class Template : Entity
 {
     public Guid Id { get; set; }
-    public Guid UserId { get; set; }
+    public Guid? UserId { get; set; }
     public bool Active { get; set; }
     public ContentType ContentType { get; set; } = ContentType.Pure;
-    public virtual User User { get; set; } = default!;
+    public virtual User? User { get; set; }
     [Timestamp]
     public byte[]? RowVersion { get; set; }
     public TemplateType TemplateType { get; set; }
     public virtual List<TemplateLang> TemplateLangs { get; set; } = [];
-    public static Template Create(ContentType contentType, TemplateType templateType,User user, IDictionary<string, string> Contents, IDictionary<string, string> Titles)
+    public static Template Create(ContentType contentType, TemplateType templateType, User user, IDictionary<string, string> Contents, IDictionary<string, string> Titles)
     {
         var template = new Template
         {
@@ -50,7 +50,7 @@ public class Template : Entity
     IDictionary<string, string>? titles,
     bool? active)
     {
-        if (active == true)  
+        if (active == true)
             Active = true;
 
         if (contentType.HasValue)

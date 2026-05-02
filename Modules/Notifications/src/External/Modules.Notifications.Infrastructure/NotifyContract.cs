@@ -1,5 +1,6 @@
 using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Modules.Notifications.Application.Abstractions;
 using Modules.Notifications.Contracts.Contracts;
 using Modules.Notifications.Contracts.Dtos;
@@ -9,6 +10,7 @@ using Modules.Notifications.Domain.ValueObjects;
 namespace Modules.Notifications.Infrastructure;
 
 public class NotifyContract(
+    ILogger<NotifyContract> logger,
     RepositoryFactory repositoryFactory,
     IUnitOfWork unitOfWork) : INotifiyContract
 {
@@ -30,9 +32,37 @@ public class NotifyContract(
             repositoryFactory.Repository<User>().GetQueryable()
             .Where(x => request.ToUserIds.Contains(x.Id))
             .ToList();
+        await NotifyUsers(request, users, template.ContentType, templateLange.Content, cancellationToken);
+        NotifyEmails(request, templateLange.Content, cancellationToken);
+        NotifyPhones(request, templateLange.Content, cancellationToken);
+    }
+    private void NotifyPhones(SystemNotifyRequestDto request, string content, CancellationToken cancellationToken)
+    {
+        var paredTemplate = Scriban.Template.Parse(content);
+        var renderedContent = paredTemplate.Render(request.KeyValuePairs);
+
+        foreach (var phone in request.ToPhoneNumbers)
+        {
+            logger.LogInformation("Sending SMS to {PhoneNumber} with content: {Content}", phone, renderedContent);
+        }
+    }
+
+    private void NotifyEmails(SystemNotifyRequestDto request, string content, CancellationToken cancellationToken)
+    {
+        var paredTemplate = Scriban.Template.Parse(content);
+        var renderedContent = paredTemplate.Render(request.KeyValuePairs);
+
+        foreach (var email in request.ToEmails)
+        {
+            logger.LogInformation("Sending Email to {Email} with content: {Content}", email, renderedContent);
+        }
+    }
+
+    private async Task NotifyUsers(SystemNotifyRequestDto request, ICollection<User> users, ContentType contentType, string content, CancellationToken cancellationToken)
+    {
         foreach (var user in users)
         {
-            var paredTemplate = Scriban.Template.Parse(templateLange.Content);
+            var paredTemplate = Scriban.Template.Parse(content);
             IEnumerable<KeyValuePair<string, string>> newKeyValuePairs = new Dictionary<string, string>(request.KeyValuePairs)
             {
                 ["FirstName"] = user.FirstName,
@@ -46,7 +76,7 @@ public class NotifyContract(
 
             var notification = Notification.Create(
                 renderedContent,
-                template.ContentType,
+                contentType,
                 request.NotifyEmail,
                 request.NotifyPhone,
                 request.NotifySystem,
@@ -55,6 +85,7 @@ public class NotifyContract(
             repositoryFactory.Repository<Notification>().Add(notification);
         }
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
     }
 
 }

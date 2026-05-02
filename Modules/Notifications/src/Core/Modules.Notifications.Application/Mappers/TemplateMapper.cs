@@ -25,7 +25,7 @@ public static class TemplateMapper
                 .ToList(),
             ContentType = template.ContentType,
             TemplateType = template.TemplateType,
-            User = template.User?.ToResponseDto() ?? new NotificationUserResponseDto { Id = template.UserId }
+            User = template.User?.ToResponseDto()
         };
     }
 }

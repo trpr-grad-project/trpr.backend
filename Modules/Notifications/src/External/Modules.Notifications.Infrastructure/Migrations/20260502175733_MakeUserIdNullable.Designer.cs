@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Modules.Notifications.Infrastructure.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Notifications.Infrastructure.Migrations
 {
     [DbContext(typeof(NotificationsDbContext))]
-    partial class NotificationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260502175733_MakeUserIdNullable")]
+    partial class MakeUserIdNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -318,7 +321,7 @@ namespace Modules.Notifications.Infrastructure.Migrations
                         {
                             TemplateId = new Guid("22222222-2222-2222-2222-222222222222"),
                             LangCode = "en",
-                            Content = "Your request has been rejected. Rejection reason: {{reason}}",
+                            Content = "Your request has been rejected. Rejection reason: {reason}",
                             CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Rejection Message",
                             UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -327,7 +330,7 @@ namespace Modules.Notifications.Infrastructure.Migrations
                         {
                             TemplateId = new Guid("33333333-3333-3333-3333-333333333333"),
                             LangCode = "en",
-                            Content = "Your OTP code is: {{code}}",
+                            Content = "Your OTP code is: {code}",
                             CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "OTP Message",
                             UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -336,7 +339,7 @@ namespace Modules.Notifications.Infrastructure.Migrations
                         {
                             TemplateId = new Guid("44444444-4444-4444-4444-444444444444"),
                             LangCode = "en",
-                            Content = "Your OTP code is: {{code}}",
+                            Content = "Your OTP code is: {code}",
                             CreatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Forget Password OTP Message",
                             UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)

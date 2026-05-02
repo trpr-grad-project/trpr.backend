@@ -11,6 +11,7 @@ public class UserConfig : IEntityTypeConfiguration<User>
         builder.HasKey(x => x.Id);
         builder.HasMany(x => x.Templates)
             .WithOne(x => x.User)
-            .HasForeignKey(t => t.UserId);
+            .HasForeignKey(t => t.UserId)
+            .IsRequired(false);
     }
 }

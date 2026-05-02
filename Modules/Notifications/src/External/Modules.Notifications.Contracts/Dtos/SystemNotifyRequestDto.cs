@@ -6,6 +6,7 @@ public record SystemNotifyRequestDto(
     bool NotifySystem,
     string TemplateType,
     ICollection<Guid> ToUserIds,
+    ICollection<string> ToEmails,
+    ICollection<string> ToPhoneNumbers,
     IDictionary<string, string> KeyValuePairs,
     string LangCode = "en");
-
