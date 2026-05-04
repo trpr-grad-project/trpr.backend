@@ -15,15 +15,14 @@ public class Template : Entity
     public byte[]? RowVersion { get; set; }
     public TemplateType TemplateType { get; set; }
     public virtual List<TemplateLang> TemplateLangs { get; set; } = [];
-    public static Template Create(ContentType contentType, TemplateType templateType, User user, IDictionary<string, string> Contents, IDictionary<string, string> Titles)
+    public static Template Create(ContentType contentType, TemplateType templateType, Guid? userId, IDictionary<string, string> Contents, IDictionary<string, string> Titles)
     {
         var template = new Template
         {
             Id = Guid.NewGuid(),
-            UserId = user.Id,
+            UserId = userId,
             ContentType = contentType,
             TemplateType = templateType,
-            User = user,
         };
         var langCodes = Contents.Keys.ToHashSet();
 

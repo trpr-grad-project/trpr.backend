@@ -1,3 +1,4 @@
+using Api.SwaggerOperationFilters;
 using Microsoft.OpenApi.Models;
 
 namespace Api.Extensions
@@ -54,6 +55,8 @@ namespace Api.Extensions
                         Array.Empty<string>()
                     }
                 });
+
+                c.OperationFilter<LanguageHeaderOperationFilter>();
             });
         }
     }

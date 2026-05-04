@@ -52,6 +52,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     await app.AddMigrations();
+    await app.ExecuteSeedingAsync();
 }
 app.MapHub<ChatHub>("chat-hub");
 app.UseLocalization();

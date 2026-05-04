@@ -19,4 +19,9 @@
     <ProjectReference Include="..\..\Modules\Trips\src\External\Modules.Trips.Infrastructure\Modules.Trips.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Conversations\src\External\Modules.Conversations.Infrastructure\Modules.Conversations.Infrastructure.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data/Seed/*.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

@@ -12,6 +12,8 @@ using Modules.Trips.Infrastructure.Options;
 using Modules.Trips.Infrastructure.Clients;
 using Modules.Trips.Application.Interfaces;
 using Modules.Trips.Infrastructure.Services;
+using Common.Application.Seeds;
+using Modules.Trips.Infrastructure.Seeds;
 
 namespace Modules.Trips.Infrastructure;
 
@@ -41,6 +43,7 @@ public static class InfrastructureDependencyInjection
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<ITripsDbContext>(x => x.GetRequiredService<TripsDbContext>());
         services.AddScoped<IUnitOfWork>(x => x.GetRequiredService<TripsDbContext>());
+        services.AddScoped<ISeed, PlacesCsvSeeder>();
         if (configuration.GetValue<bool>("Trips:UseMockRoutingService"))
             services.AddScoped<IRoutingService, MockRoutingService>(); // mock routing service for testing
         else

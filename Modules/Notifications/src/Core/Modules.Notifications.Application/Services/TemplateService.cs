@@ -14,30 +14,26 @@ using Modules.Notifications.Domain.Entities;
 
 
 namespace Modules.Notifications.Application.Services
-{   
+{
     public class TemplateService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFactory)
     {
-        public async Task<TemplateResponseDto> CreateTemplate(Guid userId, CreateTemplateDto templateDto, CancellationToken cancellationToken = default)
+        public async Task<TemplateResponseDto> CreateTemplate(Guid? userId, CreateTemplateDto templateDto, CancellationToken cancellationToken = default)
         {
-            User user = await repositoryFactory
-                        .Repository<User>()
-                        .GetFirstOrDefaultByFilter(u => u.Id == userId)
-                        ?? throw new NotFoundException("User.NotFound", userId);
 
             var templateLanguageDict = templateDto.Translations.ToDictionary(m => m.LangCode, x => x);
             var titleLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Title);
             var contentLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Content);
 
-            Template template = Template.Create(templateDto.ContentType, templateDto.TemplateType, user, contentLanguageDict, titleLanguageDict);
+            Template template = Template.Create(templateDto.ContentType, templateDto.TemplateType, userId, contentLanguageDict, titleLanguageDict);
             repositoryFactory.Repository<Template>().Add(template);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
             return template.ToResponseDto();
         }
-        public async Task<TemplateResponseDto> UpdateTemplate(Guid templateId, Guid userId,UpdateTemplateDto templateDto, CancellationToken cancellationToken = default)
+        public async Task<TemplateResponseDto> UpdateTemplate(Guid templateId, Guid? userId, UpdateTemplateDto templateDto, CancellationToken cancellationToken = default)
         {
             Template template = await repositoryFactory.Repository<Template>()
-                .GetFirstOrDefaultByFilter(t => t.Id == templateId && t.UserId == userId) 
+                .GetFirstOrDefaultByFilter(t => t.Id == templateId && t.UserId == userId)
                 ?? throw new NotFoundException("Template.NotFound", templateId);
             if (templateDto.Active == true && !template.Active)
             {
@@ -51,11 +47,11 @@ namespace Modules.Notifications.Application.Services
                     activeTemplate.Active = false;
                 }
             }
-            
-            Dictionary<string,string>? titleLanguageDict = null;
+
+            Dictionary<string, string>? titleLanguageDict = null;
             Dictionary<string, string>? contentLanguageDict = null;
 
-            if (templateDto.Translations != null) 
+            if (templateDto.Translations != null)
             {
                 var templateLanguageDict = templateDto.Translations.ToDictionary(m => m.LangCode, x => x);
                 titleLanguageDict = templateLanguageDict.ToDictionary(m => m.Key, x => x.Value.Title);
@@ -69,12 +65,15 @@ namespace Modules.Notifications.Application.Services
 
         }
 
-        public async Task<PaginationDto<TemplatePaginationResponseDto>> TemplatesPagination(PaginateRequestDto dto, Guid userId,string LangCode,CancellationToken cancellationToken = default)
+        public async Task<PaginationDto<TemplatePaginationResponseDto>> TemplatesPagination(PaginateRequestDto dto, Guid? userId, string LangCode, CancellationToken cancellationToken = default)
         {
             var query = repositoryFactory.Repository<Template>().GetQueryable();
-            query = query.Where(t => t.UserId == userId);
+
+            if (userId.HasValue)
+                query = query.Where(t => t.UserId == userId);
+
             query = query.Where(t => t.TemplateLangs.Any(tl => tl.LangCode.Equals(LangCode)));
-            if(dto.IsActive != null)
+            if (dto.IsActive != null)
             {
                 query = query.Where(t => t.Active == dto.IsActive);
             }
@@ -82,7 +81,7 @@ namespace Modules.Notifications.Application.Services
             {
                 query = query.Where(t => t.TemplateType == dto.TemplateType);
             }
-            if(!string.IsNullOrEmpty(dto.Search))
+            if (!string.IsNullOrEmpty(dto.Search))
             {
                 query = query.Where(t => t.TemplateLangs.Any(tl => tl.Title.StartsWith(dto.Search)));
             }
@@ -105,11 +104,11 @@ namespace Modules.Notifications.Application.Services
                 .ToListAsync(cancellationToken);
             return PaginationDto<TemplatePaginationResponseDto>.Create(dto.Page, dto.PageSize, totalItems, items);
         }
-        public async Task<TemplateResponseDto> TemplateDetails(Guid templateId, Guid userId, CancellationToken cancellationToken)
+        public async Task<TemplateResponseDto> TemplateDetails(Guid templateId, Guid? userId, CancellationToken cancellationToken)
         {
             Template template = await repositoryFactory.Repository<Template>()
                     .GetFirstOrDefaultByFilter(
-                        t => t.UserId == userId && t.Id == templateId,
+                        t => t.Id == templateId && (userId == null || t.UserId == userId),
                         q => q.Include(t => t.TemplateLangs),
                         q => q.Include(t => t.User)
                     ) ?? throw new NotFoundException("Template.NotFound");
