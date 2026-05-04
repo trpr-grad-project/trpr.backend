@@ -1,4 +1,6 @@
-﻿using Modules.Users.Domain.Abstractions;
+﻿using System.Data;
+using Modules.Users.Domain.Abstractions;
+using Modules.Users.Domain.Events;
 using Modules.Users.Domain.ValueObjects;
 
 namespace Modules.Users.Domain.Entities
@@ -7,11 +9,11 @@ namespace Modules.Users.Domain.Entities
     {
         public Guid Id { get; set; }
         public Guid userId { get; set; }
-        public ApproveStatus Status { get; set; } = ApproveStatus.Rejected;
+        public ApproveStatus Status { get; set; } = ApproveStatus.Pending;
         public string? RejectionReason { get; set; }
         public string Description { get; set; } = string.Empty;
         public string? Subject { get; set; }
-        public int? adminId { get; set; }
+        public Guid? adminId { get; set; }
         public DateTime? ReviewedAtUTC { get; set; }
         public virtual ICollection<Document> Documents { get; set; } = [];
         public virtual User user { get; set; } = null!;
@@ -38,6 +40,18 @@ namespace Modules.Users.Domain.Entities
             upgradeRequest.Documents = docs;
             return upgradeRequest;
         }
-        // approve
+        public void UpdateStatus(Guid AdminId, Guid userId,ApproveStatus status, string? reason = null)
+        {
+            if (Status == ApproveStatus.Pending && status != ApproveStatus.Pending)
+            {
+                Status = status;
+                RejectionReason = reason;
+                adminId = AdminId;
+                ReviewedAtUTC = DateTime.UtcNow;
+                this.RaiseDomainEvent(new GuideUpgradeRequestStatusChangedDomainEvent(AdminId, userId, status, reason));
+            }
+        }
     }
+
+
 }

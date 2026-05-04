@@ -2,7 +2,7 @@
 
 public enum ApproveStatus
 {
-    Rejected = 0,
-    Approved = 1,
-    Pending = 2,
+    Approved = 0,
+    Pending = 1,
+    Rejected = 2,
 }

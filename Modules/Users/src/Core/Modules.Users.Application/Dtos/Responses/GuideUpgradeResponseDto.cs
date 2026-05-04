@@ -13,11 +13,11 @@ namespace Modules.Users.Application.Dtos.Responses
         public Guid Id { get; set; }
         public ApproveStatus Status { get; set; } = ApproveStatus.Pending;
         public string? RejectionReason { get; set; }
-        public int? adminId { get; set; }
+        public Guid? adminId { get; set; }
         public DateTime? ReviewedAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public ICollection<DocumentDto> Documents { get; set; } = [];
+        public ICollection<DocumentResponseDto> Documents { get; set; } = [];
         public UserResponseDto user { get; set; } = null!;
     }
 }

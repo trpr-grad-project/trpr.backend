@@ -11,7 +11,7 @@ namespace Modules.Users.Application.Mappers
 {
     public static class GuideUpgradeRequestMapper
     {
-        public static GuideUpgradeResponseDto ToResponseDto(this GuideUpgradeRequest upgradeRequest, ICollection<DocumentDto> docs)
+        public static GuideUpgradeResponseDto ToResponseDto(this GuideUpgradeRequest upgradeRequest, ICollection<DocumentResponseDto> docs)
         {
             return new GuideUpgradeResponseDto
             {

@@ -32,14 +32,19 @@ namespace Modules.Users.Application.Services
                 ?? throw new NotFoundException("User.NotFound", userId);
 
             ICollection<Document> docs = [];
+            ICollection<DocumentResponseDto> response = [];
             foreach (var doc in request.Documents)
             {
                 docs.Add(await mapper.Map(doc));
             }
+            foreach (var doc in docs) 
+            {
+                response.Add(doc.ToResponseDto());
+            }
             GuideUpgradeRequest upgradeRequest = GuideUpgradeRequest.Create(userId, docs);
             repositoryFactory.Repository<GuideUpgradeRequest>().Add(upgradeRequest);
             await unitOfWork.SaveChangesAsync(cancellationToken);
-            return upgradeRequest.ToResponseDto(request.Documents);
+            return upgradeRequest.ToResponseDto(response);
         }
         public async Task<PaginationDto<UpgradePaginationResponseDto>> AllUpgradeRequests(UpgradePaginationRequestDto dto, CancellationToken cancellationToken)
         {
@@ -59,5 +64,44 @@ namespace Modules.Users.Application.Services
             return PaginationDto<UpgradePaginationResponseDto>.Create(dto.Page, dto.PageSize, TotalItems, items);
         }
 
+        public async Task<GuideUpgradeResponseDto> ChangeGuideStatus(Guid AdminId, UpdateGuideStatusRequestDto dto, CancellationToken cancellationToken)
+        {
+            var upgradeRequest = await repositoryFactory.Repository<GuideUpgradeRequest>()
+                .GetFirstOrDefaultByFilter(u => u.userId == dto.UserId && u.Id == dto.UpgradeRequestId)
+                ?? throw new NotFoundException("UpgradeRequest.NotFound", dto.UpgradeRequestId);
+            if(upgradeRequest.Status == ApproveStatus.Pending && dto.Status != ApproveStatus.Pending)
+            {
+                upgradeRequest.UpdateStatus(AdminId, upgradeRequest.userId, dto.Status, dto.RejectionReason);
+            }
+            ICollection<DocumentResponseDto> documents = [];
+            foreach (var document in upgradeRequest.Documents) 
+            {
+                documents.Add(document.ToResponseDto());
+            }
+            repositoryFactory.Repository<GuideUpgradeRequest>().Update(upgradeRequest);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+            return upgradeRequest.ToResponseDto(documents);
+        }
+
+        public async Task<List<GuideUpgradeResponseDto>> UserUpgradeRequests(Guid upgradeRequestId, CancellationToken cancellationToken)
+        {
+            var request = await repositoryFactory.Repository<GuideUpgradeRequest>()
+                .GetFirstOrDefaultByFilter(u => u.Id == upgradeRequestId)
+                ?? throw new NotFoundException("UpgradeRequest.NotFound", upgradeRequestId);
+            var query = await repositoryFactory.Repository<GuideUpgradeRequest>().GetQueryable()
+                    .Where(u => u.userId == request.userId)
+                    .OrderBy(u => u.Status)
+                    .Include(u => u.Documents)
+                    .Include(u => u.user)
+                    .ToListAsync(cancellationToken);  
+            var results = query
+                .Select(ur => ur.ToResponseDto(
+                    ur.Documents
+                        .Select(d => d.ToResponseDto())
+                        .ToList()
+                ))
+                .ToList();
+            return results;
+        }
     }
 }

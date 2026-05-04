@@ -45,5 +45,19 @@ namespace Modules.Users.Presentation.Controllers.v1
             var requests = await GuideService.AllUpgradeRequests(dto, cancellationToken);
             return Ok(requests);
         }
+        [Authorize(Roles = "Admin")]
+        [HttpPost("change-status")]
+        public async Task<ActionResult<GuideUpgradeResponseDto>> UpdateGuideStatus(UpdateGuideStatusRequestDto dto, CancellationToken cancellationToken)
+        {
+            var request = await GuideService.ChangeGuideStatus(UserId, dto, cancellationToken);
+            return Ok(request);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<List<GuideUpgradeResponseDto>>> GetUserRequests([FromRoute(Name = "id")] Guid upgradeRequestId, CancellationToken cancellationToken)
+        {
+            var request = await GuideService.UserUpgradeRequests(upgradeRequestId, cancellationToken);
+            return Ok(request);
+        }
     }
 }
