@@ -13,7 +13,7 @@ namespace Modules.Trips.Domain.Entities
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public virtual User CreatedByUser { get; set; } = null!;
-        public string ThemeId { get; set; } = string.Empty;
+        public int ThemeId { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; }
@@ -25,7 +25,7 @@ namespace Modules.Trips.Domain.Entities
         public int MaxParticipantsCount { get; set; }
         public Guid? GuideId { get; set; }
         public ICollection<TripParticipant> Participants { get; set; } = [];
-        public static Trip Create(Guid userId, string themeId, string title, string description, 
+        public static Trip Create(Guid userId, int themeId, string title, string description, 
             double price, ICollection<string> images, 
             TripVisibility tripVisibility, ICollection<ICollection<Place>> segments, 
             int maxParticipantCount, Guid? guideId, List<double> duration, User user)
