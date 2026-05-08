@@ -16,6 +16,7 @@ public static class ApplicationDependencyInjection
 
         #region  services
         services.AddScoped<PlaceService>();
+        services.AddScoped<TripService>();
         #endregion
 
         return services;

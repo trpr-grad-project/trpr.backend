@@ -16,10 +16,9 @@ namespace Modules.Users.Application.Mappers
         public async Task<Document> Map(DocumentDto source)
         {
             var path = await fileService.UploadFileAsync(source.File);
-            var imageUrl = fileService.ResolveUrl(path);
             var doc = new Document()
             {
-                FileUrl = imageUrl,
+                FileUrl = path,
                 Type = source.Type,
             };
             return doc;

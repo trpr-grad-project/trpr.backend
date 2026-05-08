@@ -15,6 +15,7 @@ namespace Modules.Users.Domain.Entities
         public string? Subject { get; set; }
         public Guid? adminId { get; set; }
         public DateTime? ReviewedAtUTC { get; set; }
+        //TODO: add guide languages
         public virtual ICollection<Document> Documents { get; set; } = [];
         public virtual User user { get; set; } = null!;
         public static GuideUpgradeRequest Create(Guid userid, ICollection<Document> documents)

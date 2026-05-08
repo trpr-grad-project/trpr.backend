@@ -5,6 +5,7 @@ using Modules.Trips.Application.Abstractions;
 using Common.Infrastructure.Outbox;
 using Common.Infrastructure.Inbox;
 using Modules.Trips.Domain.Entities;
+using Modules.Trips.Domain.Abstractions;
 
 namespace Modules.Trips.Infrastructure.Data;
 
@@ -59,5 +60,31 @@ public class TripsDbContext(DbContextOptions<TripsDbContext> options) : DbContex
         await _transaction.RollbackAsync(cancellationToken);
         await _transaction.DisposeAsync();
         _transaction = null;
+    }
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        UpdateTimestamps();
+        return base.SaveChangesAsync(cancellationToken);
+    }   
+
+    private void UpdateTimestamps()
+    {
+        // This tracks all changed entries and updates the timestamps
+        var entries = ChangeTracker.Entries<Entity>()
+            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+        foreach (var entry in entries)
+        {
+            var entity = entry.Entity;
+            if (entry.State == EntityState.Added)
+            {
+                entity.CreatedAtUTC = DateTime.UtcNow;
+                entity.UpdatedAtUTC = DateTime.UtcNow;
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                entity.UpdatedAtUTC = DateTime.UtcNow;
+            }
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Modules.Trips.Infrastructure.Data;
 using NetTopologySuite.Geometries;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Trips.Infrastructure.Migrations
 {
     [DbContext(typeof(TripsDbContext))]
-    partial class TripsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260506183938_seedThemeTable")]
+    partial class seedThemeTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,25 +140,6 @@ namespace Modules.Trips.Infrastructure.Migrations
                     b.ToTable("outbox_messages", "trp");
                 });
 
-            modelBuilder.Entity("DayPlace", b =>
-                {
-                    b.Property<Guid>("DaysId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("days_id");
-
-                    b.Property<int>("PlacesId")
-                        .HasColumnType("integer")
-                        .HasColumnName("places_id");
-
-                    b.HasKey("DaysId", "PlacesId")
-                        .HasName("pk_place_day");
-
-                    b.HasIndex("PlacesId")
-                        .HasDatabaseName("ix_place_day_places_id");
-
-                    b.ToTable("place_day", "trp");
-                });
-
             modelBuilder.Entity("Modules.Trips.Domain.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -216,34 +200,6 @@ namespace Modules.Trips.Infrastructure.Migrations
                             Id = 7,
                             Name = "other"
                         });
-                });
-
-            modelBuilder.Entity("Modules.Trips.Domain.Entities.Day", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAtUTC")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<Guid>("TripId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("trip_id");
-
-                    b.Property<DateTime>("UpdatedAtUTC")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
-
-                    b.HasKey("Id")
-                        .HasName("pk_days");
-
-                    b.HasIndex("TripId")
-                        .HasDatabaseName("ix_days_trip_id");
-
-                    b.ToTable("Days", "trp");
                 });
 
             modelBuilder.Entity("Modules.Trips.Domain.Entities.Governorate", b =>
@@ -841,182 +797,6 @@ namespace Modules.Trips.Infrastructure.Migrations
                     b.ToTable("theme_tags", "trp");
                 });
 
-            modelBuilder.Entity("Modules.Trips.Domain.Entities.Trip", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<double>("ActualDuration")
-                        .HasColumnType("double precision")
-                        .HasColumnName("actual_duration");
-
-                    b.Property<DateTime>("CreatedAtUTC")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<double>("ExpectedDuration")
-                        .HasColumnType("double precision")
-                        .HasColumnName("expected_duration");
-
-                    b.Property<Guid?>("GuideId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("guide_id");
-
-                    b.PrimitiveCollection<string[]>("Images")
-                        .IsRequired()
-                        .HasColumnType("text[]")
-                        .HasColumnName("images");
-
-                    b.Property<int>("MaxParticipantsCount")
-                        .HasColumnType("integer")
-                        .HasColumnName("max_participants_count");
-
-                    b.Property<double>("Price")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("double precision")
-                        .HasColumnName("price");
-
-                    b.Property<string>("ThemeId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("theme_id");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("title");
-
-                    b.Property<int>("TripVisibility")
-                        .HasColumnType("integer")
-                        .HasColumnName("trip_visibility");
-
-                    b.Property<DateTime>("UpdatedAtUTC")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_trips");
-
-                    b.HasIndex("ThemeId")
-                        .HasDatabaseName("ix_trips_theme_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_trips_user_id");
-
-                    b.ToTable("Trips", "trp");
-                });
-
-            modelBuilder.Entity("Modules.Trips.Domain.Entities.TripParticipant", b =>
-                {
-                    b.Property<Guid>("TripId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("trip_id");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.Property<DateTime>("CreatedAtUTC")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<DateTime>("UpdatedAtUTC")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
-
-                    b.HasKey("TripId", "UserId")
-                        .HasName("pk_trip_participant");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_trip_participant_user_id");
-
-                    b.ToTable("trip_participant", "trp");
-                });
-
-            modelBuilder.Entity("Modules.Trips.Domain.Entities.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAtUTC")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("text")
-                        .HasColumnName("email");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("first_name");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("last_name");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text")
-                        .HasColumnName("phone_number");
-
-                    b.Property<DateTime>("UpdatedAtUTC")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at_utc");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("user_name");
-
-                    b.HasKey("Id")
-                        .HasName("pk_user");
-
-                    b.ToTable("user", "trp");
-                });
-
-            modelBuilder.Entity("DayPlace", b =>
-                {
-                    b.HasOne("Modules.Trips.Domain.Entities.Day", null)
-                        .WithMany()
-                        .HasForeignKey("DaysId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_place_day_day_days_id");
-
-                    b.HasOne("Modules.Trips.Domain.Entities.Place", null)
-                        .WithMany()
-                        .HasForeignKey("PlacesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_place_day_places_places_id");
-                });
-
-            modelBuilder.Entity("Modules.Trips.Domain.Entities.Day", b =>
-                {
-                    b.HasOne("Modules.Trips.Domain.Entities.Trip", "Trip")
-                        .WithMany("Segments")
-                        .HasForeignKey("TripId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_days_trip_trip_id");
-
-                    b.Navigation("Trip");
-                });
-
             modelBuilder.Entity("Modules.Trips.Domain.Entities.Place", b =>
                 {
                     b.HasOne("Modules.Trips.Domain.Entities.Category", "Category")
@@ -1093,39 +873,6 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .HasConstraintName("fk_theme_tags_themes_theme_id");
                 });
 
-            modelBuilder.Entity("Modules.Trips.Domain.Entities.Trip", b =>
-                {
-                    b.HasOne("Modules.Trips.Domain.Entities.User", "CreatedByUser")
-                        .WithMany("CreatedTrips")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_trips_user_user_id");
-
-                    b.Navigation("CreatedByUser");
-                });
-
-            modelBuilder.Entity("Modules.Trips.Domain.Entities.TripParticipant", b =>
-                {
-                    b.HasOne("Modules.Trips.Domain.Entities.Trip", "Trip")
-                        .WithMany("Participants")
-                        .HasForeignKey("TripId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_trip_participant_trip_trip_id");
-
-                    b.HasOne("Modules.Trips.Domain.Entities.User", "User")
-                        .WithMany("JoinedTrips")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_trip_participant_user_user_id");
-
-                    b.Navigation("Trip");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Modules.Trips.Domain.Entities.Place", b =>
                 {
                     b.Navigation("PlaceTags");
@@ -1134,20 +881,6 @@ namespace Modules.Trips.Infrastructure.Migrations
             modelBuilder.Entity("Modules.Trips.Domain.Entities.Tag", b =>
                 {
                     b.Navigation("PlaceTags");
-                });
-
-            modelBuilder.Entity("Modules.Trips.Domain.Entities.Trip", b =>
-                {
-                    b.Navigation("Participants");
-
-                    b.Navigation("Segments");
-                });
-
-            modelBuilder.Entity("Modules.Trips.Domain.Entities.User", b =>
-                {
-                    b.Navigation("CreatedTrips");
-
-                    b.Navigation("JoinedTrips");
                 });
 #pragma warning restore 612, 618
         }

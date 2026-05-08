@@ -50,5 +50,9 @@ public class PlaceConfig : IEntityTypeConfiguration<Place>
             .WithMany()
             .HasForeignKey(p => p.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(p => p.Days)
+            .WithMany(d => d.Places)
+            .UsingEntity(j => j.ToTable("place_day"));
     }
 }
