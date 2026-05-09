@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CsvHelper.Configuration;
+using Modules.Trips.Domain.Entities;
 
 namespace Modules.Trips.Infrastructure.Seeds.Dto
 {

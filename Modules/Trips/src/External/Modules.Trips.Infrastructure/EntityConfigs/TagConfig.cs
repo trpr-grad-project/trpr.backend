@@ -10,7 +10,7 @@ public class TagConfig : IEntityTypeConfiguration<Tag>
     {
         builder.HasKey(t => t.Id);
         builder.Property(t => t.Id)
-            .ValueGeneratedNever();
+            .ValueGeneratedOnAdd();
         builder.HasIndex(t => t.Name)
             .IsUnique();
         builder.Property(t => t.Name)

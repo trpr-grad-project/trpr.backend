@@ -11,6 +11,7 @@ namespace Modules.Trips.Application.Repositories
         where TEntity : class
     {
         public void Add(TEntity entity);
+        public void AddRange(IEnumerable<TEntity> entities);
         public void Update(TEntity entity);
         public void Delete(TEntity entity);
         public void Attach(TEntity entity);

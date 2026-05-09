@@ -13,6 +13,11 @@ namespace Modules.Trips.Infrastructure.Repositories
             context.Set<TEntity>().Add(entity);
         }
 
+        public void AddRange(IEnumerable<TEntity> entities)
+        {
+            context.Set<TEntity>().AddRange(entities);
+        }
+
         public void Delete(TEntity entity)
         {
             context.Set<TEntity>().Remove(entity);

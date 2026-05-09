@@ -20,7 +20,7 @@ public class TripsDbContext(DbContextOptions<TripsDbContext> options) : DbContex
     public virtual DbSet<Theme> Themes { get; set; }
     public virtual DbSet<ThemeTag> ThemeTags { get; set; }
     public virtual DbSet<ThemeCategory> ThemeCategories { get; set; }
-
+    public virtual DbSet<CsvSeedHistory> CsvSeedHistories { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(Schema.Trips);
