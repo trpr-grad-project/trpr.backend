@@ -20,5 +20,6 @@ namespace Modules.Trips.Application.Dtos.Requests
         public ICollection<DayDto> Segments { get; set; } = [];
         public int MaxParticipantsCount { get; set; }
         public Guid? guideId { get; set; }
+        
     }
 }

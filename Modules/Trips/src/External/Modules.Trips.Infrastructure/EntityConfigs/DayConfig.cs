@@ -26,7 +26,6 @@ namespace Modules.Trips.Infrastructure.EntityConfigs
 
             builder.HasIndex(d => d.TripId);
 
-            builder.ToTable("Days");
         }
     }
 }

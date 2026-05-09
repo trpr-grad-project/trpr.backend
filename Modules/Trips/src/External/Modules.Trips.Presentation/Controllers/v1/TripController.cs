@@ -14,7 +14,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/trip")]
-    public class TripContoller(TripService tripService) : ControllerBase
+    public class TripController(TripService tripService) : ControllerBase
     {
         public Guid UserId => User.GetUserId();
         [HttpPost("create-trip")]

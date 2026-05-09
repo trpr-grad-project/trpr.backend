@@ -65,8 +65,6 @@ namespace Modules.Trips.Infrastructure.EntityConfigs
             builder.HasIndex(t => t.UserId);
             builder.HasIndex(t => t.ThemeId);
 
-              
-            builder.ToTable("Trips");
         }
     }
     
