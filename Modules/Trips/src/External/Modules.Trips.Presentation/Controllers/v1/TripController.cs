@@ -19,9 +19,16 @@ namespace Modules.Trips.Presentation.Controllers.v1
         public Guid UserId => User.GetUserId();
         [HttpPost("create-trip")]
         [Authorize]
-        public async Task<ActionResult<CreateTripResponseDto>> CreateTrip([FromForm] CreateTripRequestDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<TripResponseDto>> CreateTrip([FromForm] CreateTripRequestDto dto, CancellationToken cancellationToken)
         {
             var request = await tripService.CreateTrip(dto, UserId, cancellationToken);
+            return Ok(request);
+        }
+
+        [HttpGet("get-trips")]
+        public async Task<ActionResult<TripResponseDto>> GetTrips([FromQuery] SearchTripRequestDto requestDto, CancellationToken cancellationToken)
+        {
+            var request = await tripService.GetTrips(requestDto, cancellationToken);
             return Ok(request);
         }
     }

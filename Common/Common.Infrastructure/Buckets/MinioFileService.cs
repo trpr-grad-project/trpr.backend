@@ -17,6 +17,15 @@ public class MinioFileService(
     {
         return $"http://{_minioSettings.PublicEndpoint}/{_minioSettings.Bucket}/{filePath}";
     }
+    public ICollection<string> ResolveUrls(ICollection<string> filePaths)
+    {
+        ICollection<string> urls = [];
+        foreach (var filePath in filePaths)
+        {
+            urls.Add(ResolveUrl(filePath));
+        }
+        return urls;
+    }
     public async Task<string> UploadFileAsync(IFormFile file)
     {
         string objectName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
@@ -33,4 +42,13 @@ public class MinioFileService(
         return objectName;
     }
 
+    public async Task<ICollection<string>> UploadFilesAsync(ICollection<IFormFile> files)
+    {
+        ICollection<string> filePaths = [];
+        foreach (var file in files)
+        {
+            filePaths.Add(await UploadFileAsync(file));
+        }
+        return filePaths;
+    }
 }

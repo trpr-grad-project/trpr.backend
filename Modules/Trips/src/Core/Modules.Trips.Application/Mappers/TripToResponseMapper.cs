@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Common.Application;
+﻿using Common.Application;
 using Common.Application.Buckets;
-using Modules.Trips.Application.Dtos;
 using Modules.Trips.Application.Dtos.Responses;
 using Modules.Trips.Domain.Entities;
 
 
 namespace Modules.Trips.Application.Mappers
 {
-    public class TripToResponseMapper(IMapper<ICollection<string>, ICollection<string>> urlMapper) : IMapper<Trip, CreateTripResponseDto>
+    public class TripToResponseMapper(IFileService fileService) : IMapper<Trip, TripResponseDto>
     {
-        public CreateTripResponseDto Map(Trip source)
+        public TripResponseDto Map(Trip source)
         {
-            ICollection<string> imagePaths = urlMapper.Map(source.Images);
-            CreateTripResponseDto responseDto = new CreateTripResponseDto
+            ICollection<string> imagePaths = fileService.ResolveUrls(source.Images);
+            TripResponseDto responseDto = new()
             {
                 CreatedByUser = source.UserId,
                 GuideId = source.GuideId,
@@ -28,10 +22,9 @@ namespace Modules.Trips.Application.Mappers
                 ExpectedDuration = source.ExpectedDuration,
                 ImagesUrls = imagePaths,
                 TripVisibility = source.TripVisibility,
-                Segments = source.Segments
+                Segments = [.. source.Segments
                     .SelectMany(s => s.Places)
-                    .Select(x => x.ToPlaceDto())
-                    .ToList(),
+                    .Select(x => x.ToPlaceDto())],
                 MaxParticipantsCount = source.MaxParticipantsCount,
             };
             return responseDto;

@@ -8,7 +8,7 @@ using Modules.Trips.Domain.ValueObjects;
 
 namespace Modules.Trips.Application.Dtos.Responses
 {
-    public class CreateTripResponseDto
+    public class TripResponseDto
     {
         public Guid CreatedByUser { get; set; }
         public int ThemeId { get; set; }

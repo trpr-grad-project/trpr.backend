@@ -22,35 +22,50 @@ namespace Modules.Trips.Domain.Entities
         public ICollection<string> Images { get; set; } = [];
         public TripVisibility TripVisibility { get; set; } = TripVisibility.Public;
         public virtual ICollection<Day> Segments { get; set; } = [];
+        public virtual ICollection<TripGovernorate> TripGovernorates { get; set; } = [];
         public int MaxParticipantsCount { get; set; }
         public Guid? GuideId { get; set; }
         public ICollection<TripParticipant> Participants { get; set; } = [];
-        public static Trip Create(Guid userId, int themeId, string title, string description, 
-            double price, ICollection<string> images, 
-            TripVisibility tripVisibility, ICollection<ICollection<Place>> segments, 
-            int maxParticipantCount, Guid? guideId, List<double> duration, User user)
+        public static Trip Create(
+            Guid userId,
+            int themeId,
+            string title,
+            string description,
+            double price,
+            ICollection<string> images,
+            TripVisibility tripVisibility,
+            ICollection<ICollection<Place>> segments,
+            int maxParticipantCount,
+            Guid? guideId,
+            List<double> duration,
+            User user,
+            ICollection<Governorate> governorates)
         {
-            Trip newTrip = new Trip();
-            newTrip.Id = Guid.NewGuid();
-            newTrip.UserId = userId;
-            newTrip.ThemeId = themeId;
-            newTrip.Title = title;
-            newTrip.Description = description;
-            newTrip.Price = price;
-            newTrip.Images = images;
-            newTrip.TripVisibility = tripVisibility;
-            newTrip.MaxParticipantsCount = maxParticipantCount;
-            newTrip.GuideId = guideId;
-            newTrip.CreatedByUser = user;
+            Trip newTrip = new Trip()
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                ThemeId = themeId,
+                Title = title,
+                Description = description,
+                Price = price,
+                Images = images,
+                TripVisibility = tripVisibility,
+                MaxParticipantsCount = maxParticipantCount,
+                GuideId = guideId,
+                CreatedByUser = user
+            };
             foreach (double dur in duration)
             {
                 newTrip.ExpectedDuration += dur;
             }
             ICollection<Day> days = [];
-            foreach(var segment in segments)
+            int order = 1;
+            foreach (var segment in segments)
             {
-                Day day = new Day
+                Day day = new()
                 {
+                    Order = order++,
                     Id = Guid.NewGuid(),
                     TripId = newTrip.Id,
                     Places = segment
@@ -58,6 +73,17 @@ namespace Modules.Trips.Domain.Entities
                 days.Add(day);
             }
             newTrip.Segments = days;
+            ICollection<TripGovernorate> tripGovernorates = [];
+            foreach (var governorate in governorates)
+            {
+                TripGovernorate tripGovernorate = new TripGovernorate
+                {
+                    TripId = newTrip.Id,
+                    GovernorateId = governorate.Id
+                };
+                tripGovernorates.Add(tripGovernorate);
+            }
+            newTrip.TripGovernorates = tripGovernorates;
             return newTrip;
         }
         // update method for adding/removing participants

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Modules.Trips.Domain.Entities;
+﻿using Modules.Trips.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,7 +9,7 @@ namespace Modules.Trips.Infrastructure.EntityConfigs
     {
         public void Configure(EntityTypeBuilder<Trip> builder)
         {
-     
+
             builder.HasKey(t => t.Id);
 
             builder.Property(t => t.UserId)
@@ -23,17 +18,18 @@ namespace Modules.Trips.Infrastructure.EntityConfigs
             builder.Property(t => t.ThemeId)
                 .IsRequired();
 
-
-
             builder.Property(t => t.Title)
                 .IsRequired();
-
 
             builder.Property(t => t.Description)
                 .IsRequired();
 
+            builder.HasIndex(x => x.Title);
+
+            builder.HasIndex(x => x.Price);
+
             builder.Property(t => t.Price)
-                .HasPrecision(10, 2); 
+                .HasPrecision(10, 2);
 
             builder.Property(t => t.ExpectedDuration)
                 .IsRequired();
@@ -61,11 +57,11 @@ namespace Modules.Trips.Infrastructure.EntityConfigs
                 .HasForeignKey(tp => tp.TripId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-                
+
             builder.HasIndex(t => t.UserId);
             builder.HasIndex(t => t.ThemeId);
 
         }
     }
-    
+
 }

@@ -191,4 +191,21 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
             .Select(x => x.ToPlaceDto())
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<ICollection<Place>> GetPlacesAsync(ICollection<int> placeIds)
+    {
+        ICollection<Place> places = [];
+        foreach (var placeId in placeIds)
+        {
+            var place = await
+                repositoryFactory
+                .Repository<Place>()
+                .GetFirstOrDefaultByFilter(
+                    p => p.Id == placeId,
+                    includes: x => x.Include(p => p.Governorate))
+                ?? throw new NotFoundException("Place.NotFound", placeId);
+            places.Add(place);
+        }
+        return places;
+    }
 }
