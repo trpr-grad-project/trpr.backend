@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Copy all project files
@@ -12,7 +12,7 @@ RUN dotnet build "Web/Api/Api.csproj" -c Release --no-restore
 RUN dotnet publish "Web/Api/Api.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-build
 
 # Runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build /app/publish .
 EXPOSE 8080
