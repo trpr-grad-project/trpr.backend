@@ -6,7 +6,7 @@
     <ProjectReference Include="..\..\..\..\Notifications\src\External\Modules.Notifications.Contracts\Modules.Notifications.Contracts.csproj" />
   </ItemGroup>
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>

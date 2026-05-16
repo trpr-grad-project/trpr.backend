@@ -1,16 +1,17 @@
 using Api.Extensions;
-using Serilog;
-using Modules.Users.Infrastructure;
-using Modules.Notifications.Infrastructure;
 using Common.Application;
-using Common.Presentation;
 using Common.Infrastructure;
-using Modules.Trips.Infrastructure;
+using Common.Presentation;
 using Modules.Conversations.Infrastructure;
 using Modules.Conversations.Presentation.Hubs;
+using Modules.Notifications.Infrastructure;
+using Modules.Trips.Infrastructure;
+using Modules.Users.Infrastructure;
+using Scalar.AspNetCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.ConfigureSwagger();
+builder.Services.ConfigureScalar();
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
 builder.Services.AddHttpContextAccessor();
@@ -49,8 +50,8 @@ var app = builder.Build();
 app.UseStaticFiles();
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.MapOpenApi();
+    app.MapScalarApiReference();
     await app.AddMigrations();
     await app.ExecuteSeedingAsync();
 }
