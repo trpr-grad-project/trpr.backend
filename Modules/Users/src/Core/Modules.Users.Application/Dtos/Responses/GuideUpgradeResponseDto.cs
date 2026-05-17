@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Domain.ValueObjects;
 
 namespace Modules.Users.Application.Dtos.Responses
@@ -17,7 +16,7 @@ namespace Modules.Users.Application.Dtos.Responses
         public DateTime? ReviewedAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public ICollection<DocumentResponseDto> Documents { get; set; } = [];
+        public ICollection<DocumentDto> Documents { get; set; } = [];
         public UserResponseDto user { get; set; } = null!;
     }
 }

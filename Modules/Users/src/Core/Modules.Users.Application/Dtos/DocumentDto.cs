@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Modules.Users.Domain.ValueObjects;
 
-namespace Modules.Users.Application.Dtos.Requests
+namespace Modules.Users.Application.Dtos
 {
     public class DocumentDto
     {
         public DocumentType Type { get; set; }
-        public IFormFile File { get; set; } = default!;
+        public ICollection<string> Files { get; set; } = default!;
     }
 }

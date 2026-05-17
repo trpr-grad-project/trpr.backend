@@ -13,7 +13,6 @@ namespace Modules.Trips.Application.Services
 {
     public class TripService(IUnitOfWork unitOfWork,
         RepositoryFactory repositoryFactory,
-        IFileService fileService,
         PlaceService placeService,
         IMapper<Trip, TripResponseDto> tripMapper)
     {
@@ -21,7 +20,6 @@ namespace Modules.Trips.Application.Services
         {
             var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(User => User.Id == userId)
                 ?? throw new NotFoundException("User.NotFound", userId);
-            var paths = await fileService.UploadFilesAsync(dto.Images);
             var segments = await GetPlacesAsync(dto.Segments);
             var governorates = segments
                 .SelectMany(x => x)
@@ -34,7 +32,7 @@ namespace Modules.Trips.Application.Services
                         dto.Title,
                         dto.Description,
                         dto.Price,
-                        paths,
+                        dto.Images,
                         dto.TripVisibility,
                         segments,
                         dto.MaxParticipantsCount,

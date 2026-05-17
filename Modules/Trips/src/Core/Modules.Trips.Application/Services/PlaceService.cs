@@ -202,7 +202,9 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
                 .Repository<Place>()
                 .GetFirstOrDefaultByFilter(
                     p => p.Id == placeId,
-                    includes: x => x.Include(p => p.Governorate))
+                    includes: x => x.Include(p => p.Governorate)
+                        .Include(p => p.Category)
+                        .Include(p => p.PlaceTags).ThenInclude(p => p.Tag))
                 ?? throw new NotFoundException("Place.NotFound", placeId);
             places.Add(place);
         }

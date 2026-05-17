@@ -12,17 +12,9 @@ namespace Modules.Users.Presentation.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/guide")]
-    public class GuideController(IFileService fileService, GuideService GuideService) : ControllerBase
+    public class GuideController(GuideService GuideService) : ControllerBase
     {
         public Guid UserId => User.GetUserId();
-        [HttpPost("upload-image")]
-        public async Task<IActionResult> UploadImage([FromForm] UploadFileDto request)
-        {
-            var path = await fileService.UploadFileAsync(request.File);
-            var imageUrl = fileService.ResolveUrl(path);
-            return Ok(new { Path = imageUrl });
-        }
-
         [Authorize]
         [HttpPost("upgrade-request")]
         public async Task<ActionResult<GuideUpgradeResponseDto>> UpgradeRequest(GuideUpgradeRequestDto dto, CancellationToken cancellationToken)

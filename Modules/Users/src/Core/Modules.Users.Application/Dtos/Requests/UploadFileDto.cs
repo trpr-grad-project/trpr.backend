@@ -5,6 +5,6 @@ namespace Modules.Users.Application.Dtos.Requests
 {
     public class UploadFileDto
     {
-        public IFormFile File { get; set; } = default!;
+        public ICollection<IFormFile> Files { get; set; } = default!;
     }
 }

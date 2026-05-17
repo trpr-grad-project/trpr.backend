@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modules.Users.Application.Abstractions;
+using Modules.Users.Application.Dtos;
 using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Dtos.Responses;
 using Modules.Users.Application.Mappers;
@@ -23,28 +24,18 @@ namespace Modules.Users.Application.Services
 {
     public class GuideService(
         RepositoryFactory repositoryFactory,
-        IUnitOfWork unitOfWork, IMapper<DocumentDto,
-        Task<Document>> mapper)
+        IUnitOfWork unitOfWork, 
+        IMapper<DocumentDto,Dictionary<DocumentType, string>> mapper)
     {
         public async Task<ActionResult<GuideUpgradeResponseDto>> UpgradeToGuide(Guid userId, GuideUpgradeRequestDto request, CancellationToken cancellationToken)
         {
             var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(u => u.Id == userId)
                 ?? throw new NotFoundException("User.NotFound", userId);
 
-            ICollection<Document> docs = [];
-            ICollection<DocumentResponseDto> response = [];
-            foreach (var doc in request.Documents)
-            {
-                docs.Add(await mapper.Map(doc));
-            }
-            foreach (var doc in docs) 
-            {
-                response.Add(doc.ToResponseDto());
-            }
-            GuideUpgradeRequest upgradeRequest = GuideUpgradeRequest.Create(userId, docs);
+            GuideUpgradeRequest upgradeRequest = GuideUpgradeRequest.Create(userId, request.Documents);
             repositoryFactory.Repository<GuideUpgradeRequest>().Add(upgradeRequest);
             await unitOfWork.SaveChangesAsync(cancellationToken);
-            return upgradeRequest.ToResponseDto(response);
+            return upgradeRequest.ToResponseDto(upgradeRequest);
         }
         public async Task<PaginationDto<UpgradePaginationResponseDto>> AllUpgradeRequests(UpgradePaginationRequestDto dto, CancellationToken cancellationToken)
         {
