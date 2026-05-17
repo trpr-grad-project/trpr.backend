@@ -5,6 +5,7 @@ using Common.Application.Buckets;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Modules.Users.Application.Dtos;
+using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Dtos.Responses;
 using Modules.Users.Domain.Entities;
 
@@ -15,9 +16,9 @@ namespace Modules.Users.Presentation.Controllers.v1
     public class ImageController(IFileService fileService) : ControllerBase
     {
         [HttpPost("upload-documents")]
-        public async Task<ActionResult<ICollection<DocumentResponseDto>>> UploadDocuments([FromForm] DocumentDto request)
+        public async Task<ActionResult<ICollection<DocumentDto>>> UploadDocuments([FromForm] ICollection<UploadDocumentDto> request)
         {
-            var paths = await fileService.UploadFilesAsync(request.Files);
+            var paths = await fileService.UploadFilesAsync(request.Select(x => x.Files).ToList());
             return Ok(paths);
         }
         [HttpPost("upload-images")]

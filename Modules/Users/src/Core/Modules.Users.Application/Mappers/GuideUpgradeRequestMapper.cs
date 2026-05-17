@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Modules.Users.Application.Dtos;
 using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Dtos.Responses;
 using Modules.Users.Domain.Entities;
@@ -11,7 +12,7 @@ namespace Modules.Users.Application.Mappers
 {
     public static class GuideUpgradeRequestMapper
     {
-        public static GuideUpgradeResponseDto ToResponseDto(this GuideUpgradeRequest upgradeRequest, ICollection<DocumentResponseDto> docs)
+        public static GuideUpgradeResponseDto ToResponseDto(this GuideUpgradeRequest upgradeRequest, ICollection<DocumentDto> docs)
         {
             return new GuideUpgradeResponseDto
             {

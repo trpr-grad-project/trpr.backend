@@ -6,6 +6,6 @@ namespace Modules.Users.Application.Dtos
     public class DocumentDto
     {
         public DocumentType Type { get; set; }
-        public ICollection<string> Files { get; set; } = default!;
+        public string File { get; set; } = default!;
     }
 }

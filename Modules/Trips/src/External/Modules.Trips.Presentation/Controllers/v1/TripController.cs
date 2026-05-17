@@ -19,7 +19,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
         public Guid UserId => User.GetUserId();
         [HttpPost("create-trip")]
         [Authorize]
-        public async Task<ActionResult<TripResponseDto>> CreateTrip([FromForm] CreateTripRequestDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<TripResponseDto>> CreateTrip([FromBody] CreateTripRequestDto dto, CancellationToken cancellationToken)
         {
             var request = await tripService.CreateTrip(dto, UserId, cancellationToken);
             return Ok(request);

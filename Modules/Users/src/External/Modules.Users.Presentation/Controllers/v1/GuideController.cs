@@ -17,7 +17,7 @@ namespace Modules.Users.Presentation.Controllers.v1
         public Guid UserId => User.GetUserId();
         [Authorize]
         [HttpPost("upgrade-request")]
-        public async Task<ActionResult<GuideUpgradeResponseDto>> UpgradeRequest(GuideUpgradeRequestDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<GuideUpgradeResponseDto>> UpgradeRequest([FromBody] GuideUpgradeRequestDto dto, CancellationToken cancellationToken)
         {
             var roles = User.GetRoles();
             foreach (var role in roles)

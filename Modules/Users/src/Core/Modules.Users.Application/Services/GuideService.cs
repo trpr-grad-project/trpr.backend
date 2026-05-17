@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Application;
+using Common.Application.Buckets;
 using Common.Application.Dtos;
 using Common.Application.Exceptions;
 using Microsoft.AspNetCore.Http;
@@ -25,17 +27,18 @@ namespace Modules.Users.Application.Services
     public class GuideService(
         RepositoryFactory repositoryFactory,
         IUnitOfWork unitOfWork, 
-        IMapper<DocumentDto,Dictionary<DocumentType, string>> mapper)
+        IMapper<ICollection<DocumentDto>,Dictionary<string, DocumentType>> mapper,
+        IMapper<ICollection<Document>, ICollection<DocumentDto>> documentMapper)
     {
         public async Task<ActionResult<GuideUpgradeResponseDto>> UpgradeToGuide(Guid userId, GuideUpgradeRequestDto request, CancellationToken cancellationToken)
         {
             var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(u => u.Id == userId)
                 ?? throw new NotFoundException("User.NotFound", userId);
-
-            GuideUpgradeRequest upgradeRequest = GuideUpgradeRequest.Create(userId, request.Documents);
+            var documents = mapper.Map(request.Documents);
+            GuideUpgradeRequest upgradeRequest = GuideUpgradeRequest.Create(userId, documents);
             repositoryFactory.Repository<GuideUpgradeRequest>().Add(upgradeRequest);
             await unitOfWork.SaveChangesAsync(cancellationToken);
-            return upgradeRequest.ToResponseDto(upgradeRequest);
+            return upgradeRequest.ToResponseDto(documentMapper.Map(upgradeRequest.Documents));
         }
         public async Task<PaginationDto<UpgradePaginationResponseDto>> AllUpgradeRequests(UpgradePaginationRequestDto dto, CancellationToken cancellationToken)
         {
@@ -64,14 +67,9 @@ namespace Modules.Users.Application.Services
             {
                 upgradeRequest.UpdateStatus(AdminId, upgradeRequest.userId, dto.Status, dto.RejectionReason);
             }
-            ICollection<DocumentResponseDto> documents = [];
-            foreach (var document in upgradeRequest.Documents) 
-            {
-                documents.Add(document.ToResponseDto());
-            }
             repositoryFactory.Repository<GuideUpgradeRequest>().Update(upgradeRequest);
             await unitOfWork.SaveChangesAsync(cancellationToken);
-            return upgradeRequest.ToResponseDto(documents);
+            return upgradeRequest.ToResponseDto(documentMapper.Map(upgradeRequest.Documents));
         }
 
         public async Task<List<GuideUpgradeResponseDto>> UserUpgradeRequests(Guid upgradeRequestId, CancellationToken cancellationToken)
@@ -87,9 +85,7 @@ namespace Modules.Users.Application.Services
                     .ToListAsync(cancellationToken);  
             var results = query
                 .Select(ur => ur.ToResponseDto(
-                    ur.Documents
-                        .Select(d => d.ToResponseDto())
-                        .ToList()
+                    documentMapper.Map(ur.Documents)
                 ))
                 .ToList();
             return results;

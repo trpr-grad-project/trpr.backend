@@ -18,7 +18,7 @@ namespace Modules.Users.Domain.Entities
         //TODO: add guide languages
         public virtual ICollection<Document> Documents { get; set; } = [];
         public virtual User user { get; set; } = null!;
-        public static GuideUpgradeRequest Create(Guid userid, ICollection<Document> documents)
+        public static GuideUpgradeRequest Create(Guid userid, Dictionary<string, DocumentType> documents)
         {
             var upgradeRequest = new GuideUpgradeRequest
             {
@@ -33,8 +33,8 @@ namespace Modules.Users.Domain.Entities
                 {
                     Id = Guid.NewGuid(),
                     GuideRequestId = upgradeRequest.Id,
-                    Type = document.Type,
-                    FileUrl = document.FileUrl,
+                    Type = document.Value,
+                    FileUrl = document.Key,
                 };
                 docs.Add(docm);
             }
@@ -43,14 +43,11 @@ namespace Modules.Users.Domain.Entities
         }
         public void UpdateStatus(Guid AdminId, Guid userId,ApproveStatus status, string? reason = null)
         {
-            if (Status == ApproveStatus.Pending && status != ApproveStatus.Pending)
-            {
-                Status = status;
-                RejectionReason = reason;
-                adminId = AdminId;
-                ReviewedAtUTC = DateTime.UtcNow;
-                this.RaiseDomainEvent(new GuideUpgradeRequestStatusChangedDomainEvent(AdminId, userId, status, reason));
-            }
+            Status = status;
+            RejectionReason = reason;
+            adminId = AdminId;
+            ReviewedAtUTC = DateTime.UtcNow;
+            this.RaiseDomainEvent(new GuideUpgradeRequestStatusChangedDomainEvent(AdminId, userId, status, reason));
         }
     }
 
