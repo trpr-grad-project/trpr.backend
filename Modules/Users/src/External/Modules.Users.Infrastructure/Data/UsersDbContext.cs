@@ -13,6 +13,7 @@ public class UsersDbContext(DbContextOptions<UsersDbContext> options) : DbContex
 {
     public virtual DbSet<Token> Tokens { get; set; }
     public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<UserRole> UserRoles { get; set; }
     public virtual DbSet<Profile> Profiles { get; set; }
     public virtual DbSet<Language> Languages { get; set; }
     public virtual DbSet<Interest> Interests { get; set; }

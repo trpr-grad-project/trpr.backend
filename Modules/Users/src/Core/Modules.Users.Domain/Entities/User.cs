@@ -11,22 +11,21 @@ public class User : Entity
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
-    public Role Role { get; set; } = Role.Company;
     public bool TwoFactorEnabled { get; set; } = false;
     public bool IsVerified { get; set; } = false;
     public virtual Profile Profile { get; set; } = default!;
     public virtual ICollection<Token> Tokens { get; set; } = [];
-    public static User Create(string UserName, string firstName, string lastName, string passwordHash, Role role = Role.Company)
+    public virtual ICollection<UserRole> UserRoles { get; set; } = [];
+    public static User Create(string userName, string firstName, string lastName, string passwordHash)
     {
         var id = Guid.NewGuid();
         var user = new User
         {
             Id = id,
-            UserName = UserName,
+            UserName = userName,
             FirstName = firstName,
             LastName = lastName,
             PasswordHash = passwordHash,
-            Role = role,
             TwoFactorEnabled = false,
             IsVerified = false,
         };

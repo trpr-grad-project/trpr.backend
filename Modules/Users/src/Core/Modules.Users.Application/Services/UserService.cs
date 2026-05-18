@@ -9,9 +9,8 @@ using Modules.Users.Application.Interfaces;
 using Modules.Users.Application.Factories;
 using Modules.Users.Domain.ValueObjects;
 using System.Net.Mail;
-using Microsoft.AspNetCore.Http.Features;
 using Common.Application.Exceptions;
-using Modules.Users.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Modules.Users.Application.Services;
 
@@ -34,15 +33,14 @@ IUnitOfWork unitOfWork)
         }
         await RemoveUnVerifiedUserAsync(user, cancellationToken);
         var emailAdress = MailAddress.TryCreate(createUserRequestDto.Identifier, out var _) ? createUserRequestDto.Identifier : string.Format("{0}@trpr.com", createUserRequestDto.Identifier);
-        
+
         string passwordHash = BCrypt.Net.BCrypt.HashPassword(createUserRequestDto.Password);
-        
+
         user = User.Create(
                 createUserRequestDto.Identifier,
                 createUserRequestDto.FirstName,
                 createUserRequestDto.LastName,
-                passwordHash,
-                Role.Company);
+                passwordHash);
         userRepository.Add(user);
         var token = tokenFactory.CreateToken(TokenType.Otp, user);
         tokenRepository.Add(token);
@@ -61,8 +59,8 @@ IUnitOfWork unitOfWork)
     public async Task<LoginUserResponseDto> LoginUserAsync(LoginUserRequestDto loginUserRequestDto, CancellationToken cancellationToken = default)
     {
 
-        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == loginUserRequestDto.Identifier && x.IsVerified) ?? throw new NotFoundException("User.NotFound", loginUserRequestDto.Identifier);
-        
+        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == loginUserRequestDto.Identifier && x.IsVerified, x => x.Include(x => x.UserRoles)) ?? throw new NotFoundException("User.NotFound", loginUserRequestDto.Identifier);
+
         if (!BCrypt.Net.BCrypt.Verify(loginUserRequestDto.Password, user.PasswordHash))
         {
             throw new NotAuthorizedException("Invalid.Creds");

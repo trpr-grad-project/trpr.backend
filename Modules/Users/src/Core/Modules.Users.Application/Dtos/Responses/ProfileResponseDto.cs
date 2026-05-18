@@ -27,6 +27,7 @@ public class VibeResponseDto
 public class ProfileResponseDto
 {
     public Guid Id { get; set; }
+    public string Bio { get; set; } = string.Empty;
     public List<LanguageResponseDto> Languages { get; set; } = new();
     public List<InterestResponseDto> Interests { get; set; } = new();
     public List<VibeResponseDto> Vibes { get; set; } = new();

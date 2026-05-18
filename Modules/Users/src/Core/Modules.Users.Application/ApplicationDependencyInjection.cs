@@ -17,7 +17,7 @@ public static class ApplicationDependencyInjection
             .BindConfiguration("Users:TokenExpirationInMinutes")
             .ValidateDataAnnotations();
         services.AddOptions<JwtOptions>()
-            .BindConfiguration("Users:Jwt")
+            .BindConfiguration("Jwt")
             .ValidateDataAnnotations();
         #endregion
 
@@ -27,6 +27,7 @@ public static class ApplicationDependencyInjection
 
         #region  services
         services.AddScoped<UserService>();
+        services.AddScoped<AdminUserService>();
         services.AddScoped<ProfileManagementService>();
         services.AddScoped<OtpHandlerFactory>();
         services.AddKeyedScoped<ITokenHandler, ForgetPasswordOtpHandler>(TokenType.ForgetPasswordOtp);

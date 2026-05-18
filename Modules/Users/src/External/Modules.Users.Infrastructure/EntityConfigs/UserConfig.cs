@@ -20,11 +20,12 @@ public class UserConfig : IEntityTypeConfiguration<User>
         builder.Property(c => c.LastName)
             .IsRequired()
             .HasMaxLength(100);
-        builder.Property(c => c.Role)
-            .IsRequired()
-            .HasMaxLength(50)
-            .HasConversion<string>();
         builder.Property(c => c.TwoFactorEnabled)
             .HasDefaultValue(false);
+
+        builder.HasMany(u => u.UserRoles)
+            .WithOne(ur => ur.User)
+            .HasForeignKey(ur => ur.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

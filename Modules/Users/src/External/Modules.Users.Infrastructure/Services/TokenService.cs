@@ -39,14 +39,23 @@ internal sealed class TokenService(IOptions<JwtOptions> jwtOptions) : ITokenServ
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = System.Text.Encoding.ASCII.GetBytes(_secret);
-        
+
         var claims = new Dictionary<string, object>
         {
-            { ClaimTypes.Name, user.UserName },
-            { ClaimTypes.NameIdentifier, user.Id.ToString() },
-            { "X-UserId", user.Id.ToString() },
-            { "realm_access", new Dictionary<string, object> { { "roles", new[] { user.Role.ToString() } } } }
+            { "given_name", user.FirstName },
+            { "family_name", user.LastName },
+            { "identifier", user.UserName },
+            { "sub", user.Id.ToString() },
+            { "realm_access", new Dictionary<string, object> { { "roles", user.UserRoles.Select(ur => ur.Role.ToString()).ToArray() } } }
         };
+        if (user.Profile != null)
+        {
+            if (user.Profile.Email != null)
+                claims.Add("email", user.Profile.Email);
+            if (user.Profile.PhoneNumber != null)
+                claims.Add("phone_number", user.Profile.PhoneNumber);
+            claims.Add("profile_id", user.Profile.Id.ToString());
+        }
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
