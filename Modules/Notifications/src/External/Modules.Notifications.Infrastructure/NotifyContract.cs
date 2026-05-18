@@ -88,4 +88,15 @@ public class NotifyContract(
 
     }
 
+    public async Task UpdateNotificationSettingsAsync(Guid userId, UpdateNotificationSettingsRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(x => x.Id == userId) ?? throw new NotFoundException("User.NotFound", userId);
+        user.UpdateNotificationSettings(
+            request.TripUpdates,
+            request.Messages,
+            request.Promotions
+        );
+        repositoryFactory.Repository<User>().Update(user);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
 }

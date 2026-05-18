@@ -1,6 +1,7 @@
 using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Modules.Notifications.Contracts.Contracts;
 using Modules.Users.Application.Abstractions;
 using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Dtos.Responses;
@@ -12,6 +13,7 @@ namespace Modules.Users.Application.Services;
 public class ProfileManagementService(
     IUsersDbContext context,
     IUnitOfWork unitOfWork,
+    INotifiyContract notifyContract,
     ILogger<ProfileManagementService> logger)
 {
     public async Task<ProfileResponseDto> CreateProfileAsync(Guid userId, CreateProfileRequestDto createRequest, CancellationToken cancellationToken = default)
@@ -87,6 +89,17 @@ public class ProfileManagementService(
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         logger.LogInformation("Profile updated successfully for user {UserId}", userId);
+
+        if (updateRequest.NotificationSettings != null)
+        {
+            var notifSettings = new UpdateNotificationSettingsRequestDto
+            {
+                TripUpdates = updateRequest.NotificationSettings.TripUpdates,
+                Messages = updateRequest.NotificationSettings.Messages,
+                Promotions = updateRequest.NotificationSettings.Promotions
+            };
+            await notifyContract.UpdateNotificationSettingsAsync(userId, notifSettings, cancellationToken);
+        }
 
         // Reload the profile with all related data
         return await GetProfileByUserIdAsync(userId, cancellationToken);

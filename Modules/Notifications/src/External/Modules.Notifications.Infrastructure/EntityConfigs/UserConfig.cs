@@ -13,5 +13,12 @@ public class UserConfig : IEntityTypeConfiguration<User>
             .WithOne(x => x.User)
             .HasForeignKey(t => t.UserId)
             .IsRequired(false);
+
+        builder.Property(x => x.TripUpdates)
+        .HasDefaultValue(true);
+        builder.Property(x => x.Messages)
+        .HasDefaultValue(true);
+        builder.Property(x => x.Promotions)
+        .HasDefaultValue(true);
     }
 }
