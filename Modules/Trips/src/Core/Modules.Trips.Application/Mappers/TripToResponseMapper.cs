@@ -26,6 +26,7 @@ namespace Modules.Trips.Application.Mappers
                     .SelectMany(s => s.Places)
                     .Select(x => x.ToPlaceDto())],
                 MaxParticipantsCount = source.MaxParticipantsCount,
+                RejectionReason = source.RejectionReason
             };
             return responseDto;
         }

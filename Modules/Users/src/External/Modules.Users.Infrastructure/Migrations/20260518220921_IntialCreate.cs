@@ -160,7 +160,7 @@ namespace Modules.Users.Infrastructure.Migrations
                     rejection_reason = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     description = table.Column<string>(type: "text", nullable: false),
                     subject = table.Column<string>(type: "text", nullable: true),
-                    admin_id = table.Column<int>(type: "integer", nullable: true),
+                    admin_id = table.Column<Guid>(type: "uuid", nullable: true),
                     reviewed_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)

@@ -19,7 +19,7 @@ namespace Modules.Trips.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("trp")
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "10.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
@@ -921,6 +921,18 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("double precision")
                         .HasColumnName("price");
+
+                    b.Property<int>("PublishMode")
+                        .HasColumnType("integer")
+                        .HasColumnName("publish_mode");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("text")
+                        .HasColumnName("rejection_reason");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
 
                     b.Property<int>("ThemeId")
                         .HasColumnType("integer")

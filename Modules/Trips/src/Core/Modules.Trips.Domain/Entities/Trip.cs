@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Modules.Trips.Domain.Abstractions;
-using Modules.Trips.Domain.ValueObjects;
+﻿using Modules.Trips.Domain.ValueObjects;
 
 namespace Modules.Trips.Domain.Entities
 {
-    public class Trip : Entity
+    public class Trip : TripState
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
@@ -34,6 +28,7 @@ namespace Modules.Trips.Domain.Entities
             double price,
             ICollection<string> images,
             TripVisibility tripVisibility,
+            TripPublishMode publishMode,
             ICollection<ICollection<Place>> segments,
             int maxParticipantCount,
             Guid? guideId,
@@ -41,8 +36,9 @@ namespace Modules.Trips.Domain.Entities
             User user,
             ICollection<Governorate> governorates)
         {
-            Trip newTrip = new Trip()
+            Trip newTrip = new()
             {
+                PublishMode = publishMode,
                 Id = Guid.NewGuid(),
                 UserId = userId,
                 ThemeId = themeId,
@@ -53,7 +49,8 @@ namespace Modules.Trips.Domain.Entities
                 TripVisibility = tripVisibility,
                 MaxParticipantsCount = maxParticipantCount,
                 GuideId = guideId,
-                CreatedByUser = user
+                CreatedByUser = user,
+                Status = TripStatus.UnderReview,
             };
             foreach (double dur in duration)
             {
@@ -86,6 +83,7 @@ namespace Modules.Trips.Domain.Entities
             newTrip.TripGovernorates = tripGovernorates;
             return newTrip;
         }
+
         // update method for adding/removing participants
         // update method for adding new places?
         // update method for trip details

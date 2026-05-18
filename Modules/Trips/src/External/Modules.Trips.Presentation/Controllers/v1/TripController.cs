@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Common.Application.Dtos;
 using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +13,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
     public class TripController(TripService tripService) : ControllerBase
     {
         public Guid UserId => User.GetUserId();
+
         [HttpPost("create-trip")]
         [Authorize]
         public async Task<ActionResult<TripResponseDto>> CreateTrip([FromBody] CreateTripRequestDto dto, CancellationToken cancellationToken)
@@ -25,11 +22,28 @@ namespace Modules.Trips.Presentation.Controllers.v1
             return Ok(request);
         }
 
-        [HttpGet("get-trips")]
-        public async Task<ActionResult<TripResponseDto>> GetTrips([FromQuery] SearchTripRequestDto requestDto, CancellationToken cancellationToken)
+        [HttpGet("admin")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<PaginationDto<TripResponseDto>>> GetTrips([FromQuery] SearchTripRequestDto requestDto, CancellationToken cancellationToken)
         {
-            var request = await tripService.GetTrips(requestDto, cancellationToken);
+            var request = await tripService.GetTrips(requestDto, null, cancellationToken);
             return Ok(request);
+        }
+
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<ActionResult<PaginationDto<TripResponseDto>>> GetMyTrips([FromQuery] SearchTripRequestDto requestDto, CancellationToken cancellationToken)
+        {
+            var request = await tripService.GetTrips(requestDto, UserId, cancellationToken);
+            return Ok(request);
+        }
+
+        [HttpPost("change-status")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> ApproveTrip(UpdateTripStatusRequestDto dto, CancellationToken cancellationToken)
+        {
+            await tripService.UpdateStatus(dto, cancellationToken);
+            return NoContent();
         }
     }
 }

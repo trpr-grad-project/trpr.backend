@@ -21,5 +21,6 @@ namespace Modules.Trips.Application.Dtos.Responses
         public List<PlaceDto> Segments { get; set; } = [];
         public int MaxParticipantsCount { get; set; }
         public Guid? GuideId { get; set; }
+        public string? RejectionReason { get; set; }
     }
 }

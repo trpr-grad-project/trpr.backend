@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Trips.Infrastructure.Migrations
 {
     [DbContext(typeof(TripsDbContext))]
-    [Migration("20260509151005_AddGovernoratesToTrips")]
-    partial class AddGovernoratesToTrips
+    [Migration("20260518220510_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,7 +22,7 @@ namespace Modules.Trips.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("trp")
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "10.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
@@ -924,6 +924,18 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("double precision")
                         .HasColumnName("price");
+
+                    b.Property<int>("PublishMode")
+                        .HasColumnType("integer")
+                        .HasColumnName("publish_mode");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("text")
+                        .HasColumnName("rejection_reason");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
 
                     b.Property<int>("ThemeId")
                         .HasColumnType("integer")

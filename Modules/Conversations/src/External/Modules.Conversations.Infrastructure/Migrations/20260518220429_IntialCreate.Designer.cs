@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Conversations.Infrastructure.Migrations
 {
     [DbContext(typeof(ConversationsDbContext))]
-    [Migration("20260502122822_IntialCreate")]
+    [Migration("20260518220429_IntialCreate")]
     partial class IntialCreate
     {
         /// <inheritdoc />
@@ -21,7 +21,7 @@ namespace Modules.Conversations.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("cnv")
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "10.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
