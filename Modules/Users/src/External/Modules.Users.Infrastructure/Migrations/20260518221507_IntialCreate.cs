@@ -121,7 +121,8 @@ namespace Modules.Users.Infrastructure.Migrations
                     user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     first_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     last_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    identity_provider_id = table.Column<string>(type: "text", nullable: false),
+                    password_hash = table.Column<string>(type: "text", nullable: false),
+                    role = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     two_factor_enabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     is_verified = table.Column<bool>(type: "boolean", nullable: false),
                     created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -413,13 +414,6 @@ namespace Modules.Users.Infrastructure.Migrations
                 schema: "usr",
                 table: "tokens",
                 column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_users_identity_provider_id",
-                schema: "usr",
-                table: "users",
-                column: "identity_provider_id",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_users_user_name",

@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Trips.Infrastructure.Migrations
 {
     [DbContext(typeof(TripsDbContext))]
-    [Migration("20260518220510_InitialCreate")]
+    [Migration("20260518221452_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
