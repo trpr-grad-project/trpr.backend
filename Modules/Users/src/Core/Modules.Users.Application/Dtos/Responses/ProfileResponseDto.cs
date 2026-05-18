@@ -24,6 +24,13 @@ public class VibeResponseDto
     public string Name { get; set; } = string.Empty;
 }
 
+public class ProfileNotificationSettingsDto
+{
+    public bool TripUpdates { get; set; }
+    public bool Messages { get; set; }
+    public bool Promotions { get; set; }
+}
+
 public class ProfileResponseDto
 {
     public Guid Id { get; set; }
@@ -31,6 +38,7 @@ public class ProfileResponseDto
     public List<LanguageResponseDto> Languages { get; set; } = new();
     public List<InterestResponseDto> Interests { get; set; } = new();
     public List<VibeResponseDto> Vibes { get; set; } = new();
+    public ProfileNotificationSettingsDto? NotificationSettings { get; set; }
 }
 
 public class ProfileLookupResponseDto

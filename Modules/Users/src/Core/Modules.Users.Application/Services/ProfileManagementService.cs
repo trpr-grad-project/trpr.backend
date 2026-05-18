@@ -62,7 +62,17 @@ public class ProfileManagementService(
             throw new NotFoundException("Profile.NotFound", userId);
         }
 
-        return ProfileMapper.ToProfileResponseDto(profile);
+        NotificationSettingsResponseDto? notificationSettings = null;
+        try
+        {
+            notificationSettings = await notifyContract.GetNotificationSettingsAsync(userId, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to fetch notification settings for user {UserId}", userId);
+        }
+
+        return ProfileMapper.ToProfileResponseDto(profile, notificationSettings);
     }
 
     public async Task<ProfileResponseDto> UpdateProfileAsync(Guid userId, UpdateProfileBulkRequestDto updateRequest, CancellationToken cancellationToken = default)
