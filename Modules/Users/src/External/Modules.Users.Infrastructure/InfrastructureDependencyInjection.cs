@@ -2,10 +2,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Modules.Users.Application.Interfaces;
-using Modules.Users.Infrastructure.Services;
-using Modules.Users.Infrastructure.Options;
-using Modules.Users.Infrastructure.Delegates;
 using Modules.Users.Infrastructure.Clients;
+using Modules.Users.Infrastructure.Services;
 using Modules.Users.Infrastructure.Data;
 using Modules.Users.Infrastructure.Outbox;
 using Modules.Users.Infrastructure.Inbox;
@@ -21,25 +19,12 @@ public static class InfrastructureDependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<KeyCloakOptions>(configuration.GetSection("Users:KeyCloak"));
-        services.AddTransient<AdminKeyCloakAuthDelegatingHandler>();
-        services.AddHttpClient<AdminKeyCloakClient>((sp, client) =>
-        {
-            KeyCloakOptions options = sp.GetRequiredService<IOptions<KeyCloakOptions>>().Value;
-            client.BaseAddress = new Uri(options.AdminUrl);
-        })
-        .AddHttpMessageHandler<AdminKeyCloakAuthDelegatingHandler>();
-        services.AddHttpClient<TokenKeyCloackCLient>((sp, client) =>
-        {
-            KeyCloakOptions options = sp.GetRequiredService<IOptions<KeyCloakOptions>>().Value;
-            client.BaseAddress = new Uri(options.TokenUrl);
-        });
         services.AddHttpClient<SemanticModelClient>((sp, client) =>
         {
             string baseUrl = configuration.GetConnectionString("Users:SemanticModelUrl")!;
             client.BaseAddress = new Uri(baseUrl);
         });
-        services.AddScoped<IIdentityProviderService, IdentityProviderService>();
+        services.AddScoped<ITokenService, TokenService>();
 
         string dbConnectionString = configuration.GetConnectionString("RommieDb")!;
         services.AddDbContext<UsersDbContext>((sp, options) =>

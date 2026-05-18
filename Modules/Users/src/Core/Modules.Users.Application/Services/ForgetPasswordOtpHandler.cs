@@ -7,7 +7,7 @@ using Modules.Users.Domain.Entities;
 
 namespace Modules.Users.Application.Services;
 
-public class ForgetPasswordOtpHandler(IRepository<User> userRepository, IRepository<Token> tokenRepository, IUnitOfWork unitOfWork, IIdentityProviderService identityProviderService) : ITokenHandler
+public class ForgetPasswordOtpHandler(IRepository<User> userRepository, IRepository<Token> tokenRepository, IUnitOfWork unitOfWork, ITokenService tokenService) : ITokenHandler
 {
     public async Task<LoginUserResponseDto> VerifyOtpAsync(Token token, User user, string value, CancellationToken cancellationToken = default)
     {
@@ -18,7 +18,7 @@ public class ForgetPasswordOtpHandler(IRepository<User> userRepository, IReposit
         userRepository.Update(user);
         tokenRepository.Update(token);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        return await identityProviderService.ImpersonateUserAsync(user.UserName, cancellationToken);
+        return tokenService.GenerateToken(user);
     }
 
 }

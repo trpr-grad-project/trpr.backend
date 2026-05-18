@@ -11,6 +11,7 @@ using Modules.Users.Domain.ValueObjects;
 using System.Net.Mail;
 using Microsoft.AspNetCore.Http.Features;
 using Common.Application.Exceptions;
+using Modules.Users.Domain.Enums;
 
 namespace Modules.Users.Application.Services;
 
@@ -18,7 +19,7 @@ public class UserService(
 IRepository<User> userRepository,
 IRepository<Token> tokenRepository,
 TokenFactory tokenFactory,
-IIdentityProviderService identityProviderService,
+ITokenService tokenService,
 OtpHandlerFactory otpHandlerFactory,
 ILogger<UserService> logger,
 IUnitOfWork unitOfWork)
@@ -33,19 +34,15 @@ IUnitOfWork unitOfWork)
         }
         await RemoveUnVerifiedUserAsync(user, cancellationToken);
         var emailAdress = MailAddress.TryCreate(createUserRequestDto.Identifier, out var _) ? createUserRequestDto.Identifier : string.Format("{0}@trpr.com", createUserRequestDto.Identifier);
-        string userIdentitfier = await identityProviderService.RegisterUserAsync(
-            new UserModel(
-                createUserRequestDto.Identifier,
-                emailAdress,
-                createUserRequestDto.Password,
-                createUserRequestDto.FirstName,
-                createUserRequestDto.LastName),
-            cancellationToken);
+        
+        string passwordHash = BCrypt.Net.BCrypt.HashPassword(createUserRequestDto.Password);
+        
         user = User.Create(
                 createUserRequestDto.Identifier,
                 createUserRequestDto.FirstName,
                 createUserRequestDto.LastName,
-                userIdentitfier);
+                passwordHash,
+                Role.Company);
         userRepository.Add(user);
         var token = tokenFactory.CreateToken(TokenType.Otp, user);
         tokenRepository.Add(token);
@@ -65,24 +62,28 @@ IUnitOfWork unitOfWork)
     {
 
         var user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == loginUserRequestDto.Identifier && x.IsVerified) ?? throw new NotFoundException("User.NotFound", loginUserRequestDto.Identifier);
-        var loginResponse = await identityProviderService.LoginUserAsync(
-            loginUserRequestDto.Identifier,
-            loginUserRequestDto.Password,
-            cancellationToken);
+        
+        if (!BCrypt.Net.BCrypt.Verify(loginUserRequestDto.Password, user.PasswordHash))
+        {
+            throw new NotAuthorizedException("Invalid.Creds");
+        }
+
+        var loginResponse = tokenService.GenerateToken(user);
         loginResponse.ProfileSetupCompleted = user.Profile != null;
         return loginResponse;
     }
 
-    public async Task<LoginUserResponseDto> RefreshUserAsnc(RefreshTokenRequestDto refreshTokenRequestDto, CancellationToken cancellationToken = default)
+    public Task<LoginUserResponseDto> RefreshUserAsnc(RefreshTokenRequestDto refreshTokenRequestDto, CancellationToken cancellationToken = default)
     {
-        return await identityProviderService.RefreshUserAsync(
-            refreshTokenRequestDto.Token,
-            cancellationToken);
+        return Task.FromResult(tokenService.RefreshToken(refreshTokenRequestDto.Token));
     }
 
     public async Task UpdatePassword(Guid userId, UpdatePasswordRequestDto updatePasswordRequest, CancellationToken cancellationToken = default)
     {
-        await identityProviderService.UpdatePassword(userId, updatePasswordRequest.Password, cancellationToken);
+        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.Id == userId) ?? throw new NotFoundException("User.NotFound", userId);
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(updatePasswordRequest.Password);
+        userRepository.Update(user);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<LoginUserResponseDto> VerifyOtpAsync(VerifyOtpRequestDto verifyOtpRequestDto, CancellationToken cancellationToken = default)
@@ -126,7 +127,6 @@ IUnitOfWork unitOfWork)
         logger.LogInformation("User with identifier {Identifier} exists but is not verified. Proceeding to re-register.", user.Id);
         userRepository.Delete(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        await identityProviderService.RemoveUserAsync(user.Id, cancellationToken);
     }
 
 }
