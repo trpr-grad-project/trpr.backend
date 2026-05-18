@@ -20,8 +20,10 @@ public class UserConfig : IEntityTypeConfiguration<User>
         builder.Property(c => c.LastName)
             .IsRequired()
             .HasMaxLength(100);
-        builder.HasIndex(c => c.IdentityProviderId)
-            .IsUnique();
+        builder.Property(c => c.Role)
+            .IsRequired()
+            .HasMaxLength(50)
+            .HasConversion<string>();
         builder.Property(c => c.TwoFactorEnabled)
             .HasDefaultValue(false);
     }

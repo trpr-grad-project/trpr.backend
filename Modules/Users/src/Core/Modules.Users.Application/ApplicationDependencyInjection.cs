@@ -16,6 +16,9 @@ public static class ApplicationDependencyInjection
         services.AddOptions<TokenExpirationInMinutesOption>()
             .BindConfiguration("Users:TokenExpirationInMinutes")
             .ValidateDataAnnotations();
+        services.AddOptions<JwtOptions>()
+            .BindConfiguration("Users:Jwt")
+            .ValidateDataAnnotations();
         #endregion
 
         #region  factories

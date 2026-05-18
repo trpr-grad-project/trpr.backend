@@ -1,5 +1,6 @@
 using Modules.Users.Domain.Events;
 using Modules.Users.Domain.Abstractions;
+using Modules.Users.Domain.Enums;
 
 namespace Modules.Users.Domain.Entities;
 
@@ -9,20 +10,23 @@ public class User : Entity
     public string UserName { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-    public string IdentityProviderId { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
+    public Role Role { get; set; } = Role.Company;
     public bool TwoFactorEnabled { get; set; } = false;
     public bool IsVerified { get; set; } = false;
     public virtual Profile Profile { get; set; } = default!;
     public virtual ICollection<Token> Tokens { get; set; } = [];
-    public static User Create(string UserName, string firstName, string lastName, string identityProviderId)
+    public static User Create(string UserName, string firstName, string lastName, string passwordHash, Role role = Role.Company)
     {
+        var id = Guid.NewGuid();
         var user = new User
         {
-            Id = Guid.Parse(identityProviderId),
+            Id = id,
             UserName = UserName,
             FirstName = firstName,
             LastName = lastName,
-            IdentityProviderId = identityProviderId,
+            PasswordHash = passwordHash,
+            Role = role,
             TwoFactorEnabled = false,
             IsVerified = false,
         };
