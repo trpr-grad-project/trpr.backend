@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Modules.Trips.Presentation.Controllers.v1
 {
     [ApiController]
+    [Authorize]
     [Route("api/v1/trip/images")]
     public class ImageController(IFileService fileService) : ControllerBase
     {

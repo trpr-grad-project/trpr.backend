@@ -9,6 +9,6 @@ namespace Modules.Users.Application.Dtos.Requests
     public class UploadDocumentDto
     {
         public DocumentType Type { get; set; }
-        public IFormFile Files { get; set; } = default!;
+        public IFormFile File { get; set; } = default!;
     }
 }
