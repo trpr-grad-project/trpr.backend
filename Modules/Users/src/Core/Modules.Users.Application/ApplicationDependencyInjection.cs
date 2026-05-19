@@ -28,6 +28,7 @@ public static class ApplicationDependencyInjection
         #region  services
         services.AddScoped<UserService>();
         services.AddScoped<AdminUserService>();
+        services.AddScoped<GuideService>();
         services.AddScoped<ProfileManagementService>();
         services.AddScoped<OtpHandlerFactory>();
         services.AddKeyedScoped<ITokenHandler, ForgetPasswordOtpHandler>(TokenType.ForgetPasswordOtp);
