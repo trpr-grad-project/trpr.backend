@@ -9,7 +9,6 @@ namespace Modules.Users.Application.Dtos.Requests
 {
     public class UpdateGuideStatusRequestDto
     {
-        public Guid UserId { get; set; }
         public Guid UpgradeRequestId { get; set; }
         public ApproveStatus Status { get; set; }
         public string? RejectionReason { get; set; }

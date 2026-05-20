@@ -26,8 +26,8 @@ namespace Modules.Users.Application.Services
 {
     public class GuideService(
         RepositoryFactory repositoryFactory,
-        IUnitOfWork unitOfWork, 
-        IMapper<ICollection<DocumentDto>,Dictionary<string, DocumentType>> mapper,
+        IUnitOfWork unitOfWork,
+        IMapper<ICollection<DocumentDto>, Dictionary<string, DocumentType>> mapper,
         IMapper<ICollection<Document>, ICollection<DocumentDto>> documentMapper)
     {
         public async Task<ActionResult<GuideUpgradeResponseDto>> UpgradeToGuide(Guid userId, GuideUpgradeRequestDto request, CancellationToken cancellationToken)
@@ -61,9 +61,9 @@ namespace Modules.Users.Application.Services
         public async Task<GuideUpgradeResponseDto> ChangeGuideStatus(Guid AdminId, UpdateGuideStatusRequestDto dto, CancellationToken cancellationToken)
         {
             var upgradeRequest = await repositoryFactory.Repository<GuideUpgradeRequest>()
-                .GetFirstOrDefaultByFilter(u => u.userId == dto.UserId && u.Id == dto.UpgradeRequestId)
+                .GetFirstOrDefaultByFilter(u => u.Id == dto.UpgradeRequestId)
                 ?? throw new NotFoundException("UpgradeRequest.NotFound", dto.UpgradeRequestId);
-            if(upgradeRequest.Status == ApproveStatus.Pending && dto.Status != ApproveStatus.Pending)
+            if (upgradeRequest.Status == ApproveStatus.Pending && dto.Status != ApproveStatus.Pending)
             {
                 upgradeRequest.UpdateStatus(AdminId, upgradeRequest.userId, dto.Status, dto.RejectionReason);
             }
@@ -82,7 +82,7 @@ namespace Modules.Users.Application.Services
                     .OrderBy(u => u.Status)
                     .Include(u => u.Documents)
                     .Include(u => u.user)
-                    .ToListAsync(cancellationToken);  
+                    .ToListAsync(cancellationToken);
             var results = query
                 .Select(ur => ur.ToResponseDto(
                     documentMapper.Map(ur.Documents)
