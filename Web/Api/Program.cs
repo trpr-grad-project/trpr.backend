@@ -53,7 +53,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
     await app.AddMigrations();
-    // await app.ExecuteSeedingAsync();
+    await app.ExecuteSeedingAsync();
 }
 app.MapHub<ChatHub>("chat-hub");
 app.UseLocalization();

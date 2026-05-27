@@ -16,7 +16,7 @@ namespace Modules.Trips.Infrastructure.Seeds.Dto
         public string Tags { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string CategoryClean { get; set; } = string.Empty;
-        public string Governorate { get; set; } = string.Empty;
+        public int GovernorateId { get; set; }
     }
 
     public sealed class PlaceMap : ClassMap<PlaceCsv>
@@ -30,7 +30,7 @@ namespace Modules.Trips.Infrastructure.Seeds.Dto
             Map(x => x.Tags).Name("tags");
             Map(x => x.Description).Name("description");
             Map(x => x.CategoryClean).Name("category_clean");
-            Map(x => x.Governorate).Name("governorate");
+            Map(x => x.GovernorateId).Name("governorateId");
         }
     }
 }

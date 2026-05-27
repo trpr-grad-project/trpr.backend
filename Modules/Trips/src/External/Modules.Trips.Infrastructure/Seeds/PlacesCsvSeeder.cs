@@ -1,6 +1,4 @@
 using System.Globalization;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using Common.Application.Seeds;
 using Microsoft.Extensions.Logging;
 using Modules.Trips.Application.Abstractions;
@@ -64,9 +62,8 @@ public class PlacesCsvSeeder(ILogger<PlacesCsvSeeder> logger, RepositoryFactory 
             .Distinct()
             .ToList();
 
-        var governorateNames = records
-            .Select(x => x.Governorate)
-            .Select(g => g.Trim().ToLower())
+        var governorateIds = records
+            .Select(x => x.GovernorateId)
             .Distinct()
             .ToList();
 
@@ -80,8 +77,8 @@ public class PlacesCsvSeeder(ILogger<PlacesCsvSeeder> logger, RepositoryFactory 
             await unitOfWork.BeginTransactionAsync();
             var tags = await SeedTags(tagNames);
             var NameToTagMapper = tags.ToDictionary(t => t.Name, t => t);
-            var governorates = await SeedGovernorates(governorateNames);
-            var NameToGovernorateMapper = governorates.ToDictionary(g => g.Name, g => g);
+            var governorates = await SeedGovernorates(governorateIds);
+            var NameToGovernorateMapper = governorates.ToDictionary(g => g.Id, g => g);
             var categories = await SeedCategories(categoryNames);
             var NameToCategoryMapper = categories.ToDictionary(c => c.Name, c => c);
             foreach (var record in records)
@@ -90,7 +87,7 @@ public class PlacesCsvSeeder(ILogger<PlacesCsvSeeder> logger, RepositoryFactory 
                     record.PlaceName,
                     record.Description,
                     NameToCategoryMapper[record.CategoryClean.Trim().ToLower()].Id,
-                    NameToGovernorateMapper[record.Governorate.Trim().ToLower()].Id,
+                    NameToGovernorateMapper[record.GovernorateId].Id,
                     record.Lon,
                     record.Lat);
 
@@ -122,30 +119,25 @@ public class PlacesCsvSeeder(ILogger<PlacesCsvSeeder> logger, RepositoryFactory 
             await unitOfWork.RollbackTransactionAsync();
         }
     }
-    private async Task<ICollection<Governorate>> SeedGovernorates(ICollection<string> governorateNames, CancellationToken cancellationToken = default)
+    private async Task<ICollection<Governorate>> SeedGovernorates(ICollection<int> governorateIds, CancellationToken cancellationToken = default)
     {
         var governorateRepository = repositoryFactory.Repository<Governorate>();
 
         var existingGovernorates = await governorateRepository
-            .GetByExpWhereAsync(x => governorateNames.Contains(x.Name));
+            .GetByExpWhereAsync(x => governorateIds.Contains(x.Id));
 
-        var existingGovernorateNames = existingGovernorates
-            .Select(x => x.Name)
+        var existingGovernorateIds = existingGovernorates
+            .Select(x => x.Id)
             .ToHashSet();
 
-        var newGovernorates = governorateNames
-            .Where(x => !existingGovernorateNames.Contains(x))
-            .Select(x => new Governorate
-            {
-                Id = 0,
-                Name = x
-            })
+        var newGovernorates = governorateIds
+            .Where(x => !existingGovernorateIds.Contains(x))
             .ToList();
 
         if (newGovernorates.Count > 0)
         {
-            var invalidGovernorateNames = string.Join(", ", newGovernorates.Select(g => g.Name));
-            throw new Exception($"Governorates Names are invalid or not exist in the database, please add them first before seeding places: ({invalidGovernorateNames})");
+            var invalidGovernorateIds = string.Join(", ", newGovernorates);
+            throw new Exception($"Governorates Ids are invalid or not exist in the database, please add them first before seeding places: ({invalidGovernorateIds})");
         }
         return existingGovernorates;
     }
