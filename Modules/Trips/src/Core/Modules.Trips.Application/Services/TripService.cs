@@ -1,5 +1,4 @@
 ﻿using Common.Application;
-using Common.Application.Buckets;
 using Common.Application.Dtos;
 using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +8,8 @@ using Modules.Trips.Application.Dtos.Requests;
 using Modules.Trips.Application.Dtos.Responses;
 using Modules.Trips.Application.Repositories;
 using Modules.Trips.Domain.Entities;
+using Modules.Trips.Domain.ValueObjects;
+using Modules.Trips.Application.Helpers;
 
 namespace Modules.Trips.Application.Services
 {
@@ -65,7 +66,7 @@ namespace Modules.Trips.Application.Services
             return tripMapper.Map(trip);
         }
 
-        public async Task<PaginationDto<TripResponseDto>> GetTrips(SearchTripRequestDto request, Guid? userId = null, CancellationToken cancellationToken = default)
+        public async Task<PaginationDto<TripResponseDto>> GetTrips(BaseSearchTripRequestDto request, Guid? userId = null, TripStatus? status = null, CancellationToken cancellationToken = default)
         {
             // TODO FILTER BASED ON THE SEARCH REQUEST LATER
             var trips = repositoryFactory.Repository<Trip>().GetQueryable()
@@ -75,40 +76,22 @@ namespace Modules.Trips.Application.Services
                 .AsQueryable();
             if (userId.HasValue)
                 trips = trips.Where(x => x.UserId == userId.Value);
-            if (request.PublishMode.HasValue)
-                trips = trips.Where(x => x.PublishMode == request.PublishMode.Value);
-            if (request.Status.HasValue)
-                trips = trips.Where(x => x.Status == request.Status.Value);
-            if (request.ThemeId.HasValue)
-                trips = trips.Where(x => x.ThemeId == request.ThemeId.Value);
-            if (request.GovernorateId.HasValue)
-                trips = trips.Where(x => x.TripGovernorates.Any(g => g.GovernorateId == request.GovernorateId.Value));
-            if (!string.IsNullOrEmpty(request.Title))
-                trips = trips.Where(x => x.Title.Contains(request.Title));
-            if (request.MinPrice.HasValue)
-                trips = trips.Where(x => x.Price >= request.MinPrice.Value);
-            if (request.MaxPrice.HasValue)
-                trips = trips.Where(x => x.Price <= request.MaxPrice.Value);
-            ICollection<Trip> pagedTrips = [];
+            if (status.HasValue)
+                trips = trips.Where(x => x.Status == status.Value);
+            trips = FilterByBaseSearchRequest(trips, request);
             int count = 0;
-            if (request.Page.HasValue && request.PageSize.HasValue)
-            {
-                pagedTrips = await trips
-                    .Skip((request.Page.Value - 1) * request.PageSize.Value)
-                    .Take(request.PageSize.Value)
-                    .ToListAsync(cancellationToken);
-                count = await trips.CountAsync(cancellationToken);
-            }
-            else
-            {
-                pagedTrips = await trips.ToListAsync(cancellationToken);
-                count = pagedTrips.Count;
-            }
+
+            ICollection<Trip> pagedTrips = await trips
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToListAsync(cancellationToken);
+            count = await trips.CountAsync(cancellationToken);
+
             return new PaginationDto<TripResponseDto>
             {
                 Items = pagedTrips.Select(tripMapper.Map).ToList(),
-                Page = request.Page ?? 1,
-                PageSize = request.PageSize ?? count,
+                Page = request.Page,
+                PageSize = request.PageSize,
                 TotalItems = count
             };
         }
@@ -122,6 +105,29 @@ namespace Modules.Trips.Application.Services
                 places.Add(dayPlaces);
             }
             return places;
+        }
+
+        public static IQueryable<Trip> FilterByBaseSearchRequest(IQueryable<Trip> query, BaseSearchTripRequestDto request)
+        {
+            if (request.Longitude.HasValue && request.Latitude.HasValue && request.RadiusInMeters.HasValue)
+            {
+                var point = PointUtils
+                    .PointFromCoordinates(
+                        request.Longitude.Value,
+                        request.Latitude.Value);
+                query = query.Where(x => x.Centroid.Distance(point) <= request.RadiusInMeters.Value);
+            }
+            if (request.ThemeId.HasValue)
+                query = query.Where(x => x.ThemeId == request.ThemeId.Value);
+            if (request.GovernorateId.HasValue)
+                query = query.Where(x => x.TripGovernorates.Any(g => g.GovernorateId == request.GovernorateId.Value));
+            if (!string.IsNullOrEmpty(request.Title))
+                query = query.Where(x => x.Title.Contains(request.Title));
+            if (request.MinPrice.HasValue)
+                query = query.Where(x => x.Price >= request.MinPrice.Value);
+            if (request.MaxPrice.HasValue)
+                query = query.Where(x => x.Price <= request.MaxPrice.Value);
+            return query;
         }
         #endregion
     }

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Common.Application.DomainEvents.Extensions;
 using Modules.Trips.Application.Services;
 
 namespace Modules.Trips.Application;
@@ -17,6 +16,7 @@ public static class ApplicationDependencyInjection
         #region  services
         services.AddScoped<PlaceService>();
         services.AddScoped<TripService>();
+        services.AddScoped<BiddingService>();
         #endregion
 
         return services;

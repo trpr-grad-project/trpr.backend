@@ -57,6 +57,19 @@ namespace Modules.Trips.Infrastructure.EntityConfigs
                 .HasForeignKey(tp => tp.TripId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder
+                .Property(p => p.Centroid)
+                .HasColumnType("geography (Point, 4326)");
+
+            builder
+                .HasIndex(p => p.Centroid)
+                .HasMethod("GIST");
+
+            builder
+                .HasMany(t => t.Bids)
+                .WithOne(b => b.Trip)
+                .HasForeignKey(b => b.TripId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasIndex(t => t.UserId);
             builder.HasIndex(t => t.ThemeId);

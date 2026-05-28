@@ -1,4 +1,5 @@
 ﻿using Modules.Trips.Domain.ValueObjects;
+using NetTopologySuite.Geometries;
 
 namespace Modules.Trips.Domain.Entities
 {
@@ -14,9 +15,11 @@ namespace Modules.Trips.Domain.Entities
         public double ActualDuration { get; set; }
         public double ExpectedDuration { get; set; }
         public ICollection<string> Images { get; set; } = [];
+        public Point Centroid { get; set; } = default!;
         public TripVisibility TripVisibility { get; set; } = TripVisibility.Public;
         public virtual ICollection<Day> Segments { get; set; } = [];
         public virtual ICollection<TripGovernorate> TripGovernorates { get; set; } = [];
+        public virtual ICollection<TripBidding> Bids { get; set; } = [];
         public int MaxParticipantsCount { get; set; }
         public Guid? GuideId { get; set; }
         public ICollection<TripParticipant> Participants { get; set; } = [];
@@ -70,6 +73,13 @@ namespace Modules.Trips.Domain.Entities
                 days.Add(day);
             }
             newTrip.Segments = days;
+            MultiPoint points = new(
+                [.. segments
+                    .SelectMany(s => s)
+                    .Select(p => p.Location)]
+                )
+            { SRID = 4326 };
+            newTrip.Centroid = points.Centroid;
             ICollection<TripGovernorate> tripGovernorates = [];
             foreach (var governorate in governorates)
             {

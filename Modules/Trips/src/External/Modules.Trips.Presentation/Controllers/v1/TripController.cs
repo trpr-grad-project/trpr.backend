@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Modules.Trips.Application.Dtos.Requests;
 using Modules.Trips.Application.Dtos.Responses;
 using Modules.Trips.Application.Services;
+using Modules.Trips.Domain.ValueObjects;
 
 namespace Modules.Trips.Presentation.Controllers.v1
 {
@@ -14,27 +15,11 @@ namespace Modules.Trips.Presentation.Controllers.v1
     {
         public Guid UserId => User.GetUserId();
 
-        [HttpPost("create-trip")]
+        [HttpPost]
         [Authorize]
         public async Task<ActionResult<TripResponseDto>> CreateTrip([FromBody] CreateTripRequestDto dto, CancellationToken cancellationToken)
         {
             var request = await tripService.CreateTrip(dto, UserId, cancellationToken);
-            return Ok(request);
-        }
-
-        [HttpGet("admin")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<PaginationDto<TripResponseDto>>> GetTrips([FromQuery] SearchTripRequestDto requestDto, CancellationToken cancellationToken)
-        {
-            var request = await tripService.GetTrips(requestDto, null, cancellationToken);
-            return Ok(request);
-        }
-
-        [HttpGet("me")]
-        [Authorize]
-        public async Task<ActionResult<PaginationDto<TripResponseDto>>> GetMyTrips([FromQuery] SearchTripRequestDto requestDto, CancellationToken cancellationToken)
-        {
-            var request = await tripService.GetTrips(requestDto, UserId, cancellationToken);
             return Ok(request);
         }
 
@@ -45,5 +30,46 @@ namespace Modules.Trips.Presentation.Controllers.v1
             await tripService.UpdateStatus(dto, cancellationToken);
             return NoContent();
         }
+
+        [HttpGet("admin")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<PaginationDto<TripResponseDto>>> GetTrips([FromQuery] SearchTripRequestDto requestDto, CancellationToken cancellationToken)
+        {
+            var request = await tripService.GetTrips(requestDto, null, null, cancellationToken);
+            return Ok(request);
+        }
+
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<ActionResult<PaginationDto<TripResponseDto>>> GetMyTrips([FromQuery] SearchTripRequestDto requestDto, CancellationToken cancellationToken)
+        {
+            var request = await tripService.GetTrips(requestDto, UserId, null, cancellationToken);
+            return Ok(request);
+        }
+
+
+        [HttpGet("bidding")]
+        [Authorize(Roles = "Admin,Guide")]
+        public async Task<ActionResult<PaginationDto<TripResponseDto>>> GetTripsForBidding([FromQuery] BaseSearchTripRequestDto requestDto, CancellationToken cancellationToken)
+        {
+            var request = await tripService.GetTrips(requestDto, null, TripStatus.Bidding, cancellationToken);
+            return Ok(request);
+        }
+
+        [HttpGet("published")]
+        [Authorize]
+        public async Task<ActionResult<PaginationDto<TripResponseDto>>> GetAllTrips([FromQuery] BaseSearchTripRequestDto requestDto, CancellationToken cancellationToken)
+        {
+            var request = await tripService.GetTrips(requestDto, null, TripStatus.Published, cancellationToken);
+            return Ok(request);
+        }
+
+        // [HttpPost("bid")]
+        // [Authorize(Roles = "Guide")]
+        // public async Task<ActionResult> BidForTrip(BidForTripRequestDto dto, CancellationToken cancellationToken)
+        // {
+        //     await tripService.BidForTrip(dto, UserId, cancellationToken);
+        //     return NoContent();
+        // }
     }
 }

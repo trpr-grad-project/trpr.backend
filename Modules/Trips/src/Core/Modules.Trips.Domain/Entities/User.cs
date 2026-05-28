@@ -16,6 +16,7 @@ namespace Modules.Trips.Domain.Entities
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
         public virtual ICollection<Trip> CreatedTrips { get; set; } = [];
+        public virtual ICollection<TripBidding> Bids { get; set; } = [];
         public virtual ICollection<TripParticipant> JoinedTrips { get; set; } = [];
     }
 }

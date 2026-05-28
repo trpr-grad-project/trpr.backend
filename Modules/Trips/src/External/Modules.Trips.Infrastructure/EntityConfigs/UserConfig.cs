@@ -14,7 +14,7 @@ namespace Modules.Trips.Infrastructure.EntityConfigs
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.HasKey(u => u.Id);
-            
+
             builder.HasMany(t => t.CreatedTrips)
                 .WithOne(t => t.CreatedByUser)
                 .HasForeignKey(t => t.UserId)
@@ -23,6 +23,11 @@ namespace Modules.Trips.Infrastructure.EntityConfigs
             builder.HasMany(u => u.JoinedTrips)
                 .WithOne(tp => tp.User)
                 .HasForeignKey(tp => tp.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(u => u.Bids)
+                .WithOne(b => b.Guide)
+                .HasForeignKey(b => b.GuideId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

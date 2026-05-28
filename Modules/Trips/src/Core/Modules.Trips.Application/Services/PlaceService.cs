@@ -6,6 +6,7 @@ using Modules.Trips.Application.Dtos.Responses;
 using Modules.Trips.Application.Mappers;
 using Modules.Trips.Application.Repositories;
 using Modules.Trips.Domain.Entities;
+using Modules.Trips.Application.Helpers;
 
 namespace Modules.Trips.Application.Services;
 
@@ -173,14 +174,10 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
             queryable = queryable.Where(x => x.GovernorateId == query.GovernorateId);
         if (query.Longitude != null && query.Latitude != null && query.RadiusInMeters != null)
         {
-            var place = Place.Create(
-                "dummy",
-                "dummy",
-                1,
-                1,
-                query.Longitude.Value,
-                query.Latitude.Value);
-            var point = place.Location;
+            var point = PointUtils
+                .PointFromCoordinates(
+                    query.Longitude.Value,
+                    query.Latitude.Value);
             queryable = queryable.Where(x => x.Location.Distance(point) <= query.RadiusInMeters.Value);
         }
         queryable = queryable
