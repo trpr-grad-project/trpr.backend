@@ -31,6 +31,14 @@ namespace Modules.Trips.Presentation.Controllers.v1
             return NoContent();
         }
 
+        [HttpGet("{id:guid}")]
+        [Authorize]
+        public async Task<ActionResult<TripDetailsResponseDto>> GetTripDetails(Guid id, CancellationToken cancellationToken)
+        {
+            var result = await tripService.GetTripDetailsAsync(id, UserId, cancellationToken);
+            return Ok(result);
+        }
+
         [HttpGet("admin")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<PaginationDto<TripResponseDto>>> GetTrips([FromQuery] SearchTripRequestDto requestDto, CancellationToken cancellationToken)
@@ -63,13 +71,5 @@ namespace Modules.Trips.Presentation.Controllers.v1
             var request = await tripService.GetTrips(requestDto, null, TripStatus.Published, cancellationToken);
             return Ok(request);
         }
-
-        // [HttpPost("bid")]
-        // [Authorize(Roles = "Guide")]
-        // public async Task<ActionResult> BidForTrip(BidForTripRequestDto dto, CancellationToken cancellationToken)
-        // {
-        //     await tripService.BidForTrip(dto, UserId, cancellationToken);
-        //     return NoContent();
-        // }
     }
 }

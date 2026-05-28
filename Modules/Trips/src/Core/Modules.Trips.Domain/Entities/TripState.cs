@@ -3,12 +3,19 @@ using Modules.Trips.Domain.ValueObjects;
 
 namespace Modules.Trips.Domain.Entities
 {
-    public class TripState : Entity
+    public partial class Trip
     {
         public string? RejectionReason { get; set; }
         public TripPublishMode PublishMode { get; set; } = TripPublishMode.DirectPublish;
         public TripStatus Status { get; set; } = TripStatus.UnderReview;
 
+        public void SelectGuide(Guid guideId)
+        {
+            if (Status != ValueObjects.TripStatus.Bidding)
+                throw new InvalidOperationException("Only trips in Bidding status can have a guide selected.");
+            GuideId = guideId;
+            Status = ValueObjects.TripStatus.Completed;
+        }
         public void Approve()
         {
             if (Status != TripStatus.UnderReview)

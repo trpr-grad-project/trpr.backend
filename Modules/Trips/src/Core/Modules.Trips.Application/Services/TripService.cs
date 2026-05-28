@@ -10,13 +10,16 @@ using Modules.Trips.Application.Repositories;
 using Modules.Trips.Domain.Entities;
 using Modules.Trips.Domain.ValueObjects;
 using Modules.Trips.Application.Helpers;
+using Modules.Trips.Application.Mappers;
 
 namespace Modules.Trips.Application.Services
 {
     public class TripService(IUnitOfWork unitOfWork,
         RepositoryFactory repositoryFactory,
         PlaceService placeService,
-        IMapper<Trip, TripResponseDto> tripMapper)
+        BiddingService biddingService,
+        IMapper<Trip, TripResponseDto> tripMapper,
+        IMapper<Trip, TripDetailsResponseDto> tripDetailsMapper)
     {
         public async Task UpdateStatus(UpdateTripStatusRequestDto dto, CancellationToken cancellationToken)
         {
@@ -95,6 +98,38 @@ namespace Modules.Trips.Application.Services
                 TotalItems = count
             };
         }
+        public async Task<TripDetailsResponseDto> GetTripDetailsAsync(Guid tripId, Guid userId, CancellationToken cancellationToken)
+        {
+            var trip = await repositoryFactory.Repository<Trip>()
+                .GetFirstOrDefaultByFilter(
+                    t => t.Id == tripId,
+                    q => q.Include(t => t.Segments)
+                        .ThenInclude(s => s.Places)
+                        .ThenInclude(p => p.PlaceTags)
+                        .ThenInclude(pt => pt.Tag),
+                    q => q.Include(t => t.Segments)
+                        .ThenInclude(s => s.Places)
+                        .ThenInclude(p => p.Category),
+                    q => q.Include(t => t.Segments)
+                        .ThenInclude(s => s.Places)
+                        .ThenInclude(p => p.Governorate),
+                    q => q.Include(t => t.CreatedByUser))
+                ?? throw new NotFoundException("Trip.NotFound", tripId);
+
+            var dto = tripDetailsMapper.Map(trip);
+
+            dto.BiddingsPage =
+                (trip.Status == TripStatus.Bidding) ?
+                await biddingService.GetTripBiddingsAsync(tripId, userId, new GetTripBiddingsQueryDto
+                {
+                    PageSize = 10,
+                    SortOrder = BiddingSortOrder.Oldest
+                }, cancellationToken) :
+                null;
+
+            return dto;
+        }
+
         #region Helpers
         private async Task<ICollection<ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
         {

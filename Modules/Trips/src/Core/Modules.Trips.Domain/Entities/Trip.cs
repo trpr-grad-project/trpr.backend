@@ -1,9 +1,10 @@
-﻿using Modules.Trips.Domain.ValueObjects;
+﻿using Modules.Trips.Domain.Abstractions;
+using Modules.Trips.Domain.ValueObjects;
 using NetTopologySuite.Geometries;
 
 namespace Modules.Trips.Domain.Entities
 {
-    public class Trip : TripState
+    public partial class Trip : Entity
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
