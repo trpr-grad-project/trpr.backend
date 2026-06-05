@@ -72,11 +72,10 @@ namespace Modules.Trips.Application.Services
         public async Task<PaginationDto<TripResponseDto>> GetTrips(BaseSearchTripRequestDto request, Guid? userId = null, TripStatus? status = null, CancellationToken cancellationToken = default)
         {
             // TODO FILTER BASED ON THE SEARCH REQUEST LATER
-            var trips = repositoryFactory.Repository<Trip>().GetQueryable()
-                .Include(x => x.Segments).ThenInclude(s => s.Places)
-                .Include(x => x.Images)
-                .Include(x => x.CreatedByUser)
-                .AsQueryable();
+            IQueryable<Trip> trips = repositoryFactory.Repository<Trip>().GetQueryable()
+                .Include(x => x.Segments).ThenInclude(s => s.Places).ThenInclude(p => p.Governorate)
+                .Include(x => x.Segments).ThenInclude(s => s.Places).ThenInclude(p => p.Category)
+                .Include(x => x.CreatedByUser);
             if (userId.HasValue)
                 trips = trips.Where(x => x.UserId == userId.Value);
             if (status.HasValue)

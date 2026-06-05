@@ -9,6 +9,8 @@ namespace Modules.Trips.Domain.Entities
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public virtual User CreatedByUser { get; set; } = null!;
+        // TODO replace themeID with theme nav property and update tripconfig
+        // TODO add the role of the trip maker as a type (ENUM) and update the queries of all querying endpoints
         public int ThemeId { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
@@ -96,7 +98,5 @@ namespace Modules.Trips.Domain.Entities
         }
 
         // update method for adding/removing participants
-        // update method for adding new places?
-        // update method for trip details
     }
 }
