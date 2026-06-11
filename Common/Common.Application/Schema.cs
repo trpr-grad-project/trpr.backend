@@ -6,4 +6,5 @@ public static class Schema
     public const string Notifications = "ntf";
     public const string Trips = "trp";
     public const string Conversations = "cnv";
+    public const string Payments = "pay";
 }
