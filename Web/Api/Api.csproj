@@ -20,7 +20,8 @@
     <ProjectReference Include="..\..\Modules\Conversations\src\External\Modules.Conversations.Infrastructure\Modules.Conversations.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Data/Seed/*.csv">
+    <Content Include="Data\Seeds\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
