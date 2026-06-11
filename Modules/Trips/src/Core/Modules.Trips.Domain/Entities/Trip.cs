@@ -50,6 +50,7 @@ namespace Modules.Trips.Domain.Entities
                 PublishMode = publishMode,
                 Id = Guid.NewGuid(),
                 UserId = userId,
+                ThemeId = theme.Id,
                 TripTheme = theme,
                 Title = title,
                 CreatorRole = roles,
