@@ -27,7 +27,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<HomeResponseDto>> GetHomePage(BaseSearchTripRequestDto request,CancellationToken cancellationToken)
+        public async Task<ActionResult<HomeResponseDto>> GetHomePage([FromQuery]BaseSearchTripRequestDto request,CancellationToken cancellationToken)
         {
             var results = await Task.WhenAll(
                 tripService.GetTrips(request.CloneWith(TripType.Shared), null, null, cancellationToken),
