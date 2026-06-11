@@ -1,4 +1,6 @@
-﻿using Common.Application;
+﻿using System.Security.Claims;
+using System.Security.Principal;
+using Common.Application;
 using Common.Application.Dtos;
 using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
@@ -6,11 +8,11 @@ using Modules.Trips.Application.Abstractions;
 using Modules.Trips.Application.Dtos;
 using Modules.Trips.Application.Dtos.Requests;
 using Modules.Trips.Application.Dtos.Responses;
+using Modules.Trips.Application.Helpers;
+using Modules.Trips.Application.Mappers;
 using Modules.Trips.Application.Repositories;
 using Modules.Trips.Domain.Entities;
 using Modules.Trips.Domain.ValueObjects;
-using Modules.Trips.Application.Helpers;
-using Modules.Trips.Application.Mappers;
 
 namespace Modules.Trips.Application.Services
 {
@@ -39,11 +41,14 @@ namespace Modules.Trips.Application.Services
             repositoryFactory.Repository<Trip>().Update(trip);
             await unitOfWork.SaveChangesAsync(cancellationToken);
         }
-        public async Task<TripResponseDto> CreateTrip(CreateTripRequestDto dto, Guid userId, CancellationToken cancellationToken)
+        public async Task<TripResponseDto> CreateTrip(CreateTripRequestDto dto, ICollection<string> roles, Guid userId, CancellationToken cancellationToken)
         {
             var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(User => User.Id == userId)
                 ?? throw new NotFoundException("User.NotFound", userId);
             var segments = await GetPlacesAsync(dto.Segments);
+            var creatorRoles = roles.Select(x => Enum.Parse<UserRole>(x)).Aggregate((a,b) => a | b);
+            Theme theme = await repositoryFactory.Repository<Theme>().GetFirstOrDefaultByFilter(t => t.Id == dto.ThemeId)
+                ?? throw new NotFoundException("Theme.NotFound", dto.ThemeId);
             var governorates = segments
                 .SelectMany(x => x)
                 .Select(x => x.Governorate)
@@ -51,7 +56,8 @@ namespace Modules.Trips.Application.Services
                 .ToList();
             var trip = Trip.Create(
                         userId,
-                        dto.ThemeId,
+                        theme,
+                        creatorRoles,
                         dto.Title,
                         dto.Description,
                         dto.Price,
@@ -75,6 +81,7 @@ namespace Modules.Trips.Application.Services
             IQueryable<Trip> trips = repositoryFactory.Repository<Trip>().GetQueryable()
                 .Include(x => x.Segments).ThenInclude(s => s.Places).ThenInclude(p => p.Governorate)
                 .Include(x => x.Segments).ThenInclude(s => s.Places).ThenInclude(p => p.Category)
+                .Include(x => x.Segments).ThenInclude(s => s.Places).ThenInclude(p => p.PlaceTags).ThenInclude(pt => pt.Tag)
                 .Include(x => x.CreatedByUser);
             if (userId.HasValue)
                 trips = trips.Where(x => x.UserId == userId.Value);
@@ -152,7 +159,7 @@ namespace Modules.Trips.Application.Services
                 query = query.Where(x => x.Centroid.Distance(point) <= request.RadiusInMeters.Value);
             }
             if (request.ThemeId.HasValue)
-                query = query.Where(x => x.ThemeId == request.ThemeId.Value);
+                query = query.Where(x => x.TripTheme.Id == request.ThemeId.Value);
             if (request.GovernorateId.HasValue)
                 query = query.Where(x => x.TripGovernorates.Any(g => g.GovernorateId == request.GovernorateId.Value));
             if (!string.IsNullOrEmpty(request.Title))
@@ -161,6 +168,15 @@ namespace Modules.Trips.Application.Services
                 query = query.Where(x => x.Price >= request.MinPrice.Value);
             if (request.MaxPrice.HasValue)
                 query = query.Where(x => x.Price <= request.MaxPrice.Value);
+            if(request.TripType.HasValue)
+            {
+                if (request.TripType == TripType.ByGuides)
+                    query = query.Where(x => x.CreatorRole == (UserRole.Guide | UserRole.Admin));
+                else if(request.TripType == TripType.ByCompany)
+                    query = query.Where(x => x.CreatorRole == (UserRole.Company));
+                else if (request.TripType == TripType.Shared)
+                    query = query.Where(x => x.CreatorRole == (UserRole.User | UserRole.User));
+            }
             return query;
         }
         #endregion

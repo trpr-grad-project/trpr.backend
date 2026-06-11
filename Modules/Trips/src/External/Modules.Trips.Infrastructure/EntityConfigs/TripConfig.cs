@@ -15,8 +15,9 @@ namespace Modules.Trips.Infrastructure.EntityConfigs
             builder.Property(t => t.UserId)
                 .IsRequired();
 
-            builder.Property(t => t.ThemeId)
-                .IsRequired();
+            builder.HasOne(t => t.TripTheme)
+               .WithMany()
+               .HasForeignKey(t => t.ThemeId);
 
             builder.Property(t => t.Title)
                 .IsRequired();
@@ -39,6 +40,9 @@ namespace Modules.Trips.Infrastructure.EntityConfigs
 
             builder.Property(t => t.TripVisibility)
                 .IsRequired();
+
+            builder.Property(x => x.CreatorRole).HasConversion<int>().HasColumnName("CreatorRole")
+                        .IsRequired();
 
             builder.HasOne(t => t.CreatedByUser)
                 .WithMany(u => u.CreatedTrips)

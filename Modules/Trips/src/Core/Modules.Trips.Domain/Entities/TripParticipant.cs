@@ -15,9 +15,9 @@ namespace Modules.Trips.Domain.Entities
         public Guid UserId { get; set; }
         public virtual Trip Trip { get; set; } = default!;
         public virtual User User { get; set; } = default!;
-        public double? TripRating { get; set; }
-        public double? TripOwnerRating { get; set; }
-        public string? GuideReview { get; set; }
-        public string? TripReview { get; set; }
+        //public double? TripRating { get; set; }
+        //public double? TripOwnerRating { get; set; }
+        //public string? GuideReview { get; set; }
+        //public string? TripReview { get; set; }
     }
 }

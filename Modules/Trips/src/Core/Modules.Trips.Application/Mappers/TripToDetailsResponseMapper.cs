@@ -15,7 +15,11 @@ namespace Modules.Trips.Application.Mappers
                 Id = source.Id,
                 CreatedByUserId = source.UserId,
                 GuideId = source.GuideId,
-                ThemeId = source.ThemeId,
+                ThemeId = source.TripTheme.Id,
+                CreatorRoles = Enum.GetValues<UserRole>()
+                    .Where(r => source.CreatorRole.HasFlag(r))
+                    .Select(r => r.ToString())
+                    .ToList(),
                 Title = source.Title,
                 Description = source.Description,
                 Price = source.Price,

@@ -2,6 +2,7 @@
 using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Modules.Trips.Application.Dtos.Requests;
 using Modules.Trips.Application.Dtos.Responses;
 using Modules.Trips.Application.Services;
@@ -14,13 +15,32 @@ namespace Modules.Trips.Presentation.Controllers.v1
     public class TripController(TripService tripService) : ControllerBase
     {
         public Guid UserId => User.GetUserId();
+        public ICollection<string> UserRoles => User.GetRoles();
 
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<TripResponseDto>> CreateTrip([FromBody] CreateTripRequestDto dto, CancellationToken cancellationToken)
         {
-            var request = await tripService.CreateTrip(dto, UserId, cancellationToken);
+            var request = await tripService.CreateTrip(dto, UserRoles, UserId, cancellationToken);
             return Ok(request);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<HomeResponseDto>> GetHomePage(BaseSearchTripRequestDto request,CancellationToken cancellationToken)
+        {
+            var results = await Task.WhenAll(
+                tripService.GetTrips(request.CloneWith(TripType.Shared), null, null, cancellationToken),
+                tripService.GetTrips(request.CloneWith(TripType.ByCompany), null, null, cancellationToken),
+                tripService.GetTrips(request.CloneWith(TripType.ByGuides), null, null, cancellationToken)
+            );
+
+            return Ok(new HomeResponseDto
+            {
+                Shared = results[0].Items.ToList(),
+                ByCompany = results[1].Items.ToList(),
+                ByGuide = results[2].Items.ToList()
+            });
         }
 
         [HttpPost("change-status")]

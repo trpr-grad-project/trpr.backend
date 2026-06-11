@@ -10,8 +10,10 @@ namespace Modules.Trips.Domain.Entities
         public Guid UserId { get; set; }
         public virtual User CreatedByUser { get; set; } = null!;
         // TODO replace themeID with theme nav property and update tripconfig
-        // TODO add the role of the trip maker as a type (ENUM) and update the queries of all querying endpoints
+        // TODO add the role of the trip maker as a type (ENUM) and update the queries of all querying endpoints DONE
         public int ThemeId { get; set; }
+        public Theme TripTheme { get; set; } = default!;
+        public UserRole CreatorRole { get; set; } 
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; }
@@ -28,7 +30,8 @@ namespace Modules.Trips.Domain.Entities
         public ICollection<TripParticipant> Participants { get; set; } = [];
         public static Trip Create(
             Guid userId,
-            int themeId,
+            Theme theme,
+            UserRole roles,
             string title,
             string description,
             double price,
@@ -47,8 +50,9 @@ namespace Modules.Trips.Domain.Entities
                 PublishMode = publishMode,
                 Id = Guid.NewGuid(),
                 UserId = userId,
-                ThemeId = themeId,
+                TripTheme = theme,
                 Title = title,
+                CreatorRole = roles,
                 Description = description,
                 Price = price,
                 Images = images,

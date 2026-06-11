@@ -12,6 +12,7 @@ namespace Modules.Trips.Application.Dtos.Responses
     {
         public Guid CreatedByUser { get; set; }
         public int ThemeId { get; set; }
+        public List<string> CreatorRoles { get; set; } = default!;
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; }
