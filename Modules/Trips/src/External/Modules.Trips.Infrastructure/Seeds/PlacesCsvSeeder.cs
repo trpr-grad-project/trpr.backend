@@ -11,7 +11,7 @@ public class PlacesCsvSeeder(ILogger<PlacesCsvSeeder> logger, RepositoryFactory 
 {
     public async Task SeedAsync()
     {
-        var seedsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Data", "Seeds");
+        var seedsDirectory = Path.Combine(AppContext.BaseDirectory, "Data", "Seeds");
 
 
         var placeFiles = Directory.GetFiles(seedsDirectory, "places_*.csv");
