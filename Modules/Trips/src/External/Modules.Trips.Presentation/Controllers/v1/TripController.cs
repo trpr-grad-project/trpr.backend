@@ -1,6 +1,7 @@
 ﻿using Common.Application.Dtos;
 using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using Modules.Trips.Application.Dtos.Requests;
@@ -27,7 +28,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<HomeResponseDto>> GetHomePage(BaseSearchTripRequestDto request,CancellationToken cancellationToken)
+        public async Task<ActionResult<HomeResponseDto>> GetHomePage(BaseSearchTripRequestDto request, CancellationToken cancellationToken)
         {
             var results = await Task.WhenAll(
                 tripService.GetTrips(request.CloneWith(TripType.Shared), null, null, cancellationToken),
@@ -91,5 +92,12 @@ namespace Modules.Trips.Presentation.Controllers.v1
             var request = await tripService.GetTrips(requestDto, null, TripStatus.Published, cancellationToken);
             return Ok(request);
         }
+
+        // [HttpPut("join/{id:guid}")]
+        // [Authorize]
+        // public async Task<ActionResult> JoinTrip([FromRoute] Guid id)
+        // {
+
+        // }
     }
 }

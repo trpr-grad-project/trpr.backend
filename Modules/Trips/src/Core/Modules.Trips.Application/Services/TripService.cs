@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using System.Security.Principal;
-using Common.Application;
+﻿using Common.Application;
 using Common.Application.Dtos;
 using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +7,6 @@ using Modules.Trips.Application.Dtos;
 using Modules.Trips.Application.Dtos.Requests;
 using Modules.Trips.Application.Dtos.Responses;
 using Modules.Trips.Application.Helpers;
-using Modules.Trips.Application.Mappers;
 using Modules.Trips.Application.Repositories;
 using Modules.Trips.Domain.Entities;
 using Modules.Trips.Domain.ValueObjects;
@@ -134,6 +131,28 @@ namespace Modules.Trips.Application.Services
                 null;
 
             return dto;
+        }
+
+        public async Task JoinTrip(Guid tripId, Guid userId)
+        {
+            Trip trip = await repositoryFactory
+                .Repository<Trip>()
+                .GetFirstOrDefaultByFilter(
+                    x =>
+                        x.Id == tripId &
+                        x.Status == TripStatus.Published,
+                x => x.Include(x => x.Participants)) ?? throw new NotFoundException("Trip.NotFound");
+
+            TripParticipant? tripParticipant = trip
+                .Participants
+                .Where(x => x.UserId == userId)
+                .FirstOrDefault();
+
+            if (tripParticipant != null)
+                return;
+
+            tripParticipant = TripParticipant.Create(tripId, userId);
+
         }
 
         #region Helpers

@@ -13,7 +13,7 @@ namespace Modules.Trips.Domain.Entities
         // TODO add the role of the trip maker as a type (ENUM) and update the queries of all querying endpoints DONE
         public int ThemeId { get; set; }
         public Theme TripTheme { get; set; } = default!;
-        public UserRole CreatorRole { get; set; } 
+        public UserRole CreatorRole { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; }

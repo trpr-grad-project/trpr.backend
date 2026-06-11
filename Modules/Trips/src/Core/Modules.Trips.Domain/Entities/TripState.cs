@@ -14,7 +14,11 @@ namespace Modules.Trips.Domain.Entities
             if (Status != ValueObjects.TripStatus.Bidding)
                 throw new InvalidOperationException("Only trips in Bidding status can have a guide selected.");
             GuideId = guideId;
-            Status = ValueObjects.TripStatus.Completed;
+            if (Participants.Count == MaxParticipantsCount)
+                Status = TripStatus.Completed;
+            else
+                Status = TripStatus.Published;
+
         }
         public void Approve()
         {
