@@ -46,7 +46,7 @@ namespace Modules.Trips.Application.Services
             var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(User => User.Id == userId)
                 ?? throw new NotFoundException("User.NotFound", userId);
             var segments = await GetPlacesAsync(dto.Segments);
-            var creatorRoles = roles.Select(x => Enum.Parse<UserRole>(x)).Aggregate((a,b) => a | b);
+            var creatorRoles = roles.Select(x => Enum.Parse<UserRole>(x)).Aggregate((a, b) => a | b);
             Theme theme = await repositoryFactory.Repository<Theme>().GetFirstOrDefaultByFilter(t => t.Id == dto.ThemeId)
                 ?? throw new NotFoundException("Theme.NotFound", dto.ThemeId);
             var governorates = segments
@@ -168,11 +168,11 @@ namespace Modules.Trips.Application.Services
                 query = query.Where(x => x.Price >= request.MinPrice.Value);
             if (request.MaxPrice.HasValue)
                 query = query.Where(x => x.Price <= request.MaxPrice.Value);
-            if(request.TripType.HasValue)
+            if (request.TripType.HasValue)
             {
                 if (request.TripType == TripType.ByGuides)
                     query = query.Where(x => x.CreatorRole == (UserRole.Guide | UserRole.Admin));
-                else if(request.TripType == TripType.ByCompany)
+                else if (request.TripType == TripType.ByCompany)
                     query = query.Where(x => x.CreatorRole == (UserRole.Company));
                 else if (request.TripType == TripType.Shared)
                     query = query.Where(x => x.CreatorRole == (UserRole.User | UserRole.User));

@@ -29,9 +29,14 @@ namespace Modules.Trips.Application.Mappers
                 Status = source.Status,
                 PublishMode = source.PublishMode,
                 RejectionReason = source.RejectionReason,
-                Segments = [.. source.Segments
-                    .SelectMany(s => s.Places)
-                    .Select(p => p.ToPlaceDto())],
+                Segments = source
+                    .Segments
+                    .OrderBy(x => x.Order)
+                    .Select((x, idx) => new DayResponseDto
+                    {
+                        Day = idx + 1,
+                        Places = x.Places.Select(p => p.ToPlaceDto()).ToList()
+                    }).ToList(),
                 MaxParticipantsCount = source.MaxParticipantsCount,
                 CreatedAtUTC = source.CreatedAtUTC
             };
