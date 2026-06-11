@@ -59,7 +59,7 @@ IUnitOfWork unitOfWork)
     public async Task<LoginUserResponseDto> LoginUserAsync(LoginUserRequestDto loginUserRequestDto, CancellationToken cancellationToken = default)
     {
 
-        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == loginUserRequestDto.Identifier && x.IsVerified, x => x.Include(x => x.UserRoles)) ?? throw new NotFoundException("User.NotFound", loginUserRequestDto.Identifier);
+        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == loginUserRequestDto.Identifier && x.IsVerified, x => x.Include(x => x.UserRoles).Include(x => x.Profile)) ?? throw new NotFoundException("User.NotFound", loginUserRequestDto.Identifier);
 
         if (!BCrypt.Net.BCrypt.Verify(loginUserRequestDto.Password, user.PasswordHash))
         {
@@ -101,7 +101,8 @@ IUnitOfWork unitOfWork)
                 throw new BadRequestException("Otp.Invalid", verifyOtpRequestDto.Identifier);
             }
             User user =
-                await userRepository.GetFirstOrDefaultByFilter(x => x.Id == otpToken.UserId) ??
+                await userRepository.GetFirstOrDefaultByFilter(x => x.Id == otpToken.UserId,
+                x => x.Include(x => x.Profile)) ??
                 throw new NotFoundException("User.NotFound", otpToken.UserId);
             await unitOfWork
                 .SaveChangesAsync(cancellationToken);
