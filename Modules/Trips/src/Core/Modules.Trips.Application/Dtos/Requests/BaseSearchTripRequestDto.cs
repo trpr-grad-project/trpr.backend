@@ -30,7 +30,7 @@ namespace Modules.Trips.Application.Dtos.Requests
                 Longitude = Longitude,
                 Latitude = Latitude,
                 RadiusInMeters = RadiusInMeters,
-                TripType = TripType
+                TripType = shared
             };
         }
     }

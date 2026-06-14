@@ -56,6 +56,7 @@ namespace Modules.Trips.Application.Services
                         theme,
                         creatorRoles,
                         dto.Title,
+                        dto.AutoApprove,
                         dto.Description,
                         dto.Price,
                         dto.Images,
@@ -76,6 +77,7 @@ namespace Modules.Trips.Application.Services
         {
             // TODO FILTER BASED ON THE SEARCH REQUEST LATER
             IQueryable<Trip> trips = repositoryFactory.Repository<Trip>().GetQueryable()
+                .Include(x => x.TripTheme)
                 .Include(x => x.Segments).ThenInclude(s => s.Places).ThenInclude(p => p.Governorate)
                 .Include(x => x.Segments).ThenInclude(s => s.Places).ThenInclude(p => p.Category)
                 .Include(x => x.Segments).ThenInclude(s => s.Places).ThenInclude(p => p.PlaceTags).ThenInclude(pt => pt.Tag)
@@ -169,6 +171,16 @@ namespace Modules.Trips.Application.Services
 
         public static IQueryable<Trip> FilterByBaseSearchRequest(IQueryable<Trip> query, BaseSearchTripRequestDto request)
         {
+            if (request.TripType.HasValue)
+            {
+                if (request.TripType == TripType.ByGuides)
+                    query = query.Where(x => (x.CreatorRole & (UserRole.Guide | UserRole.Admin)) == UserRole.Guide);
+                else if (request.TripType == TripType.ByCompany)
+                    query = query.Where(x => (x.CreatorRole & UserRole.Company) == UserRole.Company);
+                else if (request.TripType == TripType.Shared)
+                    query = query.Where(x => (x.CreatorRole & UserRole.User) == UserRole.User);
+            }
+
             if (request.Longitude.HasValue && request.Latitude.HasValue && request.RadiusInMeters.HasValue)
             {
                 var point = PointUtils
@@ -177,6 +189,7 @@ namespace Modules.Trips.Application.Services
                         request.Latitude.Value);
                 query = query.Where(x => x.Centroid.Distance(point) <= request.RadiusInMeters.Value);
             }
+
             if (request.ThemeId.HasValue)
                 query = query.Where(x => x.TripTheme.Id == request.ThemeId.Value);
             if (request.GovernorateId.HasValue)
@@ -187,15 +200,6 @@ namespace Modules.Trips.Application.Services
                 query = query.Where(x => x.Price >= request.MinPrice.Value);
             if (request.MaxPrice.HasValue)
                 query = query.Where(x => x.Price <= request.MaxPrice.Value);
-            if (request.TripType.HasValue)
-            {
-                if (request.TripType == TripType.ByGuides)
-                    query = query.Where(x => x.CreatorRole == (UserRole.Guide | UserRole.Admin));
-                else if (request.TripType == TripType.ByCompany)
-                    query = query.Where(x => x.CreatorRole == (UserRole.Company));
-                else if (request.TripType == TripType.Shared)
-                    query = query.Where(x => x.CreatorRole == (UserRole.User | UserRole.User));
-            }
             return query;
         }
         #endregion

@@ -11,6 +11,7 @@ namespace Modules.Trips.Application.Dtos.Requests
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; }
         public List<string> Images { get; set; } = [];
+        public bool AutoApprove { get; set; }
         public TripVisibility TripVisibility { get; set; }
         public TripPublishMode PublishMode { get; set; }
         public List<DayDto> Segments { get; set; } = [];

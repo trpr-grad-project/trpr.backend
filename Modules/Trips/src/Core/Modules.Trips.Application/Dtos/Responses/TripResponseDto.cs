@@ -19,7 +19,7 @@ namespace Modules.Trips.Application.Dtos.Responses
         public double ExpectedDuration { get; set; }
         public ICollection<string> ImagesUrls { get; set; } = [];
         public TripVisibility TripVisibility { get; set; }
-        public List<PlaceDto> Segments { get; set; } = [];
+        public List<DayResponseDto> Segments { get; set; } = [];
         public int MaxParticipantsCount { get; set; }
         public Guid? GuideId { get; set; }
         public string? RejectionReason { get; set; }

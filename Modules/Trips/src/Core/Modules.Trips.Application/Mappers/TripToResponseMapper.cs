@@ -26,9 +26,14 @@ namespace Modules.Trips.Application.Mappers
                 ExpectedDuration = source.ExpectedDuration,
                 ImagesUrls = imagePaths,
                 TripVisibility = source.TripVisibility,
-                Segments = [.. source.Segments
-                    .SelectMany(s => s.Places)
-                    .Select(x => x.ToPlaceDto())],
+                Segments = source
+                    .Segments
+                    .OrderBy(x => x.Order)
+                    .Select((x, idx) => new DayResponseDto
+                    {
+                        Day = idx + 1,
+                        Places = x.Places.Select(p => p.ToPlaceDto()).ToList()
+                    }).ToList(),
                 MaxParticipantsCount = source.MaxParticipantsCount,
                 RejectionReason = source.RejectionReason
             };

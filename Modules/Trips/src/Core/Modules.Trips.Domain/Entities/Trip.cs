@@ -12,6 +12,7 @@ namespace Modules.Trips.Domain.Entities
         // TODO replace themeID with theme nav property and update tripconfig
         // TODO add the role of the trip maker as a type (ENUM) and update the queries of all querying endpoints DONE
         public int ThemeId { get; set; }
+        public bool AutoApprove { get; set; } = true;
         public Theme TripTheme { get; set; } = default!;
         public UserRole CreatorRole { get; set; }
         public string Title { get; set; } = string.Empty;
@@ -33,6 +34,7 @@ namespace Modules.Trips.Domain.Entities
             Theme theme,
             UserRole roles,
             string title,
+            bool autoApprove,
             string description,
             double price,
             ICollection<string> images,
@@ -55,6 +57,7 @@ namespace Modules.Trips.Domain.Entities
                 Title = title,
                 CreatorRole = roles,
                 Description = description,
+                AutoApprove = autoApprove,
                 Price = price,
                 Images = images,
                 TripVisibility = tripVisibility,
