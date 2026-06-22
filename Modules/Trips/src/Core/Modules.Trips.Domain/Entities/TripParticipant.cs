@@ -14,6 +14,7 @@ namespace Modules.Trips.Domain.Entities
         // TODO make join endpoint
         public Guid TripId { get; set; }
         public Guid UserId { get; set; }
+        public bool Approved { get; set; }
         public virtual Trip Trip { get; set; } = default!;
         public virtual User User { get; set; } = default!;
         public double? Rating { get; set; }
@@ -24,10 +25,16 @@ namespace Modules.Trips.Domain.Entities
             var tripParticipant = new TripParticipant
             {
                 UserId = userId,
-                TripId = tripId
+                TripId = tripId,
+                Approved = false,
             };
-            tripParticipant.RaiseDomainEvent(new TripParticipantCreatedDomainEvent(tripId, userId));
             return tripParticipant;
+        }
+        public TripParticipant Approve()
+        {
+            this.Approved = true;
+            this.RaiseDomainEvent(new TripParticipantCreatedDomainEvent(this.TripId, this.UserId));
+            return this;
         }
 
         public void MakeReview(double? rate, string? review)

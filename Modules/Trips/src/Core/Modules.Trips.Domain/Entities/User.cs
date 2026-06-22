@@ -16,6 +16,8 @@ namespace Modules.Trips.Domain.Entities
         public string LastName { get; set; } = string.Empty;
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
+        public double? Rating { get; set; } = null;
+        public int? RatingCount { get; set; } = null;
         public virtual ICollection<Trip> CreatedTrips { get; set; } = [];
         public virtual ICollection<TripBidding> Bids { get; set; } = [];
         public virtual ICollection<TripParticipant> JoinedTrips { get; set; } = [];
@@ -31,6 +33,21 @@ namespace Modules.Trips.Domain.Entities
                 Email = MailAddress.TryCreate(UserName, out var _) ? UserName : null,
                 PhoneNumber = MailAddress.TryCreate(UserName, out var _) ? null : UserName,
             };
+        }
+        public void UpdateRating(double newRating)
+        {
+            if (Rating.HasValue && RatingCount.HasValue)
+            {
+                double totalRating = Rating.Value * RatingCount.Value;
+                totalRating += newRating;
+                RatingCount++;
+                Rating = totalRating / RatingCount.Value;
+            }
+            else
+            {
+                Rating = newRating;
+                RatingCount = 1;
+            }
         }
     }
 }
