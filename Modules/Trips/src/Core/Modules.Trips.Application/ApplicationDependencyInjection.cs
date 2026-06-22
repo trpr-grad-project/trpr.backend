@@ -17,6 +17,7 @@ public static class ApplicationDependencyInjection
         services.AddScoped<PlaceService>();
         services.AddScoped<TripService>();
         services.AddScoped<BiddingService>();
+        services.AddScoped<ITripSuggestionGenerator, AiTripSuggestionGenerator>();
         #endregion
 
         return services;
