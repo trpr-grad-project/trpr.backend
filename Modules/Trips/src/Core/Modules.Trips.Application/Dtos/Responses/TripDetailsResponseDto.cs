@@ -19,6 +19,8 @@ namespace Modules.Trips.Application.Dtos.Responses
         public string? RejectionReason { get; set; }
         public List<DayResponseDto> Segments { get; set; } = [];
         public int MaxParticipantsCount { get; set; }
+        public ICollection<UserResponseDto> ApprovedParticipants { get; set; } = [];
+        public ICollection<UserResponseDto> PendingParticipants { get; set; } = [];
         public Guid? GuideId { get; set; }
         public DateTime CreatedAtUTC { get; set; }
         public BiddingCursorPageDto? BiddingsPage { get; set; } = null;

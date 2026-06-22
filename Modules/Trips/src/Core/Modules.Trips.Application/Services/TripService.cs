@@ -118,11 +118,14 @@ namespace Modules.Trips.Application.Services
                     q => q.Include(t => t.Segments)
                         .ThenInclude(s => s.Places)
                         .ThenInclude(p => p.Governorate),
-                    q => q.Include(t => t.CreatedByUser))
+                    q => q.Include(t => t.CreatedByUser),
+                    q => q.Include(p => p.Participants)
+                        .ThenInclude(u => u.User))
                 ?? throw new NotFoundException("Trip.NotFound", tripId);
 
             var dto = tripDetailsMapper.Map(trip);
-
+            if (trip.UserId != userId || trip.AutoApprove == true)
+                dto.PendingParticipants = [];
             dto.BiddingsPage =
                 (trip.Status == TripStatus.Bidding) ?
                 await biddingService.GetTripBiddingsAsync(tripId, userId, new GetTripBiddingsQueryDto
@@ -140,23 +143,79 @@ namespace Modules.Trips.Application.Services
             Trip trip = await repositoryFactory
                 .Repository<Trip>()
                 .GetFirstOrDefaultByFilter(
-                    x =>
-                        x.Id == tripId &
-                        x.Status == TripStatus.Published,
-                x => x.Include(x => x.Participants)) ?? throw new NotFoundException("Trip.NotFound");
+                    x => x.Id == tripId && x.Status == TripStatus.Published,
+                    x => x.Include(x => x.Participants))
+                ?? throw new NotFoundException("Trip.NotFound");
 
-            TripParticipant? tripParticipant = trip
-                .Participants
-                .Where(x => x.UserId == userId)
-                .FirstOrDefault();
+            TripParticipant? tripParticipant = trip.Participants
+                .FirstOrDefault(x => x.UserId == userId);
 
             if (tripParticipant != null)
                 return;
 
+            User user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(x => x.Id == userId)
+                ?? throw new NotFoundException("User.NotFound", userId);
+
             tripParticipant = TripParticipant.Create(tripId, userId);
 
+            if (trip.AutoApprove)
+                tripParticipant.Approve();
+            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
+            {
+                trip.Status = TripStatus.Completed;
+            }
+            trip.Participants.Add(tripParticipant);
+            await unitOfWork.SaveChangesAsync();
         }
 
+        public async Task ApproveUserJoinRequest(Guid tripId, Guid userId)
+        {
+            Trip trip = await repositoryFactory
+                .Repository<Trip>()
+                .GetFirstOrDefaultByFilter(
+                    x => x.Id == tripId && x.Status == TripStatus.Published,
+                    x => x.Include(x => x.Participants))
+                ?? throw new NotFoundException("Trip.NotFound", tripId);
+
+            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
+            {
+                await repositoryFactory.Repository<TripParticipant>().GetQueryable()
+                    .Where(x => x.TripId == trip.Id && !x.Approved)
+                    .ExecuteDeleteAsync();
+                trip.Status = TripStatus.Completed;
+                throw new BadRequestException("Trip.MaxParticipantsReached");
+            }
+
+            TripParticipant tripParticipant = trip.Participants
+                .FirstOrDefault(x => x.UserId == userId)
+                ?? throw new NotFoundException("TripParticipant.NotFound", userId);
+
+            if (tripParticipant.Approved)
+                return;
+
+            tripParticipant.Approve();
+
+            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
+            {
+                await repositoryFactory.Repository<TripParticipant>().GetQueryable()
+                    .Where(x => x.TripId == trip.Id && !x.Approved)
+                    .ExecuteDeleteAsync();
+                trip.Status = TripStatus.Completed;
+            }
+
+            await unitOfWork.SaveChangesAsync();
+        }
+        // create unapproved
+        // update trip participants incase of autoapprove = false endpoint
+        // make a review endpoint that shows the data of the user who wants to join
+        // update getTripDetails endpoint to show the trip participants to trip owner otherwise 
+        // keep it the same -- done
+        // send notifs to trip creator when a user wants to join
+        // send notifs to user when trip creator approves or rejects their request
+        // make an endpoint that shows the users who want to join the trip --> in getdetailsasync
+        // make an approve enpoint and keep the list of users until max participants is reached, also 
+        // update the approved users flag done
+        // update trip status to completed if maxcount reached 
         #region Helpers
         private async Task<ICollection<ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
         {
