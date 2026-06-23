@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 using Modules.Conversations.Application.Abstractions;
 using Modules.Conversations.Application.Dtos.Requests;
+using Modules.Conversations.Application.Dtos.Responses;
 using Modules.Conversations.Application.Interfaces;
 using Modules.Conversations.Domain.Entities;
 using Modules.Conversations.Infrastructure.Mappers;
@@ -35,8 +36,11 @@ namespace Modules.Conversations.Infrastructure.Services
             ];
         }
 
-        public async Task<ICollection<KeyValuePair<string, object?>>> SendMessageAsync(Guid userId, SendAiPromptRequestDto request, CancellationToken cancellationToken = default)
+        public async Task<MessageResponseDto> SendMessageAsync(Guid userId, SendAiPromptRequestDto request, CancellationToken cancellationToken = default)
         {
+            var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(
+                x => x.Id == userId
+            ) ?? throw new NotFoundException("User.NotFound");
 
             AiConversation conversation =
                 request.ConversationId == null ? AiConversation.Create(userId) : await repositoryFactory
@@ -84,12 +88,21 @@ namespace Modules.Conversations.Infrastructure.Services
                 cancellationToken: cancellationToken);
 
             var aiMessage = userPrompt.ToAiMessage(conversation, response.Messages);
-            repositoryFactory.Repository<AiConversation>().Attach(conversation);
+
+            if (request.ConversationId == null)
+                repositoryFactory.Repository<AiConversation>().Add(conversation);
+            else
+                repositoryFactory.Repository<AiConversation>().Attach(conversation);
+
             repositoryFactory.Repository<AiMessage>().Add(aiMessage);
             await unitOfWork.SaveChangesAsync(cancellationToken);
-            return [.. messagesToBeSent.Concat(response.Messages)
-                .Select(m => new KeyValuePair<string, object?>(
-                    m.Role.ToString(), m))];
+            return new MessageResponseDto
+            {
+                Id = aiMessage.Id,
+                ConversationId = aiMessage.ConversationId,
+                SenderUserId = null,
+                Content = response.Messages.LastOrDefault(x => x.Role == ChatRole.Assistant)?.Text ?? "NoResponse"
+            };
 
         }
         private static ChatOptions GenerateChatOptions()

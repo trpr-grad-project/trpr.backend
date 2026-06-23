@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Modules.Conversations.Application.Dtos.Requests;
+using Modules.Conversations.Application.Dtos.Responses;
 using Modules.Conversations.Application.Interfaces;
 using Modules.Conversations.Application.Services;
 using Modules.Conversations.Domain.Entities;
@@ -16,22 +18,22 @@ namespace Modules.Conversations.Presentation.Controllers.v1
 
         [Authorize]
         [HttpPost("ai")]
-        public async Task<IActionResult> GetPrompt(SendAiPromptRequestDto request)
+        public async Task<ActionResult<MessageResponseDto>> GetPrompt(SendAiPromptRequestDto request)
         {
-            var result = await aiChatService.SendMessageAsync(UserId, request);
+            MessageResponseDto result = await aiChatService.SendMessageAsync(UserId, request);
             return Ok(result);
         }
         [HttpPost("direct")]
-        public async Task<IActionResult> SendDirectMessage(SendMessageRequestDto request)
+        public async Task<ActionResult<MessageResponseDto>> SendDirectMessage(SendMessageRequestDto request)
         {
-            await chatService.StartDirectMessage(UserId, request);
-            return Ok();
+            MessageResponseDto result = await chatService.StartDirectMessage(UserId, request);
+            return Ok(result);
         }
         [HttpPost("conversation")]
-        public async Task<IActionResult> SendMessageToConversation(SendMessageRequestDto request)
+        public async Task<ActionResult<MessageResponseDto>> SendMessageToConversation(SendMessageRequestDto request)
         {
-            await chatService.SendMessage(UserId, request);
-            return Ok();
+            MessageResponseDto result = await chatService.SendMessage(UserId, request);
+            return Ok(result);
         }
 
         [HttpGet("{Id}/messages")]
@@ -42,9 +44,9 @@ namespace Modules.Conversations.Presentation.Controllers.v1
         }
 
         [HttpPost("relay")]
-        public async Task<ActionResult<ICollection<Message>>> GetRelayMessage([FromBody] GetRelayMessageRequestDto request)
+        public async Task<ActionResult<ICollection<MessageResponseDto>>> GetRelayMessage([FromBody] GetRelayMessageRequestDto request)
         {
-            var messages = await chatService.GetRelayMessagesAsync(request.LastConversationsMessages);
+            ICollection<MessageResponseDto> messages = await chatService.GetRelayMessagesAsync(request.LastConversationsMessages);
             return Ok(messages);
         }
 

@@ -3,6 +3,7 @@ using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Modules.Conversations.Application.Abstractions;
 using Modules.Conversations.Application.Dtos.Requests;
+using Modules.Conversations.Application.Dtos.Responses;
 using Modules.Conversations.Application.Interfaces;
 using Modules.Conversations.Domain.Entities;
 using Modules.Conversations.Domain.ValueObjects;
@@ -15,7 +16,7 @@ public class ChatService(
     IUnitOfWork unitOfWork)
 {
     // todo : add attachment support later
-    public async Task StartDirectMessage(Guid userId, SendMessageRequestDto request, CancellationToken cancellationToken = default)
+    public async Task<MessageResponseDto> StartDirectMessage(Guid userId, SendMessageRequestDto request, CancellationToken cancellationToken = default)
     {
         // Check if the recipient user exists
         var recipientUser = await repositoryFactory.Repository<User>()
@@ -36,8 +37,7 @@ public class ChatService(
         {
             // If a conversation already exists, use it
             request.RecipientId = existingConversation.Id;
-            await SendMessage(userId, request, cancellationToken);
-            return;
+            return await SendMessage(userId, request, cancellationToken);
         }
 
         // Create a new conversation
@@ -74,9 +74,9 @@ public class ChatService(
         // Set the recipient ID to the conversation ID for sending the first message
         request.RecipientId = conversation.Id;
         // Send the first message
-        await SendMessage(userId, request, cancellationToken);
+        return await SendMessage(userId, request, cancellationToken);
     }
-    public async Task SendMessage(Guid userId, SendMessageRequestDto request, CancellationToken cancellationToken = default)
+    public async Task<MessageResponseDto> SendMessage(Guid userId, SendMessageRequestDto request, CancellationToken cancellationToken = default)
     {
         // Check if the conversation exists and the user is a participant
         var conversation = await repositoryFactory.Repository<Conversation>()
@@ -104,6 +104,14 @@ public class ChatService(
         await unitOfWork.SaveChangesAsync(cancellationToken);
         // Send the message to the recipients via SignalR
         await notificationSender.SendMessageAsync(messageEntity, cancellationToken);
+
+        return new MessageResponseDto
+        {
+            Id = messageEntity.Id.ToString(),
+            SenderUserId = messageEntity.SenderUserId,
+            Content = messageEntity.Content,
+            ConversationId = messageEntity.ConversationId
+        };
     }
 
     public async Task<ICollection<Message>> GetMessagesAsync(Guid conversationId, Guid? messageId, DateTime? lastSentAt, bool older = true, CancellationToken cancellationToken = default)
@@ -129,7 +137,7 @@ public class ChatService(
         return messages;
     }
 
-    public async Task<ICollection<Message>> GetRelayMessagesAsync(ICollection<LastConversationMessageDto> lastConversationsMessages, CancellationToken cancellationToken = default)
+    public async Task<ICollection<MessageResponseDto>> GetRelayMessagesAsync(ICollection<LastConversationMessageDto> lastConversationsMessages, CancellationToken cancellationToken = default)
     {
         var messages = new List<Message>();
 
@@ -154,7 +162,13 @@ public class ChatService(
             messages.AddRange(convoMessages);
         }
 
-        return messages;
+        return messages.Select(messageEntity => new MessageResponseDto
+        {
+            Id = messageEntity.Id.ToString(),
+            SenderUserId = messageEntity.SenderUserId,
+            Content = messageEntity.Content,
+            ConversationId = messageEntity.ConversationId
+        }).ToList();
     }
 
     public async Task<ICollection<Conversation>> GetUserConversationsAsync(Guid userId, CancellationToken cancellationToken = default)
