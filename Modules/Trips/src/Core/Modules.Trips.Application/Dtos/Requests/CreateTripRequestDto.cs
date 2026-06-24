@@ -10,6 +10,8 @@ namespace Modules.Trips.Application.Dtos.Requests
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public List<string> Images { get; set; } = [];
         public bool AutoApprove { get; set; }
         public TripVisibility TripVisibility { get; set; }

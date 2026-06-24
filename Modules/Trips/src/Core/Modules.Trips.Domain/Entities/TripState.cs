@@ -11,11 +11,11 @@ namespace Modules.Trips.Domain.Entities
 
         public void SelectGuide(Guid guideId)
         {
-            if (Status != ValueObjects.TripStatus.Bidding)
+            if (Status != TripStatus.Bidding)
                 throw new InvalidOperationException("Only trips in Bidding status can have a guide selected.");
             GuideId = guideId;
             if (Participants.Count == MaxParticipantsCount)
-                Status = TripStatus.Completed;
+                Status = TripStatus.Ready;
             else
                 Status = TripStatus.Published;
 
@@ -39,8 +39,8 @@ namespace Modules.Trips.Domain.Entities
         public void Complete()
         {
             if (Status != TripStatus.Bidding && Status != TripStatus.Started)
-                throw new InvalidOperationException("Only Bidding or Started trips can be completed.");
-            Status = TripStatus.Completed;
+                throw new InvalidOperationException("Only Bidding or Started trips can be Finished.");
+            Status = TripStatus.Finished;
         }
         public void Start()
         {
