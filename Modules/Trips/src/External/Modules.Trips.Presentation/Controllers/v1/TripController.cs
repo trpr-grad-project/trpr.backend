@@ -1,6 +1,7 @@
 ﻿using Common.Application.Dtos;
 using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using Modules.Trips.Application.Dtos.Requests;
@@ -17,6 +18,14 @@ namespace Modules.Trips.Presentation.Controllers.v1
         public Guid UserId => User.GetUserId();
         public ICollection<string> UserRoles => User.GetRoles();
 
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<ThemeFormDataDto>> GetTripFormDate()
+        {
+            var result = await tripService.GetThemeFromData();
+            return Ok(result);
+        }
+
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<TripResponseDto>> CreateTrip([FromBody] CreateTripRequestDto dto, CancellationToken cancellationToken)
@@ -27,19 +36,18 @@ namespace Modules.Trips.Presentation.Controllers.v1
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<HomeResponseDto>> GetHomePage([FromQuery]BaseSearchTripRequestDto request,CancellationToken cancellationToken)
+        public async Task<ActionResult<HomeResponseDto>> GetHomePage([FromQuery] BaseSearchTripRequestDto request, CancellationToken cancellationToken)
         {
-            var results = await Task.WhenAll(
-                tripService.GetTrips(request.CloneWith(TripType.Shared), null, null, cancellationToken),
-                tripService.GetTrips(request.CloneWith(TripType.ByCompany), null, null, cancellationToken),
-                tripService.GetTrips(request.CloneWith(TripType.ByGuides), null, null, cancellationToken)
-            );
+            var shared = await tripService.GetTrips(request.CloneWith(TripType.Shared), null, null, cancellationToken);
+            var byCompany = await tripService.GetTrips(request.CloneWith(TripType.ByCompany), null, null, cancellationToken);
+            var byGuide = await tripService.GetTrips(request.CloneWith(TripType.ByGuides), null, null, cancellationToken);
+
 
             return Ok(new HomeResponseDto
             {
-                Shared = results[0].Items.ToList(),
-                ByCompany = results[1].Items.ToList(),
-                ByGuide = results[2].Items.ToList()
+                Shared = shared,
+                ByCompany = byCompany,
+                ByGuide = byGuide
             });
         }
 
@@ -91,5 +99,12 @@ namespace Modules.Trips.Presentation.Controllers.v1
             var request = await tripService.GetTrips(requestDto, null, TripStatus.Published, cancellationToken);
             return Ok(request);
         }
+
+        // [HttpPut("join/{id:guid}")]
+        // [Authorize]
+        // public async Task<ActionResult> JoinTrip([FromRoute] Guid id)
+        // {
+
+        // }
     }
 }

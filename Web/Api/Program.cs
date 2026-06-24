@@ -5,6 +5,7 @@ using Common.Presentation;
 using Modules.Conversations.Infrastructure;
 using Modules.Conversations.Presentation.Hubs;
 using Modules.Notifications.Infrastructure;
+using Modules.Payments.Infrastructure;
 using Modules.Trips.Infrastructure;
 using Modules.Users.Infrastructure;
 using Scalar.AspNetCore;
@@ -19,26 +20,31 @@ builder.Services.AddConfigurations(builder.Configuration,
     "Users",
     "Notifications",
     "Trips",
-    "Conversations");
+    "Conversations",
+    "Payments");
 builder.Services.AddCommonApplication(
     Modules.Users.Application.AssemblyRefrence.Assembly,
     Modules.Notifications.Application.AssemblyRefrence.Assembly,
     Modules.Trips.Application.AssemblyRefrence.Assembly,
+    Modules.Payments.Application.AssemblyRefrence.Assembly,
     Modules.Conversations.Application.AssemblyRefrence.Assembly);
 builder.Services.AddCommonPresentation(
     Modules.Users.Presentation.AssemblyRefrence.Assembly,
     Modules.Notifications.Presentation.AssemblyRefrence.Assembly,
     Modules.Trips.Presentation.AssemblyRefrence.Assembly,
+    Modules.Payments.Presentation.AssemblyRefrence.Assembly,
     Modules.Conversations.Presentation.AssemblyRefrence.Assembly);
 builder.Services.AddCommonInfrastructure(builder.Configuration,
     Modules.Users.Infrastructure.AssemblyRefrence.Assembly,
     Modules.Notifications.Infrastructure.AssemblyRefrence.Assembly,
     Modules.Trips.Infrastructure.AssemblyRefrence.Assembly,
+    Modules.Payments.Infrastructure.AssemblyRefrence.Assembly,
     Modules.Conversations.Infrastructure.AssemblyRefrence.Assembly);
 builder.Services.AddUsersModule(builder.Configuration);
 builder.Services.AddNotificationsModule(builder.Configuration);
 builder.Services.AddTripsModule(builder.Configuration);
 builder.Services.AddConversationsModule(builder.Configuration);
+builder.Services.AddPaymentsModule(builder.Configuration);
 builder.Services.AddIntegrationEvents();
 builder.Services.AddLocalizationServices();
 Log.Logger = new LoggerConfiguration()

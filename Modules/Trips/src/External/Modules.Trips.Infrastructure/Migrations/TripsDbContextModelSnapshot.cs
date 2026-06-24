@@ -261,6 +261,10 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at_utc");
 
+                    b.Property<DateTime>("DayDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("day_date");
+
                     b.Property<int>("Order")
                         .HasColumnType("integer")
                         .HasColumnName("order");
@@ -497,6 +501,10 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("title");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
                     b.Property<int>("VisitCount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -516,6 +524,9 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .HasDatabaseName("ix_places_location");
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Location"), "GIST");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_places_user_id");
 
                     b.ToTable("places", "trp");
                 });
@@ -891,6 +902,10 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("actual_duration");
 
+                    b.Property<bool>("AutoApprove")
+                        .HasColumnType("boolean")
+                        .HasColumnName("auto_approve");
+
                     b.Property<Point>("Centroid")
                         .IsRequired()
                         .HasColumnType("geography (Point, 4326)")
@@ -908,6 +923,10 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("description");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("end_date");
 
                     b.Property<double>("ExpectedDuration")
                         .HasColumnType("double precision")
@@ -938,6 +957,10 @@ namespace Modules.Trips.Infrastructure.Migrations
                     b.Property<string>("RejectionReason")
                         .HasColumnType("text")
                         .HasColumnName("rejection_reason");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("start_date");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer")
@@ -1060,9 +1083,21 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
+                    b.Property<bool>("Approved")
+                        .HasColumnType("boolean")
+                        .HasColumnName("approved");
+
                     b.Property<DateTime>("CreatedAtUTC")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at_utc");
+
+                    b.Property<double?>("Rating")
+                        .HasColumnType("double precision")
+                        .HasColumnName("rating");
+
+                    b.Property<string>("Review")
+                        .HasColumnType("text")
+                        .HasColumnName("review");
 
                     b.Property<DateTime>("UpdatedAtUTC")
                         .HasColumnType("timestamp with time zone")
@@ -1105,6 +1140,14 @@ namespace Modules.Trips.Infrastructure.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text")
                         .HasColumnName("phone_number");
+
+                    b.Property<double?>("Rating")
+                        .HasColumnType("double precision")
+                        .HasColumnName("rating");
+
+                    b.Property<int?>("RatingCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("rating_count");
 
                     b.Property<DateTime>("UpdatedAtUTC")
                         .HasColumnType("timestamp with time zone")
@@ -1166,9 +1209,16 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_places_governorates_governorate_id");
 
+                    b.HasOne("Modules.Trips.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("fk_places_user_user_id");
+
                     b.Navigation("Category");
 
                     b.Navigation("Governorate");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Modules.Trips.Domain.Entities.PlaceTag", b =>

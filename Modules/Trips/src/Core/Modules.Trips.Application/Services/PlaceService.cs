@@ -42,10 +42,10 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
             Tags = tags
         };
     }
-    public async Task<PlaceDto> UpdatePlaceAsync(int id, UpdatePlaceRequestDto dto, CancellationToken cancellationToken = default)
+    public async Task<PlaceDto> UpdatePlaceAsync(Guid? userId, int id, UpdatePlaceRequestDto dto, CancellationToken cancellationToken = default)
     {
         var place = await repositoryFactory.Repository<Place>()
-            .GetFirstOrDefaultByFilter(p => p.Id == id,
+            .GetFirstOrDefaultByFilter(p => p.Id == id && p.UserId == userId,
                 x => x
                     .Include(x => x.Governorate)
                     .Include(x => x.Category)
@@ -90,6 +90,7 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
             place.Description = dto.Description;
         if (dto.Longitude != null && dto.Latitude != null)
             place.Location = Place.Create(
+                null,
                 "dummy",
                 "dummy",
                 1,
@@ -111,8 +112,13 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
 
         return place.ToPlaceDto();
     }
-    public async Task<PlaceDto> CreatePlaceAsync(CreatePlaceRequestDto dto, CancellationToken cancellationToken = default)
+    public async Task<PlaceDto> CreatePlaceAsync(Guid? userId, CreatePlaceRequestDto dto, CancellationToken cancellationToken = default)
     {
+        User? user = userId != null ? (await repositoryFactory
+            .Repository<User>()
+            .GetFirstOrDefaultByFilter(x => x.Id == userId)
+            ?? throw new NotFoundException("User.NotFound")) : null;
+
         var category = await repositoryFactory
             .Repository<Category>()
             .GetFirstOrDefaultByFilter(c => c.Id == dto.CategoryId)
@@ -128,6 +134,7 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
                     ?? throw new NotFoundException("Tag.NotFound", tagId);
 
         var place = Place.Create(
+            user,
             dto.Title,
             dto.Description,
             dto.CategoryId,
@@ -165,13 +172,16 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
 
         return place.ToPlaceDto();
     }
-    public async Task<ICollection<PlaceDto>> GetPlacesAsync(GetPlacesQueryDto query, CancellationToken cancellationToken = default)
+    public async Task<CursorPageDto<PlaceDto, int?>> GetPlacesAsync(Guid? userId, GetPlacesQueryDto query, CancellationToken cancellationToken = default)
     {
         var queryable = repositoryFactory
             .Repository<Place>()
             .GetQueryable();
+
+        // filter by governorate
         if (query.GovernorateId != null)
             queryable = queryable.Where(x => x.GovernorateId == query.GovernorateId);
+        // filter by location
         if (query.Longitude != null && query.Latitude != null && query.RadiusInMeters != null)
         {
             var point = PointUtils
@@ -180,13 +190,42 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
                     query.Latitude.Value);
             queryable = queryable.Where(x => x.Location.Distance(point) <= query.RadiusInMeters.Value);
         }
+        // filter by place name 
+        if (!string.IsNullOrWhiteSpace(query.Title))
+            queryable = queryable.Where(x => x.Title.StartsWith(query.Title));
+        // oder by id 
         queryable = queryable
+            .OrderByDescending(x => x.Id);
+        // cursor pagination
+        if (query.LastPlaceId != null)
+            queryable = queryable.Where(x => x.Id < query.LastPlaceId);
+        // filter by userId
+        queryable = queryable.Where(x => x.UserId == userId);
+        // includes and page size
+        var places = await queryable
             .Include(x => x.Category)
             .Include(x => x.Governorate)
-            .Include(x => x.PlaceTags).ThenInclude(x => x.Tag);
-        return await queryable
+            .Include(x => x.PlaceTags)
+                .ThenInclude(x => x.Tag)
+            .Take(query.PageSize + 1)
             .Select(x => x.ToPlaceDto())
             .ToListAsync(cancellationToken);
+        // check if it has a next page
+        var hasNextPage = places.Count > query.PageSize;
+
+        if (hasNextPage)
+        {
+            // remove the last elemnt to use it in the next cursor search
+            places.RemoveAt(places.Count - 1);
+        }
+
+        int? nextCursor = places.LastOrDefault()?.Id;
+
+        return new CursorPageDto<PlaceDto, int?>
+        {
+            Items = places,
+            NextCursor = nextCursor
+        };
     }
 
     public async Task<ICollection<Place>> GetPlacesAsync(ICollection<int> placeIds)

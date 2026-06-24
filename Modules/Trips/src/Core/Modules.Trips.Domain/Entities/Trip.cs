@@ -12,11 +12,14 @@ namespace Modules.Trips.Domain.Entities
         // TODO replace themeID with theme nav property and update tripconfig
         // TODO add the role of the trip maker as a type (ENUM) and update the queries of all querying endpoints DONE
         public int ThemeId { get; set; }
+        public bool AutoApprove { get; set; } = true;
         public Theme TripTheme { get; set; } = default!;
-        public UserRole CreatorRole { get; set; } 
+        public UserRole CreatorRole { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public double ActualDuration { get; set; }
         public double ExpectedDuration { get; set; }
         public ICollection<string> Images { get; set; } = [];
@@ -33,6 +36,7 @@ namespace Modules.Trips.Domain.Entities
             Theme theme,
             UserRole roles,
             string title,
+            bool autoApprove,
             string description,
             double price,
             ICollection<string> images,
@@ -43,7 +47,9 @@ namespace Modules.Trips.Domain.Entities
             Guid? guideId,
             List<double> duration,
             User user,
-            ICollection<Governorate> governorates)
+            ICollection<Governorate> governorates,
+            DateTime startDate,
+            DateTime endDate)
         {
             Trip newTrip = new()
             {
@@ -55,6 +61,7 @@ namespace Modules.Trips.Domain.Entities
                 Title = title,
                 CreatorRole = roles,
                 Description = description,
+                AutoApprove = autoApprove,
                 Price = price,
                 Images = images,
                 TripVisibility = tripVisibility,
@@ -62,6 +69,8 @@ namespace Modules.Trips.Domain.Entities
                 GuideId = guideId,
                 CreatedByUser = user,
                 Status = TripStatus.UnderReview,
+                StartDate = startDate,
+                EndDate = endDate,
             };
             foreach (double dur in duration)
             {

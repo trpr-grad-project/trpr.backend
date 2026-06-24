@@ -29,6 +29,30 @@ namespace Modules.Trips.Application.Mappers
                 Status = source.Status,
                 PublishMode = source.PublishMode,
                 RejectionReason = source.RejectionReason,
+                PendingParticipants = source.Participants
+                    .Where(p => p.Approved = false)
+                    .Select(p => new UserResponseDto
+                    {
+                        Id = p.User.Id,
+                        UserName = p.User.UserName,
+                        FirstName = p.User.FirstName,
+                        LastName = p.User.LastName,
+                        Email = p.User.Email,
+                        PhoneNumber = p.User.PhoneNumber,
+                        Rating = p.User.Rating,
+                    }).ToList(),
+                ApprovedParticipants = source.Participants
+                    .Where(p => p.Approved = true)
+                    .Select(p => new UserResponseDto
+                    {
+                        Id = p.User.Id,
+                        UserName = p.User.UserName,
+                        FirstName = p.User.FirstName,
+                        LastName = p.User.LastName,
+                        Email = p.User.Email,
+                        PhoneNumber = p.User.PhoneNumber,
+                        Rating = p.User.Rating,
+                    }).ToList(),
                 Segments = source
                     .Segments
                     .OrderBy(x => x.Order)

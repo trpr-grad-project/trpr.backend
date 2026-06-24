@@ -11,8 +11,21 @@ namespace Modules.Trips.Domain.Entities
     {
         public Guid Id { get; set; }
         public int Order { get; set; } = 0;
+        public DateTime DayDate { get; set; }
         public Guid TripId { get; set; }
         public ICollection<Place> Places { get; set; } = [];
         public virtual Trip Trip { get; set; } = null!;
+
+        public static Day Create(int order, DateTime dayDate, Guid tripId, ICollection<Place> places)
+        {
+            return new Day
+            {
+                Id = Guid.NewGuid(),
+                Order = order,
+                DayDate = dayDate,
+                TripId = tripId,
+                Places = places
+            };
+        }
     }
 }

@@ -4,6 +4,7 @@ using Minio;
 using Minio.DataModel.Args;
 using Modules.Conversations.Infrastructure.Data;
 using Modules.Notifications.Infrastructure.Data;
+using Modules.Payments.Infrastructure.Data;
 using Modules.Trips.Infrastructure.Data;
 using Modules.Users.Infrastructure.Data;
 
@@ -18,6 +19,8 @@ public static class MigrationsExtension
     //dotnet ef migrations add "InitialCreate" --project .\Modules\Trips\src\External\Modules.Trips.Infrastructure\ --startup-project .\Web\Api\ --context TripsDbContext
 
     //dotnet ef migrations add "IntialCreate" --project .\Modules\Users\src\External\Modules.Users.Infrastructure\ --startup-project .\Web\Api\ --context UsersDbContext
+
+    //dotnet ef migrations add "IntialCreate" --project .\Modules\Payments\src\External\Modules.Payments.Infrastructure\ --startup-project .\Web\Api\ --context PaymentsDbContext
     public static async Task AddMigrations(this IApplicationBuilder application)
     {
         using var scope = application.ApplicationServices.CreateScope();
@@ -29,10 +32,13 @@ public static class MigrationsExtension
             .GetRequiredService<TripsDbContext>();
         var conversationsDbContext = scope.ServiceProvider
             .GetRequiredService<ConversationsDbContext>();
+        var paymentsDbContext = scope.ServiceProvider
+            .GetRequiredService<PaymentsDbContext>();
         usersDbContext.Database.Migrate();
         notificationsDbContext.Database.Migrate();
         tripsDbContext.Database.Migrate();
         conversationsDbContext.Database.Migrate();
+        paymentsDbContext.Database.Migrate();
         var minioClient = scope.ServiceProvider.GetRequiredService<IMinioClient>();
         await CreateBucketWithPoliciesAsync(minioClient, "uploads");
     }
