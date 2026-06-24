@@ -28,7 +28,7 @@ namespace Modules.Trips.Domain.ValueObjects
         UnderReview = 1,
         Published = 2,
         Bidding = 3,
-        Completed = 4,
+        Ready = 4,
         Started = 5,
         Finished = 6,
         Rejected = 7,
