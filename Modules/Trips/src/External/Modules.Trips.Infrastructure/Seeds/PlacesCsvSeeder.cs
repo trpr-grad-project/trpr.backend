@@ -84,6 +84,7 @@ public class PlacesCsvSeeder(ILogger<PlacesCsvSeeder> logger, RepositoryFactory 
             foreach (var record in records)
             {
                 var place = Place.Create(
+                    null,
                     record.PlaceName,
                     record.Description,
                     NameToCategoryMapper[record.CategoryClean.Trim().ToLower()].Id,
