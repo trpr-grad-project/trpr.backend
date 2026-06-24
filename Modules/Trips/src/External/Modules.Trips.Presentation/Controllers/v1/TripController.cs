@@ -18,6 +18,14 @@ namespace Modules.Trips.Presentation.Controllers.v1
         public Guid UserId => User.GetUserId();
         public ICollection<string> UserRoles => User.GetRoles();
 
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<ThemeFormDataDto>> GetTripFormDate()
+        {
+            var result = await tripService.GetThemeFromData();
+            return Ok(result);
+        }
+
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<TripResponseDto>> CreateTrip([FromBody] CreateTripRequestDto dto, CancellationToken cancellationToken)

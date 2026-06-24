@@ -14,12 +14,15 @@ namespace Modules.Trips.Domain.Entities
         public int RateCount { get; set; } = 0;
         public int CategoryId { get; set; }
         public int GovernorateId { get; set; }
+        public Guid? UserId { get; set; }
         public ICollection<Day> Days { get; set; } = [];
         public Point Location { get; set; } = default!;
         public Governorate Governorate { get; set; } = default!;
+        public User? User { get; set; }
         public Category Category { get; set; } = default!;
         public ICollection<PlaceTag> PlaceTags { get; set; } = [];
         public static Place Create(
+            User? user,
             string title,
             string description,
             int categoryId,
@@ -29,6 +32,8 @@ namespace Modules.Trips.Domain.Entities
         {
             return new Place
             {
+                UserId = user?.Id,
+                User = user,
                 Title = title,
                 Description = description,
                 CategoryId = categoryId,

@@ -11,6 +11,7 @@ public class PlaceDto
     public int GovernorateId { get; set; }
     public double Latitude { get; set; }
     public double Longitude { get; set; }
+    public Guid? UserId { get; set; }
     public GovernorateDto Governorate { get; set; } = default!;
     public CategoryDto Category { get; set; } = default!;
     public ICollection<TagDto> Tags { get; set; } = [];

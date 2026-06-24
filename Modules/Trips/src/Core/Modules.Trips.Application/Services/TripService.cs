@@ -168,6 +168,21 @@ namespace Modules.Trips.Application.Services
             await unitOfWork.SaveChangesAsync();
         }
 
+        public async Task<ThemeFormDataDto> GetThemeFromData()
+        {
+            var themes = await repositoryFactory
+                .Repository<Theme>()
+                .GetQueryable()
+                .ToListAsync();
+            return new ThemeFormDataDto
+            {
+                Themes = themes.Select(x => new ThemeDto
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToList()
+            };
+        }
         public async Task ApproveUserJoinRequest(Guid tripId, Guid userId)
         {
             Trip trip = await repositoryFactory
