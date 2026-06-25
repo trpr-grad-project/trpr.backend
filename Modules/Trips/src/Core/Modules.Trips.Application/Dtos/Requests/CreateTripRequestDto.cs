@@ -3,7 +3,6 @@ using Modules.Trips.Domain.ValueObjects;
 
 namespace Modules.Trips.Application.Dtos.Requests
 {
-
     public class CreateTripRequestDto
     {
         public int ThemeId { get; set; }
@@ -19,6 +18,5 @@ namespace Modules.Trips.Application.Dtos.Requests
         public List<DayDto> Segments { get; set; } = [];
         public int MaxParticipantsCount { get; set; }
         public Guid? GuideId { get; set; }
-
     }
 }

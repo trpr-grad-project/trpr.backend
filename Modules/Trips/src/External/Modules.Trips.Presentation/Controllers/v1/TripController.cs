@@ -100,11 +100,33 @@ namespace Modules.Trips.Presentation.Controllers.v1
             return Ok(request);
         }
 
-        // [HttpPut("join/{id:guid}")]
-        // [Authorize]
-        // public async Task<ActionResult> JoinTrip([FromRoute] Guid id)
-        // {
+        [HttpPut("join/{id:guid}")]
+        [Authorize]
+        public async Task<ActionResult> JoinTrip([FromRoute] Guid id)
+        {
+            await tripService.JoinTrip(id, UserId);
+            return Ok();
+        }
+        [HttpPut("Accept/{id:guid}")]
+        public async Task<ActionResult> AcceptJoin([FromRoute] Guid id)
+        {
+            await tripService.ApproveUserJoinRequest(id, UserId);
+            return Ok();
+        }
 
-        // }
+        [HttpPut("start/{id:guid}")]
+        [Authorize]
+        public async Task<ActionResult> StartTrip([FromRoute] Guid id)
+        {
+            await tripService.StartTrip(id, UserId);
+            return Ok();
+        }
+        [HttpPut("end/{id:guid}")]
+        [Authorize]
+        public async Task<ActionResult> EndTrip([FromRoute] Guid id)
+        {
+            await tripService.EndTrip(id, UserId);
+            return Ok();
+        }
     }
 }
