@@ -42,7 +42,7 @@ namespace Modules.Trips.Domain.Entities
             ICollection<string> images,
             TripVisibility tripVisibility,
             TripPublishMode publishMode,
-            ICollection<ICollection<Place>> segments,
+            Dictionary<DateTime, ICollection<Place>> segments,
             int maxParticipantCount,
             Guid? guideId,
             List<double> duration,
@@ -85,14 +85,15 @@ namespace Modules.Trips.Domain.Entities
                     Order = order++,
                     Id = Guid.NewGuid(),
                     TripId = newTrip.Id,
-                    Places = segment
+                    DayDate = segment.Key,
+                    Places = segment.Value
                 };
                 days.Add(day);
             }
             newTrip.Segments = days;
             MultiPoint points = new(
                 [.. segments
-                    .SelectMany(s => s)
+                    .SelectMany(s => s.Value)
                     .Select(p => p.Location)]
                 )
             { SRID = 4326 };
