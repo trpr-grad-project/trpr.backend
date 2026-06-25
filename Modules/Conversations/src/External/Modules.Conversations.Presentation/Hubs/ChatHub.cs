@@ -31,26 +31,5 @@ public class ChatHub(RepositoryFactory repositoryFactory) : Hub
         await Clients.All.SendAsync("UserDisconnected", $"user id : {UserId}");
         await base.OnDisconnectedAsync(exception);
     }
-
-    public Task Typing(Guid conversationId)
-    {
-        return Clients
-            .Group(conversationId.ToString())
-            .SendAsync("UserTyping", UserId);
-    }
-
-    public Task StopTyping(Guid conversationId)
-    {
-        return Clients
-            .Group(conversationId.ToString())
-            .SendAsync("UserStopTyping", UserId);
-    }
-    public Task ReadMessages(Guid conversationId, Guid lastReadMessageId)
-    {
-        return Clients
-            .Group(conversationId.ToString())
-            .SendAsync("UserReadMessages", UserId, lastReadMessageId);
-    }
-
 }
 

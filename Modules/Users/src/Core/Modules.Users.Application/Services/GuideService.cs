@@ -21,11 +21,13 @@ using Modules.Users.Application.Dtos.Responses;
 using Modules.Users.Application.Mappers;
 using Modules.Users.Application.Repositories;
 using Modules.Users.Domain.Entities;
+using Modules.Users.Domain.Enums;
 using Modules.Users.Domain.ValueObjects;
 namespace Modules.Users.Application.Services
 {
     public class GuideService(
         RepositoryFactory repositoryFactory,
+        AdminUserService adminUserService,
         IUnitOfWork unitOfWork,
         IMapper<ICollection<DocumentDto>, Dictionary<string, DocumentType>> mapper,
         IMapper<ICollection<Document>, ICollection<DocumentDto>> documentMapper)
@@ -63,9 +65,17 @@ namespace Modules.Users.Application.Services
             var upgradeRequest = await repositoryFactory.Repository<GuideUpgradeRequest>()
                 .GetFirstOrDefaultByFilter(u => u.Id == dto.UpgradeRequestId)
                 ?? throw new NotFoundException("UpgradeRequest.NotFound", dto.UpgradeRequestId);
-            if (upgradeRequest.Status == ApproveStatus.Pending && dto.Status != ApproveStatus.Pending)
+            if (upgradeRequest.Status != ApproveStatus.Pending || dto.Status == ApproveStatus.Pending)
+                throw new ConflictException("Guide.Request");
+            upgradeRequest.UpdateStatus(AdminId, upgradeRequest.userId, dto.Status, dto.RejectionReason);
+            if (dto.Status == ApproveStatus.Approved)
             {
-                upgradeRequest.UpdateStatus(AdminId, upgradeRequest.userId, dto.Status, dto.RejectionReason);
+                await adminUserService.AssignRolesAsync(
+                    upgradeRequest.userId,
+                    new AssignRolesRequestDto
+                    {
+                        Roles = [Role.Guide]
+                    }, cancellationToken);
             }
             repositoryFactory.Repository<GuideUpgradeRequest>().Update(upgradeRequest);
             await unitOfWork.SaveChangesAsync(cancellationToken);
