@@ -60,7 +60,7 @@ public class SupportService(
         // Filter by status if provided
         if (request.Status.HasValue)
         {
-            query = query.Where(x => (int)x.Status == request.Status.Value);
+            query = query.Where(x => x.Status == request.Status);
         }
 
         // Filter by subject search if provided

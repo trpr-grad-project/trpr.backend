@@ -54,6 +54,12 @@ namespace Modules.Trips.Domain.Entities
                 throw new InvalidOperationException("Trip is already canceled.");
             Status = TripStatus.Canceled;
         }
+        public void Ready()
+        {
+            if (Status != TripStatus.Published)
+                throw new InvalidOperationException("Only trips in Published status can be marked as Ready.");
+            Status = TripStatus.Ready;
+        }
 
     }
 }

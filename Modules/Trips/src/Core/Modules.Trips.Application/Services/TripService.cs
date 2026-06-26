@@ -65,12 +65,13 @@ namespace Modules.Trips.Application.Services
             Theme theme = await repositoryFactory.Repository<Theme>().GetFirstOrDefaultByFilter(t => t.Id == dto.ThemeId)
                 ?? throw new NotFoundException("Theme.NotFound", dto.ThemeId);
             var governorates = segments
-                .SelectMany(x => x)
+                .SelectMany(x => x.Value)
                 .Select(x => x.Governorate)
                 .DistinctBy(x => x.Id)
                 .ToList();
             if (creatorRoles.HasFlag(UserRole.Guide) && !dto.GuideId.HasValue)
                 dto.GuideId = userId;
+            // if trip owner is not a guide, make him a participant in the trip
             var trip = Trip.Create(
                         userId,
                         theme,
@@ -91,10 +92,15 @@ namespace Modules.Trips.Application.Services
                         dto.StartDate,
                         dto.EndDate);
             repositoryFactory.Repository<Trip>().Add(trip);
+            if (!creatorRoles.HasFlag(UserRole.Guide) || !creatorRoles.HasFlag(UserRole.Company))
+            {
+                var tripParticipant = TripParticipant.Create(trip.Id, userId);
+                tripParticipant.Approve();
+                repositoryFactory.Repository<TripParticipant>().Add(tripParticipant);
+            }
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return tripMapper.Map(trip);
         }
-
         public async Task<PaginationDto<TripResponseDto>> GetTrips(BaseSearchTripRequestDto request, Guid? userId = null, TripStatus? status = null, CancellationToken cancellationToken = default)
         {
             // TODO FILTER BASED ON THE SEARCH REQUEST LATER
@@ -168,6 +174,12 @@ namespace Modules.Trips.Application.Services
                     x => x.Id == tripId && x.Status == TripStatus.Published,
                     x => x.Include(x => x.Participants))
                 ?? throw new NotFoundException("Trip.NotFound");
+            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
+            {
+                if (trip.Status == TripStatus.Ready)
+                    trip.Ready();
+                throw new BadRequestException("Trip.MaxParticipantsReached");
+            }
 
             TripParticipant? tripParticipant = trip.Participants
                 .FirstOrDefault(x => x.UserId == userId);
@@ -182,12 +194,13 @@ namespace Modules.Trips.Application.Services
 
             if (trip.AutoApprove)
                 tripParticipant.Approve();
-            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
-            {
-                trip.Status = TripStatus.Ready;
-            }
+            
             trip.Participants.Add(tripParticipant);
             await unitOfWork.SaveChangesAsync();
+            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
+            {
+                trip.Ready();
+            }
         }
 
         public async Task<ThemeFormDataDto> GetThemeFromData()
@@ -219,7 +232,8 @@ namespace Modules.Trips.Application.Services
                 await repositoryFactory.Repository<TripParticipant>().GetQueryable()
                     .Where(x => x.TripId == trip.Id && !x.Approved)
                     .ExecuteDeleteAsync();
-                trip.Start();
+                if (trip.Status == TripStatus.Ready)
+                    trip.Ready();
                 throw new BadRequestException("Trip.MaxParticipantsReached");
             }
 
@@ -231,28 +245,31 @@ namespace Modules.Trips.Application.Services
                 return;
 
             tripParticipant.Approve();
+            
+            await unitOfWork.SaveChangesAsync();
 
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
             {
                 await repositoryFactory.Repository<TripParticipant>().GetQueryable()
                     .Where(x => x.TripId == trip.Id && !x.Approved)
                     .ExecuteDeleteAsync();
-                trip.Status = TripStatus.Ready;
+                trip.Ready();
             }
-            await unitOfWork.SaveChangesAsync();
         }
-        public async Task<string> StartTrip(Guid tripId, Guid userId)
+        public async Task StartTrip(Guid tripId, Guid userId)
         {
             Trip trip = await repositoryFactory
                 .Repository<Trip>()
                 .GetFirstOrDefaultByFilter(
                     x => x.Id == tripId && x.Status == TripStatus.Ready && x.UserId == userId)
                 ?? throw new NotFoundException("Trip.NotFound", tripId);
-            trip.Start();
+            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
+                trip.Start();
+            else
+                throw new BadRequestException("Trip.MaxParticipantsNotReached");
             await unitOfWork.SaveChangesAsync();
-            return "Trip started successfully.";
         }
-        public async Task<string> EndTrip(Guid tripId, Guid userId)
+        public async Task EndTrip(Guid tripId, Guid userId)
         {
             Trip trip = await repositoryFactory
                 .Repository<Trip>()
@@ -261,33 +278,16 @@ namespace Modules.Trips.Application.Services
                 ?? throw new NotFoundException("Trip.NotFound", tripId);
             trip.Complete();
             await unitOfWork.SaveChangesAsync();
-            return "Trip completed successfully.";
         }
-        // create unapproved
-        // update trip participants incase of autoapprove = false endpoint
-        // make a review endpoint that shows the data of the user who wants to join
-        // update getTripDetails endpoint to show the trip participants to trip owner otherwise 
-        // keep it the same -- done
-        // send notifs to trip creator when a user wants to join
-        // send notifs to user when trip creator approves or rejects their request
-        // make an endpoint that shows the users who want to join the trip --> in getdetailsasync
-        // make an approve enpoint and keep the list of users until max participants is reached, also 
-        // update the approved users flag done
-        // update trip status to completed if maxcount reached 
-        // -- DONE
-        // change the trip status to started and make a start endpoint for the trip, add a ready state for trip
-        // after trip duration passes, make it completed
-        // maybe a done endpoint OR idk fr
-        // if a guide creates a trip, he is automatically assigned as the guide of the trip and the trip is published and
-        // waits for users to join, as for the rest of the flow it should probably stay the same
+
         #region Helpers
-        private async Task<ICollection<ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
+        private async Task<Dictionary<DateTime, ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
         {
-            ICollection<ICollection<Place>> places = new List<ICollection<Place>>();
+            Dictionary<DateTime, ICollection<Place>> places = [];
             foreach (var day in source)
             {
                 ICollection<Place> dayPlaces = await placeService.GetPlacesAsync(day.PlacesIds);
-                places.Add(dayPlaces);
+                places.Add(day.DayDate, dayPlaces);
             }
             return places;
         }
