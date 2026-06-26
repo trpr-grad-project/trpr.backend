@@ -21,10 +21,12 @@ namespace Modules.Trips.Application.Mappers
                     .Select(r => r.ToString())
                     .ToList(),
                 Title = source.Title,
+                StartDate = source.StartDate,
                 Description = source.Description,
                 Price = source.Price,
                 ExpectedDuration = source.ExpectedDuration,
                 ImagesUrls = imagePaths,
+                TripTime = source.Segments.Max(x => x.Order).ToString() + " Day(s)",
                 TripVisibility = source.TripVisibility,
                 Segments = source
                     .Segments

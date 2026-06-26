@@ -18,8 +18,7 @@ namespace Modules.Trips.Domain.Entities
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateOnly StartDate { get; set; }
         public double ActualDuration { get; set; }
         public double ExpectedDuration { get; set; }
         public ICollection<string> Images { get; set; } = [];
@@ -42,14 +41,14 @@ namespace Modules.Trips.Domain.Entities
             ICollection<string> images,
             TripVisibility tripVisibility,
             TripPublishMode publishMode,
-            Dictionary<DateTime, ICollection<Place>> segments,
+            Dictionary<double, ICollection<Place>> segments,
             int maxParticipantCount,
             Guid? guideId,
             List<double> duration,
             User user,
             ICollection<Governorate> governorates,
-            DateTime startDate,
-            DateTime endDate)
+            DateOnly startDate,
+            DateOnly endDate)
         {
             Trip newTrip = new()
             {
@@ -70,7 +69,6 @@ namespace Modules.Trips.Domain.Entities
                 CreatedByUser = user,
                 Status = TripStatus.UnderReview,
                 StartDate = startDate,
-                EndDate = endDate,
             };
             foreach (double dur in duration)
             {
@@ -85,7 +83,7 @@ namespace Modules.Trips.Domain.Entities
                     Order = order++,
                     Id = Guid.NewGuid(),
                     TripId = newTrip.Id,
-                    DayDate = segment.Key,
+                    Duration = segment.Key,
                     Places = segment.Value
                 };
                 days.Add(day);

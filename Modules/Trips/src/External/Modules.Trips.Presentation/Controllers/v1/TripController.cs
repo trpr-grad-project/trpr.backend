@@ -25,7 +25,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
             return Ok(result);
         }
 
-        [HttpGet("from-data")]
+        [HttpGet("form-data")]
         [Authorize]
         public async Task<ActionResult<ThemeFormDataDto>> GetTripFormDate()
         {

@@ -71,7 +71,6 @@ namespace Modules.Trips.Application.Services
                 .ToList();
             if (creatorRoles.HasFlag(UserRole.Guide) && !dto.GuideId.HasValue)
                 dto.GuideId = userId;
-            // if trip owner is not a guide, make him a participant in the trip
             var trip = Trip.Create(
                         userId,
                         theme,
@@ -282,13 +281,13 @@ namespace Modules.Trips.Application.Services
         }
 
         #region Helpers
-        private async Task<Dictionary<DateTime, ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
+        private async Task<Dictionary<double, ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
         {
-            Dictionary<DateTime, ICollection<Place>> places = [];
+            Dictionary<double, ICollection<Place>> places = [];
             foreach (var day in source)
             {
                 ICollection<Place> dayPlaces = await placeService.GetPlacesAsync(day.PlacesIds);
-                places.Add(day.DayDate, dayPlaces);
+                places.Add(day.Duration, dayPlaces);
             }
             return places;
         }
