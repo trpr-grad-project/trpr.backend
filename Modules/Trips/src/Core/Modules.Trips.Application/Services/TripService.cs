@@ -194,7 +194,7 @@ namespace Modules.Trips.Application.Services
 
             if (trip.AutoApprove)
                 tripParticipant.Approve();
-            
+
             trip.Participants.Add(tripParticipant);
             await unitOfWork.SaveChangesAsync();
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
@@ -218,6 +218,7 @@ namespace Modules.Trips.Application.Services
                 }).ToList()
             };
         }
+        // TODO : Enhancement for race condition add for update
         public async Task ApproveUserJoinRequest(Guid tripId, Guid userId)
         {
             Trip trip = await repositoryFactory
@@ -245,7 +246,7 @@ namespace Modules.Trips.Application.Services
                 return;
 
             tripParticipant.Approve();
-            
+
             await unitOfWork.SaveChangesAsync();
 
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
