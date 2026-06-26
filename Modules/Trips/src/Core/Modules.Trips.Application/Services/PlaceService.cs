@@ -202,12 +202,16 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
         // filter by userId
         queryable = queryable.Where(x => x.UserId == userId);
         // includes and page size
-        var places = await queryable
+        queryable = queryable
             .Include(x => x.Category)
             .Include(x => x.Governorate)
             .Include(x => x.PlaceTags)
-                .ThenInclude(x => x.Tag)
-            .Take(query.PageSize + 1)
+                .ThenInclude(x => x.Tag);
+
+        if (query.PageSize != null)
+            queryable = queryable.Take(query.PageSize.Value + 1);
+
+        var places = await queryable
             .Select(x => x.ToPlaceDto())
             .ToListAsync(cancellationToken);
         // check if it has a next page

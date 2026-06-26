@@ -17,9 +17,27 @@ namespace Modules.Trips.Application.Services
         RepositoryFactory repositoryFactory,
         PlaceService placeService,
         BiddingService biddingService,
+        ITripSuggestionGenerator tripSuggestionGenerator,
         IMapper<Trip, TripResponseDto> tripMapper,
         IMapper<Trip, TripDetailsResponseDto> tripDetailsMapper)
     {
+        public async Task<object> GetTripSuggestion(TripSuggestionRequestDto requestDto)
+        {
+            var places = await placeService.GetPlacesAsync(null, new GetPlacesQueryDto
+            {
+                GovernorateId = requestDto.GovernorateId,
+                Latitude = requestDto.Latitude,
+                Longitude = requestDto.Longitude,
+                RadiusInMeters = requestDto.RadiusInMeters,
+                PageSize = null
+            });
+            var theme = await repositoryFactory.Repository<Theme>().GetFirstOrDefaultByFilter(t => t.Id == requestDto.ThemeId)
+                ?? throw new NotFoundException("Theme.NotFound", requestDto.ThemeId);
+            return await tripSuggestionGenerator.GenerateTrip(
+                requestDto.StartDateUtc,
+                requestDto.NumberOfDays,
+                theme, places.Items);
+        }
         public async Task UpdateStatus(UpdateTripStatusRequestDto dto, CancellationToken cancellationToken)
         {
             var trip = await repositoryFactory.Repository<Trip>().GetFirstOrDefaultByFilter(t => t.Id == dto.Id)

@@ -14,6 +14,7 @@ using Modules.Trips.Application.Interfaces;
 using Modules.Trips.Infrastructure.Services;
 using Common.Application.Seeds;
 using Modules.Trips.Infrastructure.Seeds;
+using Modules.Trips.Application.Services;
 
 namespace Modules.Trips.Infrastructure;
 
@@ -38,6 +39,7 @@ public static class InfrastructureDependencyInjection
         services.Configure<OutBoxOptions>(configuration.GetSection("Trips:OutBox"));
         services.Configure<InBoxOptions>(configuration.GetSection("Trips:InBox"));
         services.Configure<RoutingEngineOptions>(configuration.GetSection("Trips:RoutingEngine"));
+        services.Configure<TripPlanOptions>(configuration.GetSection("Trips:TripPlan"));
         services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
         services.AddScoped<RepositoryFactory>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -49,6 +51,8 @@ public static class InfrastructureDependencyInjection
         else
             services.AddScoped<IRoutingService, RoutingService>(); // real routing service implementation
         services.AddHttpClient<RoutingEngineClient>();
+        services.AddHttpClient<TripPlanClient>();
+        services.AddScoped<IAiTripSuggestionService, AiTripSuggestionService>();
         // adding quartz for background jobs 
         services.AddQuartz();
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);

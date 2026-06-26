@@ -17,8 +17,15 @@ namespace Modules.Trips.Presentation.Controllers.v1
     {
         public Guid UserId => User.GetUserId();
         public ICollection<string> UserRoles => User.GetRoles();
+        [HttpGet("suggestion")]
+        [Authorize]
+        public async Task<ActionResult<object>> GetTripSuggestion([FromQuery] TripSuggestionRequestDto requestDto)
+        {
+            var result = await tripService.GetTripSuggestion(requestDto);
+            return Ok(result);
+        }
 
-        [HttpGet]
+        [HttpGet("from-data")]
         [Authorize]
         public async Task<ActionResult<ThemeFormDataDto>> GetTripFormDate()
         {

@@ -16,6 +16,7 @@ public static class PlaceMapper
             GovernorateId = place.GovernorateId,
             Latitude = place.Location.Y,
             Longitude = place.Location.X,
+            AverageVisitTime = place.AverageVisitTime,
             UserId = place.UserId,
             Governorate = new GovernorateDto
             {

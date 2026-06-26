@@ -7,6 +7,7 @@ public class PlaceDto
     public int Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public double? AverageVisitTime { get; set; }
     public int CategoryId { get; set; }
     public int GovernorateId { get; set; }
     public double Latitude { get; set; }
