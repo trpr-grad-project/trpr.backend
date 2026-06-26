@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Common.Application.DomainEvents;
 using Modules.Notifications.Contracts.Contracts;
+using Modules.Notifications.Contracts.Dtos;
 using Modules.Users.Domain.Events;
 using Modules.Users.Domain.ValueObjects;
 
@@ -14,7 +15,7 @@ namespace Modules.Users.Application.Projections
     {
         public async Task HandleAsync(GuideUpgradeRequestStatusChangedDomainEvent domainEvent, CancellationToken cancellationToken = default)
         {
-            await notifyContract.NotifyAsync(new Notifications.Contracts.Dtos.SystemNotifyRequestDto(
+            await notifyContract.NotifyAsync(new SystemNotifyRequestDto(
                 NotifyEmail: true,
                 NotifyPhone: true,
                 NotifySystem: true,
@@ -25,16 +26,15 @@ namespace Modules.Users.Application.Projections
                 KeyValuePairs: new Dictionary<string, string>
                 {
                     { "rejectionReason" , domainEvent.RejectionReason ?? string.Empty }
-                },
-                LangCode: "en"
+                }
             ), cancellationToken);
         }
-        private string TemplateTypeSwitch(ApproveStatus status)
+        private TemplateType TemplateTypeSwitch(ApproveStatus status)
         {
             return status switch
             {
-                ApproveStatus.Approved => "ApprovalMessage",
-                ApproveStatus.Rejected => "RejectionMessage",
+                ApproveStatus.Approved => TemplateType.ApprovalMessage,
+                ApproveStatus.Rejected => TemplateType.RejectionMessage,
                 _ => throw new NotSupportedException($"Unsupported approve status: {status}")
             };
         }

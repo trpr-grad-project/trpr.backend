@@ -13,8 +13,6 @@ namespace Modules.Notifications.Infrastructure.Data;
 public class NotificationsDbContext(DbContextOptions<NotificationsDbContext> options) : DbContext(options), IUnitOfWork, INotificationsDbContext
 {
     public virtual DbSet<User> Users { get; set; }
-    public virtual DbSet<Template> Templates { get; set; }
-    public virtual DbSet<TemplateLang> TemplateLangs { get; set; }
     public virtual DbSet<Notification> Notifications { get; set; }
     private IDbContextTransaction? _transaction;
 

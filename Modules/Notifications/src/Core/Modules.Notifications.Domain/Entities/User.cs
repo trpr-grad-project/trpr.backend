@@ -14,7 +14,6 @@ public class User : Entity
     public bool TripUpdates { get; set; } = true;
     public bool Messages { get; set; } = true;
     public bool Promotions { get; set; } = true;
-    public virtual ICollection<Template> Templates { get; set; } = [];
     public virtual ICollection<Notification> Notifications { get; set; } = [];
     public static User Create(Guid Id, string UserName, string FirstName, string LastName)
     {

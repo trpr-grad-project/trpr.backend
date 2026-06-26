@@ -1,12 +1,19 @@
 namespace Modules.Notifications.Contracts.Dtos;
 
+public enum TemplateType
+{
+    RejectionMessage = 1,
+    ApprovalMessage = 2,
+    OtpMessage = 3,
+    ForgetPasswordMessage = 4,
+}
+
 public record SystemNotifyRequestDto(
     bool NotifyEmail,
     bool NotifyPhone,
     bool NotifySystem,
-    string TemplateType,
+    TemplateType TemplateType,
     ICollection<Guid> ToUserIds,
     ICollection<string> ToEmails,
     ICollection<string> ToPhoneNumbers,
-    IDictionary<string, string> KeyValuePairs,
-    string LangCode = "en");
+    IDictionary<string, string> KeyValuePairs);

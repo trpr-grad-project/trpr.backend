@@ -3,6 +3,7 @@ using Common.Application.DomainEvents;
 using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Modules.Notifications.Contracts.Contracts;
+using Modules.Notifications.Contracts.Dtos;
 using Modules.Users.Application.Abstractions;
 using Modules.Users.Domain.Events;
 using Modules.Users.Domain.ValueObjects;
@@ -30,7 +31,7 @@ namespace Modules.Users.Application.Projections
         {
             var emailAdresses = emailAdress.EndsWith("@trpr.com") ? [] : new List<string> { emailAdress };
             var phoneNumbers = emailAdress.EndsWith("@trpr.com") ? new List<string> { emailAdress.Substring(0, emailAdress.Length - "@trpr.com".Length) } : [];
-            await notifiyContract.NotifyAsync(new Notifications.Contracts.Dtos.SystemNotifyRequestDto(
+            await notifiyContract.NotifyAsync(new SystemNotifyRequestDto(
                 NotifyEmail: true,
                 NotifyPhone: false,
                 NotifySystem: false,
@@ -41,15 +42,14 @@ namespace Modules.Users.Application.Projections
                 KeyValuePairs: new Dictionary<string, string>
                 {
                     { "code", otpValue }
-                },
-                LangCode: "en"
+                }
             ), cancellationToken);
         }
 
-        public string TemplateTypeSwitch(TokenType tokenType) => tokenType switch
+        public static TemplateType TemplateTypeSwitch(TokenType tokenType) => tokenType switch
         {
-            TokenType.Otp => "OtpMessage",
-            TokenType.ForgetPasswordOtp => "ForgetPasswordMessage",
+            TokenType.Otp => TemplateType.OtpMessage,
+            TokenType.ForgetPasswordOtp => TemplateType.ForgetPasswordMessage,
             _ => throw new NotSupportedException($"Token type {tokenType} is not supported for notification.")
         };
     }

@@ -2,6 +2,7 @@ using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Modules.Notifications.Application.Abstractions;
+using Modules.Notifications.Application.Services;
 using Modules.Notifications.Contracts.Contracts;
 using Modules.Notifications.Contracts.Dtos;
 using Modules.Notifications.Domain.Entities;
@@ -12,29 +13,46 @@ namespace Modules.Notifications.Infrastructure;
 public class NotifyContract(
     ILogger<NotifyContract> logger,
     RepositoryFactory repositoryFactory,
+    IEmailService emailService,
     IUnitOfWork unitOfWork) : INotifiyContract
 {
     public async Task NotifyAsync(SystemNotifyRequestDto request, CancellationToken cancellationToken)
     {
-        var templateType = Enum.TryParse(typeof(TemplateType), request.TemplateType, out var result) ? (TemplateType)result : throw new ArgumentException("Invalid template type");
-        var template = await repositoryFactory.Repository<Template>().GetQueryable()
-            .Include(x => x.TemplateLangs)
-            .Where(x => x.TemplateType == templateType && x.Active == true)
-            .FirstOrDefaultAsync(cancellationToken: cancellationToken) ?? throw new NotFoundException("Template.NotFound", templateType.ToString());
-        var templateLange = template
-            .TemplateLangs
-            .FirstOrDefault(x => x.LangCode == request.LangCode) ??
-            template
-            .TemplateLangs
-            .FirstOrDefault(x => x.LangCode == "en") ??
-            throw new NotFoundException("Template.Lang.NotFound", templateType, request.LangCode);
+        var path = Path.Combine(
+            AppContext.BaseDirectory,
+            "Templates",
+            $"{request.TemplateType}.html");
+
+        var (subject, content) = await LoadTemplate(request.TemplateType, cancellationToken);
+
         ICollection<User> users =
             repositoryFactory.Repository<User>().GetQueryable()
             .Where(x => request.ToUserIds.Contains(x.Id))
             .ToList();
-        await NotifyUsers(request, users, template.ContentType, templateLange.Content, cancellationToken);
-        NotifyEmails(request, templateLange.Content, cancellationToken);
-        NotifyPhones(request, templateLange.Content, cancellationToken);
+
+        await NotifyUsers(request, users, content, cancellationToken);
+        await NotifyEmails(request, subject, content, cancellationToken);
+        NotifyPhones(request, content, cancellationToken);
+    }
+    public static async Task<(string, string)> LoadTemplate(TemplateType templateType, CancellationToken cancellationToken)
+    {
+        var path = Path.Combine(
+            AppContext.BaseDirectory,
+            "Templates",
+            $"{templateType}.html");
+
+        var text = await File.ReadAllTextAsync(path, cancellationToken);
+        var parts = text.Split("---", 3, StringSplitOptions.TrimEntries);
+
+        var metadata = parts[1];
+        var body = parts[2];
+
+        var title = metadata
+            .Split('\n')
+            .First(x => x.StartsWith("title:"))
+            .Replace("title:", "")
+            .Trim();
+        return (title, body);
     }
     private void NotifyPhones(SystemNotifyRequestDto request, string content, CancellationToken cancellationToken)
     {
@@ -47,18 +65,24 @@ public class NotifyContract(
         }
     }
 
-    private void NotifyEmails(SystemNotifyRequestDto request, string content, CancellationToken cancellationToken)
+    private async Task NotifyEmails(SystemNotifyRequestDto request, string title, string content, CancellationToken cancellationToken)
     {
         var paredTemplate = Scriban.Template.Parse(content);
         var renderedContent = paredTemplate.Render(request.KeyValuePairs);
 
         foreach (var email in request.ToEmails)
         {
-            logger.LogInformation("Sending Email to {Email} with content: {Content}", email, renderedContent);
+            logger.LogInformation("Sending Email to {Email} with title: {Title}\nContent:\n {Content}", email, title, renderedContent);
+            await emailService.SendAsync(
+                [email],
+                title,
+                renderedContent,
+                cancellationToken
+            );
         }
     }
 
-    private async Task NotifyUsers(SystemNotifyRequestDto request, ICollection<User> users, ContentType contentType, string content, CancellationToken cancellationToken)
+    private async Task NotifyUsers(SystemNotifyRequestDto request, ICollection<User> users, string content, CancellationToken cancellationToken)
     {
         foreach (var user in users)
         {
@@ -76,7 +100,7 @@ public class NotifyContract(
 
             var notification = Notification.Create(
                 renderedContent,
-                contentType,
+                ContentType.Html,
                 request.NotifyEmail,
                 request.NotifyPhone,
                 request.NotifySystem,

@@ -7,6 +7,9 @@ using Modules.Notifications.Infrastructure.Data;
 using Modules.Notifications.Infrastructure.Repositories;
 using Modules.Notifications.Infrastructure.Inbox;
 using Modules.Notifications.Infrastructure.Outbox;
+using Modules.Notifications.Infrastructure.Options;
+using Modules.Notifications.Infrastructure.Services;
+using Modules.Notifications.Application.Services;
 
 namespace Modules.Notifications.Infrastructure;
 
@@ -26,8 +29,10 @@ public static class InfrastructureDependencyInjection
                 .AddInterceptors(sp.GetRequiredService<PublishOutboxMessagesInterceptor>());
         });
         services.AddScoped<PublishOutboxMessagesInterceptor>();
+        services.AddScoped<IEmailService, EmailService>();
         services.Configure<OutBoxOptions>(configuration.GetSection("Notifications:OutBox"));
         services.Configure<InBoxOptions>(configuration.GetSection("Notifications:Inbox"));
+        services.Configure<EmailOptions>(configuration.GetSection("Notifications:Email"));
         services.AddScoped<IDbConnectionFactory>(x => new DbConnectionFactory(dbConnectionString));
         services.AddScoped<RepositoryFactory>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
