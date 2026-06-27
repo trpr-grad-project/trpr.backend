@@ -36,6 +36,7 @@ public static class InfrastructureDependencyInjection
                 .AddInterceptors(sp.GetRequiredService<PublishOutboxMessagesInterceptor>());
         });
         services.AddScoped<PublishOutboxMessagesInterceptor>();
+        services.Configure<ThemeOptions>(configuration.GetSection("Trips:ThemeScoring"));
         services.Configure<OutBoxOptions>(configuration.GetSection("Trips:OutBox"));
         services.Configure<InBoxOptions>(configuration.GetSection("Trips:InBox"));
         services.Configure<RoutingEngineOptions>(configuration.GetSection("Trips:RoutingEngine"));

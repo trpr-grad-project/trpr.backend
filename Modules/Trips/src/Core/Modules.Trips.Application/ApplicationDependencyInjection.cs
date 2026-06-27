@@ -17,7 +17,15 @@ public static class ApplicationDependencyInjection
         services.AddScoped<PlaceService>();
         services.AddScoped<TripService>();
         services.AddScoped<BiddingService>();
-        services.AddScoped<ITripSuggestionGenerator, AiTripSuggestionGenerator>();
+        services.AddScoped<ITripSuggestionGenerator, AlgorithmicSuggestionGenerator>();
+        services.AddScoped<ICategoryScorer, CategoryScorer>();
+        services.AddScoped<IThemeProvider, ThemeProvider>();
+        services.AddScoped<ITagScorer, TagScorer>();
+        services.AddScoped<IRatingScorer, RatingScorer>();
+        services.AddScoped<IThemeScorer, ThemeScorer>();
+        services.AddScoped<ITravelPenaltyCalculator, TravelPenaltyCalculator>();
+        services.AddTransient<TripPlanGenerator>();
+        services.AddScoped<IItineraryRecommendationEngine, ItineraryRecommendationEngine>();
         #endregion
 
         return services;

@@ -1,21 +1,53 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Modules.Trips.Domain.Entities;
+using Modules.Trips.Application.Dtos.Responses;
+using Modules.Trips.Infrastructure.Options;
 
 namespace Modules.Trips.Application.Services
 {
+    public interface IItineraryRecommendationEngine
+    {
+        IReadOnlyList<RankedItinerary> Rank(
+       IReadOnlyList<Itinerary> itineraries,
+       ThemeDefinition theme);
+    }
+
+    public interface IThemeScorer
+    {
+        ItineraryScore Score(
+            Itinerary itinerary,
+            ThemeDefinition theme);
+    }
+    public sealed class ItineraryScore
+    {
+        public double ThemeScore { get; init; }
+
+        public double RatingScore { get; init; }
+
+        public double CategoryScore { get; init; }
+
+        public double TravelPenalty { get; init; }
+
+        public double TotalScore { get; init; }
+    }
+    public sealed class Itinerary
+    {
+        public IReadOnlyList<PlaceDto> Places { get; init; } = [];
+    }
+    public sealed class RankedItinerary
+    {
+        public Itinerary Itinerary { get; init; } = default!;
+
+        public ItineraryScore Score { get; init; } = default!;
+    }
     public class TripPlanGenerator
     {
-        private List<Place> _candidates = [];
-        private Dictionary<int, int> _categoryLimits = [];
+        private List<PlaceDto> _candidates = [];
+        private Dictionary<string, int> _categoryLimits = [];
         private double _totalTime;
-        private List<List<Place>> _results = [];
+        private List<List<PlaceDto>> _results = [];
 
-        public List<List<Place>> GeneratePlans(
-            List<Place> candidates,
-            Dictionary<int, int> categoryLimits,
+        public List<Itinerary> GeneratePlans(
+            List<PlaceDto> candidates,
+            Dictionary<string, int> categoryLimits,
             double totalTime)
         {
             _candidates = candidates;
@@ -29,14 +61,14 @@ namespace Modules.Trips.Application.Services
                 currentTime: 0,
                 categoryUsage: []);
 
-            return _results;
+            return [.. _results.Select(plan => new Itinerary { Places = plan })];
         }
 
         private void Backtrack(
             int startIndex,
-            List<Place> currentPlan,
+            List<PlaceDto> currentPlan,
             double currentTime,
-            Dictionary<int, int> categoryUsage)
+            Dictionary<string, int> categoryUsage)
         {
             if (currentPlan.Count > 0)
             {
@@ -46,45 +78,44 @@ namespace Modules.Trips.Application.Services
             for (int i = startIndex; i < _candidates.Count; i++)
             {
                 var place = _candidates[i];
-                var visitTime = place.AverageVisitTime ?? 60;
+                var visitTime = place.AverageVisitTime ?? 1;
 
-                // double travelTime = 0;
+                double travelTime = 0;
 
-                // if (currentPlan.Count > 0)
-                // {
-                //     var lastPlace = currentPlan.Last();
+                if (currentPlan.Count > 0)
+                {
+                    var lastPlace = currentPlan.Last();
 
-                //     THIS is the routing engine call
-                //     travelTime = _routingService.GetTravelTime(
-                //         lastPlace.Latitude,
-                //         lastPlace.Longitude,
-                //         place.Latitude,
-                //         place.Longitude);
-                // }
+                    travelTime = GeoUtils.DistanceInMeters(
+                        lastPlace.Latitude,
+                        lastPlace.Longitude,
+                        place.Latitude,
+                        place.Longitude) / 1000 * 60;
+                }
 
-                if (!CanAddPlace(place, visitTime, currentTime, categoryUsage))
+                if (!CanAddPlace(place, visitTime + travelTime, currentTime, categoryUsage))
                     continue;
 
-                AddPlace(place, visitTime, currentPlan, categoryUsage, ref currentTime);
+                AddPlace(place, visitTime + travelTime, currentPlan, categoryUsage, ref currentTime);
 
                 Backtrack(i + 1, currentPlan, currentTime, categoryUsage);
 
-                RemovePlace(place, visitTime, currentPlan, categoryUsage, ref currentTime);
+                RemovePlace(place, visitTime + travelTime, currentPlan, categoryUsage, ref currentTime);
             }
         }
 
         private bool CanAddPlace(
-            Place place,
+            PlaceDto place,
             double visitTime,
             double currentTime,
-            Dictionary<int, int> categoryUsage)
+            Dictionary<string, int> categoryUsage)
         {
             if (currentTime + visitTime > _totalTime)
                 return false;
 
-            if (_categoryLimits.TryGetValue(place.CategoryId, out int maxLimit))
+            if (_categoryLimits.TryGetValue(place.Category.Name, out int maxLimit))
             {
-                if (categoryUsage.GetValueOrDefault(place.CategoryId) >= maxLimit)
+                if (categoryUsage.GetValueOrDefault(place.Category.Name) >= maxLimit)
                     return false;
             }
 
@@ -92,29 +123,29 @@ namespace Modules.Trips.Application.Services
         }
 
         private static void AddPlace(
-            Place place,
+            PlaceDto place,
             double visitTime,
-            List<Place> currentPlan,
-            Dictionary<int, int> categoryUsage,
+            List<PlaceDto> currentPlan,
+            Dictionary<string, int> categoryUsage,
             ref double currentTime)
         {
             currentPlan.Add(place);
             currentTime += visitTime;
 
-            categoryUsage[place.CategoryId] =
-                categoryUsage.GetValueOrDefault(place.CategoryId) + 1;
+            categoryUsage[place.Category.Name] =
+                categoryUsage.GetValueOrDefault(place.Category.Name) + 1;
         }
 
         private static void RemovePlace(
-            Place place,
+            PlaceDto place,
             double visitTime,
-            List<Place> currentPlan,
-            Dictionary<int, int> categoryUsage,
+            List<PlaceDto> currentPlan,
+            Dictionary<string, int> categoryUsage,
             ref double currentTime)
         {
             currentPlan.RemoveAt(currentPlan.Count - 1);
             currentTime -= visitTime;
-            categoryUsage[place.CategoryId]--;
+            categoryUsage[place.Category.Name]--;
         }
     }
 }
