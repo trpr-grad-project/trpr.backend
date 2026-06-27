@@ -47,8 +47,7 @@ namespace Modules.Trips.Domain.Entities
             List<double> duration,
             User user,
             ICollection<Governorate> governorates,
-            DateOnly startDate,
-            DateOnly endDate)
+            DateOnly startDate)
         {
             Trip newTrip = new()
             {
