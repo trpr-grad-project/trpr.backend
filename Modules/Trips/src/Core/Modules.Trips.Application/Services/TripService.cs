@@ -10,6 +10,7 @@ using Modules.Trips.Application.Helpers;
 using Modules.Trips.Application.Repositories;
 using Modules.Trips.Domain.Entities;
 using Modules.Trips.Domain.ValueObjects;
+using Modules.Trips.Presentation.Controllers.v1;
 
 namespace Modules.Trips.Application.Services
 {
@@ -71,7 +72,6 @@ namespace Modules.Trips.Application.Services
                 .ToList();
             if (creatorRoles.HasFlag(UserRole.Guide) && !dto.GuideId.HasValue)
                 dto.GuideId = userId;
-            // if trip owner is not a guide, make him a participant in the trip
             var trip = Trip.Create(
                         userId,
                         theme,
@@ -89,8 +89,7 @@ namespace Modules.Trips.Application.Services
                         dto.Segments.Select(s => s.Duration).ToList(),
                         user,
                         governorates,
-                        dto.StartDate,
-                        dto.EndDate);
+                        dto.StartDate);
             repositoryFactory.Repository<Trip>().Add(trip);
             if (!creatorRoles.HasFlag(UserRole.Guide) || !creatorRoles.HasFlag(UserRole.Company))
             {
@@ -165,7 +164,16 @@ namespace Modules.Trips.Application.Services
 
             return dto;
         }
-
+        public async Task ApproveTrip(ApproveTripRequestDto dto)
+        {
+            Trip trip = await repositoryFactory
+                .Repository<Trip>()
+                .GetFirstOrDefaultByFilter(
+                    x => x.Id == dto.TripId && x.UserId == dto.UserId && x.Status == TripStatus.UnderReview)
+                ?? throw new NotFoundException("Trip.NotFound");
+            trip.Approve();
+            await unitOfWork.SaveChangesAsync();
+        }
         public async Task JoinTrip(Guid tripId, Guid userId)
         {
             Trip trip = await repositoryFactory
@@ -282,13 +290,13 @@ namespace Modules.Trips.Application.Services
         }
 
         #region Helpers
-        private async Task<Dictionary<DateTime, ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
+        private async Task<Dictionary<double, ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
         {
-            Dictionary<DateTime, ICollection<Place>> places = [];
+            Dictionary<double, ICollection<Place>> places = [];
             foreach (var day in source)
             {
                 ICollection<Place> dayPlaces = await placeService.GetPlacesAsync(day.PlacesIds);
-                places.Add(day.DayDate, dayPlaces);
+                places.Add(day.Duration, dayPlaces);
             }
             return places;
         }

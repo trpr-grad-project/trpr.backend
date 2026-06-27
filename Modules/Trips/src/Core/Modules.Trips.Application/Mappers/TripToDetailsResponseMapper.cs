@@ -29,6 +29,8 @@ namespace Modules.Trips.Application.Mappers
                 Status = source.Status,
                 PublishMode = source.PublishMode,
                 RejectionReason = source.RejectionReason,
+                StartDate = source.StartDate,
+                TripTime = source.Segments.Max(x => x.Order).ToString() + "Day(s)",
                 PendingParticipants = source.Participants
                     .Where(p => p.Approved = false)
                     .Select(p => new UserResponseDto

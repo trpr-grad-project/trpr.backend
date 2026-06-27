@@ -9,7 +9,6 @@ namespace Modules.Trips.Application.Dtos
     public class DayDto
     {
         public double Duration { get; set; }
-        public DateTime DayDate { get; set; }
         public ICollection<int> PlacesIds { get; set; } = [];
     }
 }

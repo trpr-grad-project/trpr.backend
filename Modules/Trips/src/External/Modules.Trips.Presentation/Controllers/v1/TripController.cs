@@ -25,7 +25,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
             return Ok(result);
         }
 
-        [HttpGet("from-data")]
+        [HttpGet("form-data")]
         [Authorize]
         public async Task<ActionResult<ThemeFormDataDto>> GetTripFormDate()
         {
@@ -40,14 +40,20 @@ namespace Modules.Trips.Presentation.Controllers.v1
             var request = await tripService.CreateTrip(dto, UserRoles, UserId, cancellationToken);
             return Ok(request);
         }
-
+        [Authorize(Roles = "Admin")]
+        [HttpPost("approve/")]
+        public async Task<ActionResult> ApproveTrip([FromBody] ApproveTripRequestDto dto, CancellationToken cancellationToken)
+        {
+            await tripService.ApproveTrip(dto);
+            return NoContent();
+        }
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<HomeResponseDto>> GetHomePage([FromQuery] BaseSearchTripRequestDto request, CancellationToken cancellationToken)
         {
-            var shared = await tripService.GetTrips(request.CloneWith(TripType.Shared), null, null, cancellationToken);
-            var byCompany = await tripService.GetTrips(request.CloneWith(TripType.ByCompany), null, null, cancellationToken);
-            var byGuide = await tripService.GetTrips(request.CloneWith(TripType.ByGuides), null, null, cancellationToken);
+            var shared = await tripService.GetTrips(request.CloneWith(TripType.Shared), null, TripStatus.Published, cancellationToken);
+            var byCompany = await tripService.GetTrips(request.CloneWith(TripType.ByCompany), null, TripStatus.Published, cancellationToken);
+            var byGuide = await tripService.GetTrips(request.CloneWith(TripType.ByGuides), null, TripStatus.Published, cancellationToken);
 
 
             return Ok(new HomeResponseDto
