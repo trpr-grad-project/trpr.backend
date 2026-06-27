@@ -10,6 +10,7 @@ using Modules.Trips.Application.Helpers;
 using Modules.Trips.Application.Repositories;
 using Modules.Trips.Domain.Entities;
 using Modules.Trips.Domain.ValueObjects;
+using Modules.Trips.Presentation.Controllers.v1;
 
 namespace Modules.Trips.Application.Services
 {
@@ -163,7 +164,16 @@ namespace Modules.Trips.Application.Services
 
             return dto;
         }
-
+        public async Task ApproveTrip(ApproveTripRequestDto dto)
+        {
+            Trip trip = await repositoryFactory
+                .Repository<Trip>()
+                .GetFirstOrDefaultByFilter(
+                    x => x.Id == dto.TripId && x.UserId == dto.UserId && x.Status == TripStatus.UnderReview)
+                ?? throw new NotFoundException("Trip.NotFound");
+            trip.Approve();
+            await unitOfWork.SaveChangesAsync();
+        }
         public async Task JoinTrip(Guid tripId, Guid userId)
         {
             Trip trip = await repositoryFactory
