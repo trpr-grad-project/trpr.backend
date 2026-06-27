@@ -88,8 +88,7 @@ namespace Modules.Trips.Application.Services
                         dto.Segments.Select(s => s.Duration).ToList(),
                         user,
                         governorates,
-                        dto.StartDate,
-                        dto.EndDate);
+                        dto.StartDate);
             repositoryFactory.Repository<Trip>().Add(trip);
             if (!creatorRoles.HasFlag(UserRole.Guide) || !creatorRoles.HasFlag(UserRole.Company))
             {
