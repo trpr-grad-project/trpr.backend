@@ -40,7 +40,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
             var request = await tripService.CreateTrip(dto, UserRoles, UserId, cancellationToken);
             return Ok(request);
         }
-        [HttpGet]
+        [HttpGet("home")]
         [Authorize]
         public async Task<ActionResult<HomeResponseDto>> GetHomePage([FromQuery] BaseSearchTripRequestDto request, CancellationToken cancellationToken)
         {
