@@ -10,6 +10,7 @@ namespace Modules.Trips.Application.Dtos.Responses
 {
     public class TripResponseDto
     {
+        public Guid TripId { get; set; }
         public Guid CreatedByUser { get; set; }
         public int ThemeId { get; set; }
         public List<string> CreatorRoles { get; set; } = default!;

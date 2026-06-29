@@ -66,7 +66,7 @@ namespace Modules.Trips.Application.Services
             Theme theme = await repositoryFactory.Repository<Theme>().GetFirstOrDefaultByFilter(t => t.Id == dto.ThemeId)
                 ?? throw new NotFoundException("Theme.NotFound", dto.ThemeId);
             var governorates = segments
-                .SelectMany(x => x.Value)
+                .SelectMany(x => x)
                 .Select(x => x.Governorate)
                 .DistinctBy(x => x.Id)
                 .ToList();
@@ -163,16 +163,6 @@ namespace Modules.Trips.Application.Services
                 null;
 
             return dto;
-        }
-        public async Task ApproveTrip(ApproveTripRequestDto dto)
-        {
-            Trip trip = await repositoryFactory
-                .Repository<Trip>()
-                .GetFirstOrDefaultByFilter(
-                    x => x.Id == dto.TripId && x.UserId == dto.UserId && x.Status == TripStatus.UnderReview)
-                ?? throw new NotFoundException("Trip.NotFound");
-            trip.Approve();
-            await unitOfWork.SaveChangesAsync();
         }
         public async Task JoinTrip(Guid tripId, Guid userId)
         {
@@ -290,13 +280,13 @@ namespace Modules.Trips.Application.Services
         }
 
         #region Helpers
-        private async Task<Dictionary<double, ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
+        private async Task<ICollection<ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
         {
-            Dictionary<double, ICollection<Place>> places = [];
+            ICollection<ICollection<Place>> places = [];
             foreach (var day in source)
             {
                 ICollection<Place> dayPlaces = await placeService.GetPlacesAsync(day.PlacesIds);
-                places.Add(day.Duration, dayPlaces);
+                places.Add(dayPlaces);
             }
             return places;
         }

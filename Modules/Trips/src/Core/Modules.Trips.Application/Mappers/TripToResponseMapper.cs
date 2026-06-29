@@ -13,6 +13,7 @@ namespace Modules.Trips.Application.Mappers
             ICollection<string> imagePaths = fileService.ResolveUrls(source.Images);
             TripResponseDto responseDto = new()
             {
+                TripId = source.Id,
                 CreatedByUser = source.UserId,
                 GuideId = source.GuideId,
                 ThemeId = source.TripTheme.Id,
