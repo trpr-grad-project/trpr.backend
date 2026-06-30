@@ -12,9 +12,6 @@ public class ConversationConfig : IEntityTypeConfiguration<Conversation>
 
         builder.HasIndex(c => c.CreateByUserId);
 
-        builder.Property(c => c.Type)
-            .IsRequired();
-
         builder.Property(c => c.Title);
         builder.Property(c => c.ImageUrl);
 

@@ -12,17 +12,14 @@ namespace Modules.Conversations.Domain.Entities
         public virtual User? SenderUser { get; private set; } = default!;
         public string Content { get; private set; } = string.Empty;
         public DateTime SentAtUtc { get; private set; } = DateTime.UtcNow;
-        public MessageType Type { get; private set; } = MessageType.Text;
-        public ICollection<MessageAttachment> Attachments { get; set; } = [];
-        public static Message Create(Conversation conversation, User user, string content)
+        public static Message Create(Conversation conversation, Guid userId, string content)
         {
             return new Message
             {
                 Id = Guid.CreateVersion7(),
                 ConversationId = conversation.Id,
                 Conversation = conversation,
-                SenderUserId = user.Id,
-                SenderUser = user,
+                SenderUserId = userId,
                 Content = content,
             };
         }

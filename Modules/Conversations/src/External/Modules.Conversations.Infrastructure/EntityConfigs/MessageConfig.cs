@@ -11,15 +11,11 @@ public class MessageConfig : IEntityTypeConfiguration<Message>
         builder.HasKey(m => m.Id);
 
         builder.HasIndex(m => m.ConversationId);
-        builder.HasIndex(m => m.SenderUserId);
 
         builder.Property(m => m.Content)
             .IsRequired();
 
         builder.Property(m => m.SentAtUtc)
-            .IsRequired();
-
-        builder.Property(m => m.Type)
             .IsRequired();
 
         builder

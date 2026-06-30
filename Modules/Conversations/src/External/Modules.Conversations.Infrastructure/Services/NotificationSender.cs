@@ -16,14 +16,6 @@ public class NotificationSender(IHubContext<ChatHub> hubContext) : INotification
             SenderUserId = message.SenderUserId,
             Content = message.Content,
             SentAtUtc = message.SentAtUtc,
-            Type = message.Type,
-            Attachments = message.Attachments.Select(a => new
-            {
-                type = a.AttachmentType.ToString(),
-                a.Id,
-                a.Url,
-                a.AttachmentName
-            }).ToList()
         }, cancellationToken);
     }
 

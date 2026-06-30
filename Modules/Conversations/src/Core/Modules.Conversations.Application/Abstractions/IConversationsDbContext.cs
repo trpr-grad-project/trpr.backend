@@ -9,5 +9,4 @@ public interface IConversationsDbContext
     public DbSet<Conversation> Conversations { get; set; }
     public DbSet<ConversationParticipant> ConversationParticipants { get; set; }
     public DbSet<Message> Messages { get; set; }
-    public DbSet<MessageAttachment> MessageAttachments { get; set; }
 }

@@ -14,7 +14,6 @@ public class ConversationsDbContext(DbContextOptions<ConversationsDbContext> opt
     public DbSet<Conversation> Conversations { get; set; }
     public DbSet<ConversationParticipant> ConversationParticipants { get; set; }
     public DbSet<Message> Messages { get; set; }
-    public DbSet<MessageAttachment> MessageAttachments { get; set; }
     public DbSet<AiConversation> AiConversations { get; set; }
     public DbSet<AiMessage> AiMessages { get; set; }
     private IDbContextTransaction? _transaction;
