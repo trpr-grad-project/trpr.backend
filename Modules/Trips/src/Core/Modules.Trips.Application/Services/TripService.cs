@@ -66,7 +66,7 @@ namespace Modules.Trips.Application.Services
             Theme theme = await repositoryFactory.Repository<Theme>().GetFirstOrDefaultByFilter(t => t.Id == dto.ThemeId)
                 ?? throw new NotFoundException("Theme.NotFound", dto.ThemeId);
             var governorates = segments
-                .SelectMany(x => x.Value)
+                .SelectMany(x => x)
                 .Select(x => x.Governorate)
                 .DistinctBy(x => x.Id)
                 .ToList();
@@ -110,7 +110,10 @@ namespace Modules.Trips.Application.Services
                 .Include(x => x.Segments).ThenInclude(s => s.Places).ThenInclude(p => p.PlaceTags).ThenInclude(pt => pt.Tag)
                 .Include(x => x.CreatedByUser);
             if (userId.HasValue)
-                trips = trips.Where(x => x.UserId == userId.Value);
+                trips = trips.Where(x =>
+                    x.UserId == userId.Value ||
+                    x.Participants.Any(p => p.UserId == userId.Value)
+                );
             if (status.HasValue)
                 trips = trips.Where(x => x.Status == status.Value);
             trips = FilterByBaseSearchRequest(trips, request);
@@ -147,11 +150,12 @@ namespace Modules.Trips.Application.Services
                         .ThenInclude(p => p.Governorate),
                     q => q.Include(t => t.CreatedByUser),
                     q => q.Include(p => p.Participants)
-                        .ThenInclude(u => u.User))
+                        .ThenInclude(u => u.User),
+                    q => q.Include(th => th.TripTheme))
                 ?? throw new NotFoundException("Trip.NotFound", tripId);
 
             var dto = tripDetailsMapper.Map(trip);
-            if (trip.UserId != userId || trip.AutoApprove == true)
+            if (trip.UserId != userId)
                 dto.PendingParticipants = [];
             dto.BiddingsPage =
                 (trip.Status == TripStatus.Bidding) ?
@@ -164,16 +168,6 @@ namespace Modules.Trips.Application.Services
 
             return dto;
         }
-        public async Task ApproveTrip(ApproveTripRequestDto dto)
-        {
-            Trip trip = await repositoryFactory
-                .Repository<Trip>()
-                .GetFirstOrDefaultByFilter(
-                    x => x.Id == dto.TripId && x.UserId == dto.UserId && x.Status == TripStatus.UnderReview)
-                ?? throw new NotFoundException("Trip.NotFound");
-            trip.Approve();
-            await unitOfWork.SaveChangesAsync();
-        }
         public async Task JoinTrip(Guid tripId, Guid userId)
         {
             Trip trip = await repositoryFactory
@@ -182,10 +176,17 @@ namespace Modules.Trips.Application.Services
                     x => x.Id == tripId && x.Status == TripStatus.Published,
                     x => x.Include(x => x.Participants))
                 ?? throw new NotFoundException("Trip.NotFound");
-            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
+
+            if (trip.UserId == userId)
+                throw new BadRequestException("Trip.CreatorCannotJoin");
+
+            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
             {
-                if (trip.Status == TripStatus.Ready)
+                if (trip.Status != TripStatus.Ready)
+                {
                     trip.Ready();
+                    await unitOfWork.SaveChangesAsync();
+                }
                 throw new BadRequestException("Trip.MaxParticipantsReached");
             }
 
@@ -195,20 +196,17 @@ namespace Modules.Trips.Application.Services
             if (tripParticipant != null)
                 return;
 
-            User user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(x => x.Id == userId)
-                ?? throw new NotFoundException("User.NotFound", userId);
-
             tripParticipant = TripParticipant.Create(tripId, userId);
-
-            if (trip.AutoApprove)
+            repositoryFactory.Repository<TripParticipant>().Add(tripParticipant);
+            if (trip.AutoApprove == true)
                 tripParticipant.Approve();
 
             trip.Participants.Add(tripParticipant);
-            await unitOfWork.SaveChangesAsync();
-            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
-            {
+            repositoryFactory.Repository<Trip>().Update(trip);
+            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
                 trip.Ready();
-            }
+
+            await unitOfWork.SaveChangesAsync();
         }
 
         public async Task<ThemeFormDataDto> GetThemeFromData()
@@ -226,44 +224,58 @@ namespace Modules.Trips.Application.Services
                 }).ToList()
             };
         }
+
         // TODO : Enhancement for race condition add for update
-        public async Task ApproveUserJoinRequest(Guid tripId, Guid userId)
+        public async Task UpdateUserJoinRequest(UpdateUserJoinRequestDto dto, Guid userId)
         {
             Trip trip = await repositoryFactory
                 .Repository<Trip>()
                 .GetFirstOrDefaultByFilter(
-                    x => x.Id == tripId && x.Status == TripStatus.Published,
+                    x => x.Id == dto.TripId && x.Status == TripStatus.Published && x.UserId == userId,
                     x => x.Include(x => x.Participants))
-                ?? throw new NotFoundException("Trip.NotFound", tripId);
+                ?? throw new NotFoundException("Trip.NotFound", dto.TripId);
 
-            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
+            if(trip.UserId == dto.UserId)
+                throw new BadRequestException("Trip.CreatorCannotJoin");
+
+            TripParticipant tripParticipant = trip.Participants
+                .FirstOrDefault(x => x.UserId == dto.UserId)
+                ?? throw new NotFoundException("TripParticipant.NotFound", userId);
+
+            if (dto.IsApproved == false)
+            {
+                tripParticipant.Reject();
+                repositoryFactory.Repository<TripParticipant>().Delete(tripParticipant);
+                await unitOfWork.SaveChangesAsync();
+                return;
+            }
+
+            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
             {
                 await repositoryFactory.Repository<TripParticipant>().GetQueryable()
-                    .Where(x => x.TripId == trip.Id && !x.Approved)
+                    .Where(x => x.TripId == trip.Id && x.Approved == false)
                     .ExecuteDeleteAsync();
-                if (trip.Status == TripStatus.Ready)
+                if (trip.Status != TripStatus.Ready)
                     trip.Ready();
+                await unitOfWork.SaveChangesAsync();
                 throw new BadRequestException("Trip.MaxParticipantsReached");
             }
 
-            TripParticipant tripParticipant = trip.Participants
-                .FirstOrDefault(x => x.UserId == userId)
-                ?? throw new NotFoundException("TripParticipant.NotFound", userId);
-
-            if (tripParticipant.Approved)
+            if (tripParticipant.Approved == true)
                 return;
 
             tripParticipant.Approve();
-
+            repositoryFactory.Repository<TripParticipant>().Update(tripParticipant);
             await unitOfWork.SaveChangesAsync();
-
-            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
+            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
             {
                 await repositoryFactory.Repository<TripParticipant>().GetQueryable()
-                    .Where(x => x.TripId == trip.Id && !x.Approved)
+                    .Where(x => x.TripId == trip.Id && x.Approved == false)
                     .ExecuteDeleteAsync();
                 trip.Ready();
-            }
+                await unitOfWork.SaveChangesAsync();
+            } 
+            return;
         }
         public async Task StartTrip(Guid tripId, Guid userId)
         {
@@ -290,13 +302,13 @@ namespace Modules.Trips.Application.Services
         }
 
         #region Helpers
-        private async Task<Dictionary<double, ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
+        private async Task<ICollection<ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
         {
-            Dictionary<double, ICollection<Place>> places = [];
+            ICollection<ICollection<Place>> places = [];
             foreach (var day in source)
             {
                 ICollection<Place> dayPlaces = await placeService.GetPlacesAsync(day.PlacesIds);
-                places.Add(day.Duration, dayPlaces);
+                places.Add(dayPlaces);
             }
             return places;
         }

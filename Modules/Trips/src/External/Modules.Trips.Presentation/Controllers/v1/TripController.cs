@@ -40,14 +40,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
             var request = await tripService.CreateTrip(dto, UserRoles, UserId, cancellationToken);
             return Ok(request);
         }
-        [Authorize(Roles = "Admin")]
-        [HttpPost("approve/")]
-        public async Task<ActionResult> ApproveTrip([FromBody] ApproveTripRequestDto dto, CancellationToken cancellationToken)
-        {
-            await tripService.ApproveTrip(dto);
-            return NoContent();
-        }
-        [HttpGet]
+        [HttpGet("home")]
         [Authorize]
         public async Task<ActionResult<HomeResponseDto>> GetHomePage([FromQuery] BaseSearchTripRequestDto request, CancellationToken cancellationToken)
         {
@@ -84,7 +77,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<PaginationDto<TripResponseDto>>> GetTrips([FromQuery] SearchTripRequestDto requestDto, CancellationToken cancellationToken)
         {
-            var request = await tripService.GetTrips(requestDto, null, null, cancellationToken);
+            var request = await tripService.GetTrips(requestDto, null, requestDto.Status ?? null, cancellationToken);
             return Ok(request);
         }
 
@@ -118,13 +111,13 @@ namespace Modules.Trips.Presentation.Controllers.v1
         public async Task<ActionResult> JoinTrip([FromRoute] Guid id)
         {
             await tripService.JoinTrip(id, UserId);
-            return Ok();
+            return NoContent();
         }
-        [HttpPut("Accept/{id:guid}")]
-        public async Task<ActionResult> AcceptJoin([FromRoute] Guid id)
+        [HttpPut("accept")]
+        public async Task<ActionResult> AcceptJoin(UpdateUserJoinRequestDto dto)
         {
-            await tripService.ApproveUserJoinRequest(id, UserId);
-            return Ok();
+            await tripService.UpdateUserJoinRequest(dto, UserId);
+            return NoContent();
         }
 
         [HttpPut("start/{id:guid}")]
@@ -132,14 +125,14 @@ namespace Modules.Trips.Presentation.Controllers.v1
         public async Task<ActionResult> StartTrip([FromRoute] Guid id)
         {
             await tripService.StartTrip(id, UserId);
-            return Ok();
+            return NoContent();
         }
         [HttpPut("end/{id:guid}")]
         [Authorize]
         public async Task<ActionResult> EndTrip([FromRoute] Guid id)
         {
             await tripService.EndTrip(id, UserId);
-            return Ok();
+            return NoContent();
         }
     }
 }

@@ -31,7 +31,7 @@ public class ProfileManagementService(
 
         await ValidateReferences(createRequest);
         var profile = new Profile { Id = userId };
-        UpdateProfileInterests(profile, createRequest.InterestIds);
+        UpdateProfileLanguages(profile, createRequest.LanguageIds);
         UpdateProfileInterests(profile, createRequest.InterestIds);
         UpdateProfileVibes(profile, createRequest.VibeIds);
         context.Profiles.Add(profile);

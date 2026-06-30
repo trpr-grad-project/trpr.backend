@@ -13,9 +13,19 @@ namespace Modules.Trips.Application.Mappers
             return new TripDetailsResponseDto
             {
                 Id = source.Id,
-                CreatedByUserId = source.UserId,
+                CreatedByUser = new UserResponseDto
+                {
+                    Id = source.CreatedByUser.Id,
+                    UserName = source.CreatedByUser.UserName,
+                    FirstName = source.CreatedByUser.FirstName,
+                    LastName = source.CreatedByUser.LastName,
+                    Email = source.CreatedByUser.Email,
+                    PhoneNumber = source.CreatedByUser.PhoneNumber,
+                    Rating = source.CreatedByUser.Rating,
+                },
+                AutoApprove = source.AutoApprove,
                 GuideId = source.GuideId,
-                ThemeId = source.TripTheme.Id,
+                Theme = source.TripTheme.Name,
                 CreatorRoles = Enum.GetValues<UserRole>()
                     .Where(r => source.CreatorRole.HasFlag(r))
                     .Select(r => r.ToString())
@@ -23,7 +33,6 @@ namespace Modules.Trips.Application.Mappers
                 Title = source.Title,
                 Description = source.Description,
                 Price = source.Price,
-                ExpectedDuration = source.ExpectedDuration,
                 ImagesUrls = imagePaths,
                 TripVisibility = source.TripVisibility,
                 Status = source.Status,
@@ -32,7 +41,7 @@ namespace Modules.Trips.Application.Mappers
                 StartDate = source.StartDate,
                 TripTime = source.Segments.Max(x => x.Order).ToString() + "Day(s)",
                 PendingParticipants = source.Participants
-                    .Where(p => p.Approved = false)
+                    .Where(p => p.Approved == false)
                     .Select(p => new UserResponseDto
                     {
                         Id = p.User.Id,
@@ -44,7 +53,7 @@ namespace Modules.Trips.Application.Mappers
                         Rating = p.User.Rating,
                     }).ToList(),
                 ApprovedParticipants = source.Participants
-                    .Where(p => p.Approved = true)
+                    .Where(p => p.Approved == true)
                     .Select(p => new UserResponseDto
                     {
                         Id = p.User.Id,
@@ -61,6 +70,7 @@ namespace Modules.Trips.Application.Mappers
                     .Select((x, idx) => new DayResponseDto
                     {
                         Day = idx + 1,
+                        Duration = x.Duration,
                         Places = x.Places.Select(p => p.ToPlaceDto()).ToList()
                     }).ToList(),
                 MaxParticipantsCount = source.MaxParticipantsCount,

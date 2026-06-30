@@ -13,9 +13,10 @@ namespace Modules.Trips.Application.Mappers
             ICollection<string> imagePaths = fileService.ResolveUrls(source.Images);
             TripResponseDto responseDto = new()
             {
+                TripId = source.Id,
                 CreatedByUser = source.UserId,
                 GuideId = source.GuideId,
-                ThemeId = source.TripTheme.Id,
+                Theme = source.TripTheme.Name,
                 CreatorRoles = Enum.GetValues<UserRole>()
                     .Where(r => source.CreatorRole.HasFlag(r))
                     .Select(r => r.ToString())
@@ -24,16 +25,18 @@ namespace Modules.Trips.Application.Mappers
                 StartDate = source.StartDate,
                 Description = source.Description,
                 Price = source.Price,
-                ExpectedDuration = source.ExpectedDuration,
                 ImagesUrls = imagePaths,
                 TripTime = source.Segments.Max(x => x.Order).ToString() + " Day(s)",
                 TripVisibility = source.TripVisibility,
+                Status = source.Status,
+                AutoApprove = source.AutoApprove,
                 Segments = source
                     .Segments
                     .OrderBy(x => x.Order)
                     .Select((x, idx) => new DayResponseDto
                     {
                         Day = idx + 1,
+                        Duration = x.Duration,
                         Places = x.Places.Select(p => p.ToPlaceDto()).ToList()
                     }).ToList(),
                 MaxParticipantsCount = source.MaxParticipantsCount,
