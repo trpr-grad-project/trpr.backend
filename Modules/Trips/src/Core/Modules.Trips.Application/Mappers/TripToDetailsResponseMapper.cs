@@ -40,7 +40,7 @@ namespace Modules.Trips.Application.Mappers
                 StartDate = source.StartDate,
                 TripTime = source.Segments.Max(x => x.Order).ToString() + "Day(s)",
                 PendingParticipants = source.Participants
-                    .Where(p => p.Approved = false)
+                    .Where(p => p.Approved == false)
                     .Select(p => new UserResponseDto
                     {
                         Id = p.User.Id,
@@ -52,7 +52,7 @@ namespace Modules.Trips.Application.Mappers
                         Rating = p.User.Rating,
                     }).ToList() ?? null,
                 ApprovedParticipants = source.Participants
-                    .Where(p => p.Approved = true)
+                    .Where(p => p.Approved == true)
                     .Select(p => new UserResponseDto
                     {
                         Id = p.User.Id,

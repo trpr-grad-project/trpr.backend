@@ -180,7 +180,7 @@ namespace Modules.Trips.Application.Services
             if (trip.UserId == userId)
                 throw new BadRequestException("Trip.CreatorCannotJoin");
 
-            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
+            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
             {
                 if (trip.Status != TripStatus.Ready)
                 {
@@ -198,12 +198,12 @@ namespace Modules.Trips.Application.Services
 
             tripParticipant = TripParticipant.Create(tripId, userId);
 
-            if (trip.AutoApprove)
+            if (trip.AutoApprove == true)
                 tripParticipant.Approve();
 
             trip.Participants.Add(tripParticipant);
 
-            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
+            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
                 trip.Ready();
 
             await unitOfWork.SaveChangesAsync();
@@ -250,10 +250,10 @@ namespace Modules.Trips.Application.Services
                 return;
             }
 
-            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
+            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
             {
                 await repositoryFactory.Repository<TripParticipant>().GetQueryable()
-                    .Where(x => x.TripId == trip.Id && !x.Approved)
+                    .Where(x => x.TripId == trip.Id && x.Approved == false)
                     .ExecuteDeleteAsync();
                 if (trip.Status != TripStatus.Ready)
                     trip.Ready();
@@ -261,14 +261,14 @@ namespace Modules.Trips.Application.Services
                 throw new BadRequestException("Trip.MaxParticipantsReached");
             }
 
-            if (tripParticipant.Approved)
+            if (tripParticipant.Approved == true)
                 return;
 
             tripParticipant.Approve();
-            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
+            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
             {
                 await repositoryFactory.Repository<TripParticipant>().GetQueryable()
-                    .Where(x => x.TripId == trip.Id && !x.Approved)
+                    .Where(x => x.TripId == trip.Id && x.Approved == false)
                     .ExecuteDeleteAsync();
                 trip.Ready();
             }

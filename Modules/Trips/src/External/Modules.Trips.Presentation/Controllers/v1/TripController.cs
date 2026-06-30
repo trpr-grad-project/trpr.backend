@@ -77,7 +77,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<PaginationDto<TripResponseDto>>> GetTrips([FromQuery] SearchTripRequestDto requestDto, CancellationToken cancellationToken)
         {
-            var request = await tripService.GetTrips(requestDto, null, null, cancellationToken);
+            var request = await tripService.GetTrips(requestDto, null, requestDto.Status ?? null, cancellationToken);
             return Ok(request);
         }
 
