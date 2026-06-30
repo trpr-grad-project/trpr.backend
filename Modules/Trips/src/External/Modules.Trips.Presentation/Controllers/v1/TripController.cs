@@ -113,7 +113,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
             await tripService.JoinTrip(id, UserId);
             return NoContent();
         }
-        [HttpPut("Accept/{id:guid}")]
+        [HttpPut("accept/{id:guid}")]
         public async Task<ActionResult> AcceptJoin([FromRoute] Guid id)
         {
             await tripService.ApproveUserJoinRequest(id, UserId);
