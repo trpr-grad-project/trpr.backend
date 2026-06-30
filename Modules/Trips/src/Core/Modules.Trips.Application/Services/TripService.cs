@@ -110,7 +110,10 @@ namespace Modules.Trips.Application.Services
                 .Include(x => x.Segments).ThenInclude(s => s.Places).ThenInclude(p => p.PlaceTags).ThenInclude(pt => pt.Tag)
                 .Include(x => x.CreatedByUser);
             if (userId.HasValue)
-                trips = trips.Where(x => x.UserId == userId.Value);
+                trips = trips.Where(x =>
+                    x.UserId == userId.Value ||
+                    x.Participants.Any(p => p.UserId == userId.Value)
+                );
             if (status.HasValue)
                 trips = trips.Where(x => x.Status == status.Value);
             trips = FilterByBaseSearchRequest(trips, request);

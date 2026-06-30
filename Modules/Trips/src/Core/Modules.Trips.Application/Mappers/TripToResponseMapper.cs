@@ -29,6 +29,7 @@ namespace Modules.Trips.Application.Mappers
                 ImagesUrls = imagePaths,
                 TripTime = source.Segments.Max(x => x.Order).ToString() + " Day(s)",
                 TripVisibility = source.TripVisibility,
+                Status = source.Status,
                 Segments = source
                     .Segments
                     .OrderBy(x => x.Order)

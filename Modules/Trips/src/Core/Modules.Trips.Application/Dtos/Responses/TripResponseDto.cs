@@ -21,6 +21,7 @@ namespace Modules.Trips.Application.Dtos.Responses
         public DateOnly StartDate { get; set; }
         public ICollection<string> ImagesUrls { get; set; } = [];
         public TripVisibility TripVisibility { get; set; }
+        public TripStatus Status { get; set; }
         public List<DayResponseDto> Segments { get; set; } = [];
         public string TripTime { get; set; } = string.Empty;
         public int MaxParticipantsCount { get; set; }
