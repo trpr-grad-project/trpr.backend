@@ -23,6 +23,7 @@ namespace Modules.Trips.Application.Mappers
                     PhoneNumber = source.CreatedByUser.PhoneNumber,
                     Rating = source.CreatedByUser.Rating,
                 },
+                AutoApprove = source.AutoApprove,
                 GuideId = source.GuideId,
                 Theme = source.TripTheme.Name,
                 CreatorRoles = Enum.GetValues<UserRole>()
@@ -50,7 +51,7 @@ namespace Modules.Trips.Application.Mappers
                         Email = p.User.Email,
                         PhoneNumber = p.User.PhoneNumber,
                         Rating = p.User.Rating,
-                    }).ToList() ?? null,
+                    }).ToList(),
                 ApprovedParticipants = source.Participants
                     .Where(p => p.Approved == true)
                     .Select(p => new UserResponseDto
@@ -62,7 +63,7 @@ namespace Modules.Trips.Application.Mappers
                         Email = p.User.Email,
                         PhoneNumber = p.User.PhoneNumber,
                         Rating = p.User.Rating,
-                    }).ToList() ?? null,
+                    }).ToList(),
                 Segments = source
                     .Segments
                     .OrderBy(x => x.Order)

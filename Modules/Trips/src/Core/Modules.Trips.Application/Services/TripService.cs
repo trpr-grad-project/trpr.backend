@@ -231,15 +231,15 @@ namespace Modules.Trips.Application.Services
             Trip trip = await repositoryFactory
                 .Repository<Trip>()
                 .GetFirstOrDefaultByFilter(
-                    x => x.Id == dto.TripId && x.Status == TripStatus.Published,
+                    x => x.Id == dto.TripId && x.Status == TripStatus.Published && x.UserId == userId,
                     x => x.Include(x => x.Participants))
                 ?? throw new NotFoundException("Trip.NotFound", dto.TripId);
 
-            if(trip.UserId == userId)
+            if(trip.UserId == dto.UserId)
                 throw new BadRequestException("Trip.CreatorCannotJoin");
 
             TripParticipant tripParticipant = trip.Participants
-                .FirstOrDefault(x => x.UserId == userId)
+                .FirstOrDefault(x => x.UserId == dto.UserId)
                 ?? throw new NotFoundException("TripParticipant.NotFound", userId);
 
             if (dto.IsApproved == false)

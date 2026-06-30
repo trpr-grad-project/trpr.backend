@@ -11,6 +11,7 @@ namespace Modules.Trips.Application.Dtos.Responses
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; }
+        public bool AutoApprove { get; set; }
         public DateOnly StartDate { get; set; }
         public string TripTime { get; set; } = string.Empty;
         public ICollection<string> ImagesUrls { get; set; } = [];
@@ -20,8 +21,8 @@ namespace Modules.Trips.Application.Dtos.Responses
         public string? RejectionReason { get; set; }
         public List<DayResponseDto> Segments { get; set; } = [];
         public int MaxParticipantsCount { get; set; }
-        public ICollection<UserResponseDto>? ApprovedParticipants { get; set; } = [];
-        public ICollection<UserResponseDto>? PendingParticipants { get; set; } = [];
+        public ICollection<UserResponseDto> ApprovedParticipants { get; set; } = [];
+        public ICollection<UserResponseDto> PendingParticipants { get; set; } = [];
         public Guid? GuideId { get; set; }
         public DateTime CreatedAtUTC { get; set; }
         public BiddingCursorPageDto? BiddingsPage { get; set; } = null;

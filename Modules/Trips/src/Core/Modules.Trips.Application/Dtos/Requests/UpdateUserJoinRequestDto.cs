@@ -8,5 +8,6 @@ namespace Modules.Trips.Application.Dtos.Requests
     {
         public bool IsApproved { get; set; }
         public Guid TripId { get; set; }
+        public Guid UserId { get; set; }
     }
 }
