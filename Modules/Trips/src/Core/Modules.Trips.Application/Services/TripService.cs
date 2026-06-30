@@ -197,12 +197,12 @@ namespace Modules.Trips.Application.Services
                 return;
 
             tripParticipant = TripParticipant.Create(tripId, userId);
-
+            repositoryFactory.Repository<TripParticipant>().Add(tripParticipant);
             if (trip.AutoApprove == true)
                 tripParticipant.Approve();
 
             trip.Participants.Add(tripParticipant);
-
+            repositoryFactory.Repository<Trip>().Update(trip);
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
                 trip.Ready();
 
@@ -265,15 +265,16 @@ namespace Modules.Trips.Application.Services
                 return;
 
             tripParticipant.Approve();
+            repositoryFactory.Repository<TripParticipant>().Update(tripParticipant);
+            await unitOfWork.SaveChangesAsync();
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
             {
                 await repositoryFactory.Repository<TripParticipant>().GetQueryable()
                     .Where(x => x.TripId == trip.Id && x.Approved == false)
                     .ExecuteDeleteAsync();
                 trip.Ready();
-            }
-
-            await unitOfWork.SaveChangesAsync();
+                await unitOfWork.SaveChangesAsync();
+            } 
             return;
         }
         public async Task StartTrip(Guid tripId, Guid userId)
