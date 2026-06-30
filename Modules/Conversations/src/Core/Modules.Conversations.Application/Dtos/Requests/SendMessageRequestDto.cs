@@ -11,7 +11,6 @@ public class LastConversationMessageDto
 {
     public Guid ConversationId { get; set; }
     public Guid LastMessageId { get; set; }
-    public DateTime LastSentAtUtc { get; set; }
 }
 
 public class SendMessageRequestDto

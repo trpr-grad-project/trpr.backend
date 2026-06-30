@@ -36,25 +36,11 @@ namespace Modules.Conversations.Presentation.Controllers.v1
             return Ok(result);
         }
 
-        [HttpGet("{Id}/messages")]
-        public async Task<ActionResult<ICollection<Message>>> GetMessages([FromRoute] Guid Id, [FromQuery] Guid? LastMessageId, [FromQuery] DateTime? lastSentAt, [FromQuery] bool older = true)
-        {
-            var messages = await chatService.GetMessagesAsync(Id, LastMessageId, lastSentAt, older);
-            return Ok(messages);
-        }
-
         [HttpPost("relay")]
         public async Task<ActionResult<ICollection<MessageResponseDto>>> GetRelayMessage([FromBody] GetRelayMessageRequestDto request)
         {
-            ICollection<MessageResponseDto> messages = await chatService.GetRelayMessagesAsync(request.LastConversationsMessages);
+            ICollection<MessageResponseDto> messages = await chatService.GetRelayMessagesAsync(UserId, request.LastConversationsMessages);
             return Ok(messages);
-        }
-
-        [HttpGet("")]
-        public async Task<ActionResult<ICollection<Conversation>>> GetUserConversations()
-        {
-            var conversations = await chatService.GetUserConversationsAsync(UserId);
-            return Ok(conversations);
         }
 
     }

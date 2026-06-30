@@ -4,6 +4,5 @@ namespace Modules.Conversations.Domain.ValueObjects
     {
         Direct,
         Group,
-        Ai
     }
 }

@@ -1,5 +1,6 @@
 using System.Security.Cryptography.X509Certificates;
 using Common.Application.Exceptions;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Modules.Conversations.Application.Abstractions;
 using Modules.Conversations.Application.Dtos.Requests;
@@ -15,7 +16,6 @@ public class ChatService(
     INotificationSender notificationSender,
     IUnitOfWork unitOfWork)
 {
-    // todo : add attachment support later
     public async Task<MessageResponseDto> StartDirectMessage(Guid userId, SendMessageRequestDto request, CancellationToken cancellationToken = default)
     {
         // Check if the recipient user exists
@@ -78,11 +78,13 @@ public class ChatService(
     }
     public async Task<MessageResponseDto> SendMessage(Guid userId, SendMessageRequestDto request, CancellationToken cancellationToken = default)
     {
+        var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(
+            x => x.Id == userId
+        ) ?? throw new NotFoundException("User.NotFound");
         // Check if the conversation exists and the user is a participant
         var conversation = await repositoryFactory.Repository<Conversation>()
             .GetQueryable().Where(x =>
-                x.Id == request.RecipientId &&
-                (x.Type == ConversationType.Direct || x.Type == ConversationType.Group))
+                x.Id == request.RecipientId)
             .Include(x => x.Participants)
             .FirstOrDefaultAsync(cancellationToken)
                 ?? throw new NotFoundException("Conversation.NotFound");
@@ -91,14 +93,7 @@ public class ChatService(
         var participant = conversation.Participants.FirstOrDefault(p => p.UserId == userId)
             ?? throw new NotFoundException("Conversation.ParticipantNotFound");
 
-        var messageEntity = new Message
-        {
-            Id = Guid.NewGuid(),
-            ConversationId = conversation.Id,
-            Conversation = conversation,
-            SenderUserId = userId,
-            Content = request.MessageContent,
-        };
+        var messageEntity = Message.Create(conversation, user, request.MessageContent);
         // Save the message to the database
         repositoryFactory.Repository<Message>().Add(messageEntity);
         await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -113,107 +108,43 @@ public class ChatService(
             ConversationId = messageEntity.ConversationId
         };
     }
-
-    public async Task<ICollection<Message>> GetMessagesAsync(Guid conversationId, Guid? messageId, DateTime? lastSentAt, bool older = true, CancellationToken cancellationToken = default)
+    public async Task<ICollection<MessageResponseDto>> GetRelayMessagesAsync(Guid userId, ICollection<LastConversationMessageDto> lastConversationsMessages, CancellationToken cancellationToken = default)
     {
-        var messagesQuery = repositoryFactory.Repository<Message>()
+        var conversations = repositoryFactory.Repository<ConversationParticipant>()
             .GetQueryable()
-            .Where(m => m.ConversationId == conversationId);
+            .Where(x => x.UserId == userId)
+            .Include(x => x.Conversation)
+            .Select(x => x.Conversation);
 
-        if (lastSentAt.HasValue && messageId.HasValue)
-            if (older)
-                messagesQuery = messagesQuery
-                    .Where(m =>
-                            m.SentAtUtc < lastSentAt.Value || (m.SentAtUtc == lastSentAt.Value && m.Id < messageId.Value));
-            else messagesQuery = messagesQuery
-                    .Where(m =>
-                            m.SentAtUtc > lastSentAt.Value || (m.SentAtUtc == lastSentAt.Value && m.Id > messageId.Value));
+        var lastMessageConversation = lastConversationsMessages
+            .ToDictionary(x => x.ConversationId, x => x.LastMessageId);
 
-        var messages = await messagesQuery
-            .OrderByDescending(m => m.SentAtUtc)
-            .Take(50)
-            .ToListAsync(cancellationToken);
-
-        return messages;
-    }
-
-    public async Task<ICollection<MessageResponseDto>> GetRelayMessagesAsync(ICollection<LastConversationMessageDto> lastConversationsMessages, CancellationToken cancellationToken = default)
-    {
         var messages = new List<Message>();
-
-        foreach (var convoMsg in lastConversationsMessages)
+        foreach (var conversation in conversations)
         {
-            var convoMessagesQuery = repositoryFactory.Repository<Message>()
+            var convoMessagesQuery = repositoryFactory
+                .Repository<Message>()
                 .GetQueryable()
-                .Where(m => m.ConversationId == convoMsg.ConversationId);
+                .Where(m => m.ConversationId == conversation.Id);
 
-            if (convoMsg.LastSentAtUtc != default && convoMsg.LastMessageId != default)
+            if (lastMessageConversation.TryGetValue(conversation.Id, out Guid lastMessageId))
             {
                 convoMessagesQuery = convoMessagesQuery
-                    .Where(m =>
-                        m.SentAtUtc > convoMsg.LastSentAtUtc ||
-                        (m.SentAtUtc == convoMsg.LastSentAtUtc && m.Id > convoMsg.LastMessageId));
+                    .Where(x => x.Id > lastMessageId)
+                    .OrderBy(m => m.SentAtUtc);
             }
 
-            var convoMessages = await convoMessagesQuery
-                .OrderBy(m => m.SentAtUtc)
-                .ToListAsync(cancellationToken);
-
+            var convoMessages = await convoMessagesQuery.ToListAsync(cancellationToken);
             messages.AddRange(convoMessages);
         }
 
-        return messages.Select(messageEntity => new MessageResponseDto
+        return [.. messages.Select(messageEntity => new MessageResponseDto
         {
             Id = messageEntity.Id.ToString(),
             SenderUserId = messageEntity.SenderUserId,
             Content = messageEntity.Content,
             ConversationId = messageEntity.ConversationId
-        }).ToList();
+        })];
     }
 
-    public async Task<ICollection<Conversation>> GetUserConversationsAsync(Guid userId, CancellationToken cancellationToken = default)
-    {
-        var conversations = await repositoryFactory.Repository<Conversation>()
-            .GetQueryable()
-            .Where(c => c.Participants.Any(p => p.UserId == userId))
-            .Where(c => c.Type == ConversationType.Direct || c.Type == ConversationType.Group)
-            .Include(c => c.Participants)
-            .ToListAsync(cancellationToken);
-
-        return conversations;
-    }
-
-    // TODO : FINSIH LATER
-    public async Task<Dictionary<Conversation, ICollection<Message>>>
-    GetRelayAsync(Guid userId, FetchMissingMessagesRequestDto request, CancellationToken cancellationToken = default)
-    {
-        ICollection<Conversation> conversations = await repositoryFactory.Repository<ConversationParticipant>()
-            .GetQueryable()
-            .Where(x => x.UserId == userId)
-            .Include(x => x.Conversation)
-            .Select(x => x.Conversation)
-            .DistinctBy(x => x.Id)
-            .ToListAsync(cancellationToken);
-        Dictionary<Guid, Guid?> ConvLastMessageIds = request.Messages.ToDictionary(x => x.ConversationId, x => x.LastMessageId);
-        Dictionary<Conversation, ICollection<Message>> result = new();
-        foreach (Conversation conversation in conversations)
-        {
-            Guid? lastMessageId = ConvLastMessageIds.ContainsKey(conversation.Id) ? ConvLastMessageIds[conversation.Id] : null;
-            var messagesQuery = repositoryFactory.Repository<Message>()
-                .GetQueryable()
-                .Where(m => m.ConversationId == conversation.Id);
-
-            if (lastMessageId.HasValue)
-            {
-                messagesQuery = messagesQuery.Where(m => m.Id > lastMessageId.Value);
-            }
-
-            var messages = await messagesQuery
-                .OrderBy(m => m.SentAtUtc)
-                .ToListAsync(cancellationToken);
-
-            result[conversation] = messages;
-        }
-        return result;
-    }
 }
