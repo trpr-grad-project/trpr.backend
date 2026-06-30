@@ -175,10 +175,17 @@ namespace Modules.Trips.Application.Services
                     x => x.Id == tripId && x.Status == TripStatus.Published,
                     x => x.Include(x => x.Participants))
                 ?? throw new NotFoundException("Trip.NotFound");
+
+            if (trip.UserId == userId)
+                throw new BadRequestException("Trip.CreatorCannotJoin");
+
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
             {
-                if (trip.Status == TripStatus.Ready)
+                if (trip.Status != TripStatus.Ready)
+                {
                     trip.Ready();
+                    await unitOfWork.SaveChangesAsync();
+                }
                 throw new BadRequestException("Trip.MaxParticipantsReached");
             }
 
@@ -188,20 +195,17 @@ namespace Modules.Trips.Application.Services
             if (tripParticipant != null)
                 return;
 
-            User user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(x => x.Id == userId)
-                ?? throw new NotFoundException("User.NotFound", userId);
-
             tripParticipant = TripParticipant.Create(tripId, userId);
 
             if (trip.AutoApprove)
                 tripParticipant.Approve();
 
             trip.Participants.Add(tripParticipant);
-            await unitOfWork.SaveChangesAsync();
+
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
-            {
                 trip.Ready();
-            }
+
+            await unitOfWork.SaveChangesAsync();
         }
 
         public async Task<ThemeFormDataDto> GetThemeFromData()
@@ -219,37 +223,47 @@ namespace Modules.Trips.Application.Services
                 }).ToList()
             };
         }
+
         // TODO : Enhancement for race condition add for update
-        public async Task ApproveUserJoinRequest(Guid tripId, Guid userId)
+        public async Task UpdateUserJoinRequest(UpdateUserJoinRequestDto dto, Guid userId)
         {
             Trip trip = await repositoryFactory
                 .Repository<Trip>()
                 .GetFirstOrDefaultByFilter(
-                    x => x.Id == tripId && x.Status == TripStatus.Published,
+                    x => x.Id == dto.TripId && x.Status == TripStatus.Published,
                     x => x.Include(x => x.Participants))
-                ?? throw new NotFoundException("Trip.NotFound", tripId);
+                ?? throw new NotFoundException("Trip.NotFound", dto.TripId);
+
+            if(trip.UserId == userId)
+                throw new BadRequestException("Trip.CreatorCannotJoin");
+
+            TripParticipant tripParticipant = trip.Participants
+                .FirstOrDefault(x => x.UserId == userId)
+                ?? throw new NotFoundException("TripParticipant.NotFound", userId);
+
+            if (dto.IsApproved == false)
+            {
+                tripParticipant.Reject();
+                repositoryFactory.Repository<TripParticipant>().Delete(tripParticipant);
+                await unitOfWork.SaveChangesAsync();
+                return;
+            }
 
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
             {
                 await repositoryFactory.Repository<TripParticipant>().GetQueryable()
                     .Where(x => x.TripId == trip.Id && !x.Approved)
                     .ExecuteDeleteAsync();
-                if (trip.Status == TripStatus.Ready)
+                if (trip.Status != TripStatus.Ready)
                     trip.Ready();
+                await unitOfWork.SaveChangesAsync();
                 throw new BadRequestException("Trip.MaxParticipantsReached");
             }
-
-            TripParticipant tripParticipant = trip.Participants
-                .FirstOrDefault(x => x.UserId == userId)
-                ?? throw new NotFoundException("TripParticipant.NotFound", userId);
 
             if (tripParticipant.Approved)
                 return;
 
             tripParticipant.Approve();
-
-            await unitOfWork.SaveChangesAsync();
-
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
             {
                 await repositoryFactory.Repository<TripParticipant>().GetQueryable()
@@ -257,6 +271,9 @@ namespace Modules.Trips.Application.Services
                     .ExecuteDeleteAsync();
                 trip.Ready();
             }
+
+            await unitOfWork.SaveChangesAsync();
+            return;
         }
         public async Task StartTrip(Guid tripId, Guid userId)
         {

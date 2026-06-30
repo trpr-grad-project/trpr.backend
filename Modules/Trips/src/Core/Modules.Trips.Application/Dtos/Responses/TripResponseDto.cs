@@ -15,9 +15,9 @@ namespace Modules.Trips.Application.Dtos.Responses
         public int ThemeId { get; set; }
         public List<string> CreatorRoles { get; set; } = default!;
         public string Title { get; set; } = string.Empty;
+        public bool AutoApprove { get; set; }
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; }
-        public double ExpectedDuration { get; set; }
         public DateOnly StartDate { get; set; }
         public ICollection<string> ImagesUrls { get; set; } = [];
         public TripVisibility TripVisibility { get; set; }

@@ -25,11 +25,11 @@ namespace Modules.Trips.Application.Mappers
                 StartDate = source.StartDate,
                 Description = source.Description,
                 Price = source.Price,
-                ExpectedDuration = source.ExpectedDuration,
                 ImagesUrls = imagePaths,
                 TripTime = source.Segments.Max(x => x.Order).ToString() + " Day(s)",
                 TripVisibility = source.TripVisibility,
                 Status = source.Status,
+                AutoApprove = source.AutoApprove,
                 Segments = source
                     .Segments
                     .OrderBy(x => x.Order)

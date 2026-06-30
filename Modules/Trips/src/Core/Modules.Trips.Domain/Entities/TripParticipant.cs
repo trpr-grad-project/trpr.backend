@@ -36,6 +36,12 @@ namespace Modules.Trips.Domain.Entities
             this.RaiseDomainEvent(new TripParticipantCreatedDomainEvent(this.TripId, this.UserId));
             return this;
         }
+        public TripParticipant Reject()
+        {
+            this.Approved = false;
+            //this.RaiseDomainEvent(new TripParticipantRejectedDomainEvent(this.TripId, this.UserId));
+            return this;
+        }
 
         public void MakeReview(double? rate, string? review)
         {

@@ -23,7 +23,6 @@ namespace Modules.Trips.Application.Mappers
                 Title = source.Title,
                 Description = source.Description,
                 Price = source.Price,
-                ExpectedDuration = source.ExpectedDuration,
                 ImagesUrls = imagePaths,
                 TripVisibility = source.TripVisibility,
                 Status = source.Status,
@@ -42,7 +41,7 @@ namespace Modules.Trips.Application.Mappers
                         Email = p.User.Email,
                         PhoneNumber = p.User.PhoneNumber,
                         Rating = p.User.Rating,
-                    }).ToList(),
+                    }).ToList() ?? null,
                 ApprovedParticipants = source.Participants
                     .Where(p => p.Approved = true)
                     .Select(p => new UserResponseDto
@@ -54,7 +53,7 @@ namespace Modules.Trips.Application.Mappers
                         Email = p.User.Email,
                         PhoneNumber = p.User.PhoneNumber,
                         Rating = p.User.Rating,
-                    }).ToList(),
+                    }).ToList() ?? null,
                 Segments = source
                     .Segments
                     .OrderBy(x => x.Order)
