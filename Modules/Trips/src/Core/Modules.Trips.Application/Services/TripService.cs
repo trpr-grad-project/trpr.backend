@@ -150,11 +150,12 @@ namespace Modules.Trips.Application.Services
                         .ThenInclude(p => p.Governorate),
                     q => q.Include(t => t.CreatedByUser),
                     q => q.Include(p => p.Participants)
-                        .ThenInclude(u => u.User))
+                        .ThenInclude(u => u.User),
+                    q => q.Include(th => th.TripTheme))
                 ?? throw new NotFoundException("Trip.NotFound", tripId);
 
             var dto = tripDetailsMapper.Map(trip);
-            if (trip.UserId != userId || trip.AutoApprove == true)
+            if (trip.UserId != userId)
                 dto.PendingParticipants = [];
             dto.BiddingsPage =
                 (trip.Status == TripStatus.Bidding) ?

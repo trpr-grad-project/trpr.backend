@@ -12,7 +12,7 @@ namespace Modules.Trips.Application.Dtos.Responses
     {
         public Guid TripId { get; set; }
         public Guid CreatedByUser { get; set; }
-        public int ThemeId { get; set; }
+        public string Theme { get; set; } = string.Empty;
         public List<string> CreatorRoles { get; set; } = default!;
         public string Title { get; set; } = string.Empty;
         public bool AutoApprove { get; set; }

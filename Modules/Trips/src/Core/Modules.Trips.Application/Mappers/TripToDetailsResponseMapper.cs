@@ -13,9 +13,18 @@ namespace Modules.Trips.Application.Mappers
             return new TripDetailsResponseDto
             {
                 Id = source.Id,
-                CreatedByUserId = source.UserId,
+                CreatedByUser = new UserResponseDto
+                {
+                    Id = source.CreatedByUser.Id,
+                    UserName = source.CreatedByUser.UserName,
+                    FirstName = source.CreatedByUser.FirstName,
+                    LastName = source.CreatedByUser.LastName,
+                    Email = source.CreatedByUser.Email,
+                    PhoneNumber = source.CreatedByUser.PhoneNumber,
+                    Rating = source.CreatedByUser.Rating,
+                },
                 GuideId = source.GuideId,
-                ThemeId = source.TripTheme.Id,
+                Theme = source.TripTheme.Name,
                 CreatorRoles = Enum.GetValues<UserRole>()
                     .Where(r => source.CreatorRole.HasFlag(r))
                     .Select(r => r.ToString())
@@ -60,6 +69,7 @@ namespace Modules.Trips.Application.Mappers
                     .Select((x, idx) => new DayResponseDto
                     {
                         Day = idx + 1,
+                        Duration = x.Duration,
                         Places = x.Places.Select(p => p.ToPlaceDto()).ToList()
                     }).ToList(),
                 MaxParticipantsCount = source.MaxParticipantsCount,

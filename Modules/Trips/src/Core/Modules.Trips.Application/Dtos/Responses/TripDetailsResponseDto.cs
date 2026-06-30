@@ -5,13 +5,12 @@ namespace Modules.Trips.Application.Dtos.Responses
     public class TripDetailsResponseDto
     {
         public Guid Id { get; set; }
-        public Guid CreatedByUserId { get; set; }
+        public UserResponseDto CreatedByUser { get; set; } = default!;
         public List<string> CreatorRoles { get; set; } = default!;
-        public int ThemeId { get; set; }
+        public string Theme { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; }
-        public double ExpectedDuration { get; set; }
         public DateOnly StartDate { get; set; }
         public string TripTime { get; set; } = string.Empty;
         public ICollection<string> ImagesUrls { get; set; } = [];
