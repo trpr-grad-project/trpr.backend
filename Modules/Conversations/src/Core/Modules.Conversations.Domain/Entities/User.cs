@@ -10,5 +10,6 @@ namespace Modules.Conversations.Domain.Entities
         public string Identifier { get; set; } = string.Empty;
         public string? AvatarUrl { get; set; }
         public virtual ICollection<ConversationParticipant> ConversationParticipants { get; set; } = [];
+        public virtual ICollection<Message> Messages { get; set; } = [];
     }
 }

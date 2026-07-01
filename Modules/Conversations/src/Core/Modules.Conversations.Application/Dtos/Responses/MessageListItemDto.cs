@@ -7,4 +7,5 @@ public class MessageListItemDto
     public string Content { get; set; } = string.Empty;
     public Guid? SenderUserId { get; set; }
     public DateTime SentAtUtc { get; set; }
+    public Guid ConversationId { get; set; }
 }

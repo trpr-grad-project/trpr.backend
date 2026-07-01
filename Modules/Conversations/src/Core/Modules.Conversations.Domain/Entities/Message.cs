@@ -15,15 +15,17 @@ namespace Modules.Conversations.Domain.Entities
         public DateTime SentAtUtc { get; private set; } = DateTime.UtcNow;
         public static Message Create(Conversation conversation, Guid userId, string content)
         {
-            return new Message
+            conversation.IncrementSequenceNumber();
+            var message = new Message
             {
                 Id = Guid.CreateVersion7(),
                 ConversationId = conversation.Id,
                 Conversation = conversation,
                 SenderUserId = userId,
                 Content = content,
-                SequenceNumber = conversation.SequenceNumber++
+                SequenceNumber = conversation.SequenceNumber
             };
+            return message;
         }
     }
 }

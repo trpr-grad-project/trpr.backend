@@ -79,7 +79,8 @@ IUnitOfWork unitOfWork)
     public async Task UpdatePassword(Guid userId, UpdatePasswordRequestDto updatePasswordRequest, CancellationToken cancellationToken = default)
     {
         var user = await userRepository.GetFirstOrDefaultByFilter(x => x.Id == userId) ?? throw new NotFoundException("User.NotFound", userId);
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(updatePasswordRequest.Password);
+        var PasswordHash = BCrypt.Net.BCrypt.HashPassword(updatePasswordRequest.Password);
+        user.SetPasswordHash(PasswordHash);
         userRepository.Update(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

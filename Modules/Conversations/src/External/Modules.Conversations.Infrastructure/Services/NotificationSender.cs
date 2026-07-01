@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
+using Modules.Conversations.Application.Dtos.Responses;
 using Modules.Conversations.Application.Interfaces;
 using Modules.Conversations.Domain.Entities;
 using Modules.Conversations.Presentation.Hubs;
@@ -10,12 +11,14 @@ public class NotificationSender(IHubContext<ChatHub> hubContext) : INotification
     public async Task SendMessageAsync(Message message, CancellationToken cancellationToken = default)
     {
         await hubContext.Clients.Group(message.ConversationId.ToString()).SendAsync("ReceiveMessage", new
+        MessageListItemDto
         {
-            MessageId = message.Id,
+            Id = message.Id,
             ConversationId = message.ConversationId,
             SenderUserId = message.SenderUserId,
             Content = message.Content,
             SentAtUtc = message.SentAtUtc,
+            SequenceNumber = message.SequenceNumber
         }, cancellationToken);
     }
 

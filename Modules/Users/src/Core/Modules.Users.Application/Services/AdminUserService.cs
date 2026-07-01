@@ -6,7 +6,6 @@ using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Dtos.Responses;
 using Modules.Users.Application.Repositories;
 using Modules.Users.Domain.Entities;
-using Modules.Users.Domain.Enums;
 
 namespace Modules.Users.Application.Services;
 
@@ -62,8 +61,7 @@ public class AdminUserService(
         var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(u => u.Id == userId)
             ?? throw new NotFoundException("User.NotFound", userId);
 
-        user.FirstName = request.FirstName;
-        user.LastName = request.LastName;
+        user.Update(request.FirstName, request.LastName);
 
         repositoryFactory.Repository<User>().Update(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);

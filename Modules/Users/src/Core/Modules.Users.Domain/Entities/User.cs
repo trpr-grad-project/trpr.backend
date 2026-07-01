@@ -6,22 +6,21 @@ namespace Modules.Users.Domain.Entities;
 
 public class User : Entity
 {
-    public Guid Id { get; set; }
-    public string UserName { get; set; } = string.Empty;
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
-    public string PasswordHash { get; set; } = string.Empty;
-    public bool TwoFactorEnabled { get; set; } = false;
-    public bool IsVerified { get; set; } = false;
+    public Guid Id { get; private set; }
+    public string UserName { get; private set; } = string.Empty;
+    public string FirstName { get; private set; } = string.Empty;
+    public string LastName { get; private set; } = string.Empty;
+    public string PasswordHash { get; private set; } = string.Empty;
+    public bool TwoFactorEnabled { get; private set; } = false;
+    public bool IsVerified { get; private set; } = false;
     public virtual Profile Profile { get; set; } = default!;
     public virtual ICollection<Token> Tokens { get; set; } = [];
     public virtual ICollection<UserRole> UserRoles { get; set; } = [];
     public static User Create(string userName, string firstName, string lastName, string passwordHash)
     {
-        var id = Guid.NewGuid();
         var user = new User
         {
-            Id = id,
+            Id = Guid.CreateVersion7(),
             UserName = userName,
             FirstName = firstName,
             LastName = lastName,
@@ -29,7 +28,26 @@ public class User : Entity
             TwoFactorEnabled = false,
             IsVerified = false,
         };
-        user.RaiseDomainEvent(new UserCreatedDomainEvent(user.Id));
         return user;
+    }
+
+    public void Update(string? firstName, string? lastName)
+    {
+        if (!string.IsNullOrWhiteSpace(firstName))
+            this.FirstName = firstName;
+
+        if (!string.IsNullOrWhiteSpace(lastName))
+            this.LastName = lastName;
+    }
+
+    public void Verify()
+    {
+        this.IsVerified = true;
+        this.RaiseDomainEvent(new UserCreatedDomainEvent(Id));
+    }
+
+    public void SetPasswordHash(string passwordHash)
+    {
+        this.PasswordHash = passwordHash;
     }
 }

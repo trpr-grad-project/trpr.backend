@@ -17,5 +17,16 @@ namespace Modules.Conversations.Domain.Entities
         {
             SequenceNumber++;
         }
+        public static Conversation Create(string? title, string? imageUrl, Guid createByUserId)
+        {
+            var conversation = new Conversation
+            {
+                Id = Guid.CreateVersion7(),
+                Title = title,
+                ImageUrl = imageUrl,
+                CreateByUserId = createByUserId
+            };
+            return conversation;
+        }
     }
 }

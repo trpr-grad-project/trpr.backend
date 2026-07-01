@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Modules.Conversations.Application.Abstractions;
 using Modules.Conversations.Application.Dtos.Requests;
 using Modules.Conversations.Application.Dtos.Responses;
-using Modules.Conversations.Application.Helpers;
 using Modules.Conversations.Application.Interfaces;
 using Modules.Conversations.Domain.Entities;
 
@@ -14,6 +13,29 @@ public class ChatService(
     INotificationSender notificationSender,
     IUnitOfWork unitOfWork)
 {
+    public async Task<ConversationDetailsResponseDto> CreateConversation(Guid userId, CreateConversationRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var conversation = Conversation.Create(request.Title, request.ImageUrl, userId);
+        var participants = request.ParticipantUserIds.Distinct().Select(participantUserId => new ConversationParticipant
+        {
+            ConversationId = conversation.Id,
+            UserId = participantUserId,
+            JoinedAtUtc = DateTime.UtcNow
+        }).ToList();
+        repositoryFactory.Repository<Conversation>().Add(conversation);
+        foreach (var participant in participants)
+            repositoryFactory.Repository<ConversationParticipant>().Add(participant);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        return new ConversationDetailsResponseDto
+        {
+            Id = conversation.Id.ToString(),
+            Title = conversation.Title,
+            ImageUrl = conversation.ImageUrl,
+            LastMessage = null,
+            LastReadSequence = 0,
+            UnreadCount = 0
+        };
+    }
     public async Task<MessageListItemDto> SendMessage(Guid userId, Guid conversationId, SendMessageRequestDto request, CancellationToken cancellationToken = default)
     {
         try
@@ -46,7 +68,8 @@ public class ChatService(
                 Content = messageEntity.Content,
                 SentAtUtc = messageEntity.SentAtUtc,
                 SequenceNumber = messageEntity.SequenceNumber,
-                SenderUserId = messageEntity.SenderUserId
+                SenderUserId = messageEntity.SenderUserId,
+                ConversationId = messageEntity.ConversationId
             };
         }
         catch
@@ -69,32 +92,21 @@ public class ChatService(
                 cp.Conversation.Title,
                 cp.Conversation.ImageUrl,
                 cp.JoinedAtUtc,
-                LastMessageId = cp.Conversation.Messages
+                LastMessage = cp.Conversation.Messages
                     .OrderByDescending(m => m.SequenceNumber)
-                    .Select(m => m.Id)
-                    .FirstOrDefault(),
-                LastMessageSequence = cp.Conversation.Messages
-                    .OrderByDescending(m => m.SequenceNumber)
-                    .Select(m => m.SequenceNumber)
-                    .FirstOrDefault(),
-                LastMessageText = cp.Conversation.Messages
-                    .OrderByDescending(m => m.SequenceNumber)
-                    .Select(m => m.Content)
-                    .FirstOrDefault(),
-                LastMessageSenderId = cp.Conversation.Messages
-                    .OrderByDescending(m => m.SequenceNumber)
-                    .Select(m => m.SenderUserId)
-                    .FirstOrDefault(),
-                LastMessageSentAt = cp.Conversation.Messages
-                    .OrderByDescending(m => m.SequenceNumber)
-                    .Select(m => m.SentAtUtc)
+                    .Select(m => new
+                    {
+                        m.Id,
+                        m.SequenceNumber,
+                        m.Content,
+                        m.SenderUserId,
+                        m.SentAtUtc
+                    })
                     .FirstOrDefault(),
                 TotalUnread = cp.Conversation.Messages.Count(m => m.SentAtUtc > cp.JoinedAtUtc),
                 LastRead = cp.Conversation.Messages
                     .Where(m => m.SentAtUtc <= cp.JoinedAtUtc)
-                    .Select(m => m.SequenceNumber)
-                    .DefaultIfEmpty(0)
-                    .Max()
+                    .Max(m => (int?)m.SequenceNumber) ?? 0
             });
 
         if (query.Cursor.HasValue)
@@ -113,13 +125,13 @@ public class ChatService(
         {
             Id = item.Id,
             Title = item.Title,
-            LastMessage = item.LastMessageId == default ? null : new ConversationLastMessageDto
+            LastMessage = item.LastMessage == null ? null : new ConversationLastMessageDto
             {
-                Id = item.LastMessageId.ToString(),
-                SequenceNumber = item.LastMessageSequence,
-                Text = item.LastMessageText ?? string.Empty,
-                SenderId = item.LastMessageSenderId,
-                SentAt = item.LastMessageSentAt
+                Id = item.LastMessage.Id,
+                SequenceNumber = item.LastMessage.SequenceNumber,
+                Text = item.LastMessage.Content ?? string.Empty,
+                SenderId = item.LastMessage.SenderUserId,
+                SentAt = item.LastMessage.SentAtUtc
             },
             LastReadSequence = item.LastRead,
             UnreadCount = item.TotalUnread,
@@ -151,50 +163,35 @@ public class ChatService(
                 cp.Conversation.Title,
                 cp.Conversation.ImageUrl,
                 cp.JoinedAtUtc,
-                LastMessageId = cp.Conversation.Messages
+                LastMessage = cp.Conversation.Messages
                     .OrderByDescending(m => m.SequenceNumber)
-                    .Select(m => m.Id)
-                    .FirstOrDefault(),
-                LastMessageSequence = cp.Conversation.Messages
-                    .OrderByDescending(m => m.SequenceNumber)
-                    .Select(m => m.SequenceNumber)
-                    .FirstOrDefault(),
-                LastMessageText = cp.Conversation.Messages
-                    .OrderByDescending(m => m.SequenceNumber)
-                    .Select(m => m.Content)
-                    .FirstOrDefault(),
-                LastMessageSenderId = cp.Conversation.Messages
-                    .OrderByDescending(m => m.SequenceNumber)
-                    .Select(m => m.SenderUserId)
-                    .FirstOrDefault(),
-                LastMessageSentAt = cp.Conversation.Messages
-                    .OrderByDescending(m => m.SequenceNumber)
-                    .Select(m => m.SentAtUtc)
+                    .Select(m => new
+                    {
+                        m.Id,
+                        m.SequenceNumber,
+                        m.Content,
+                        m.SenderUserId,
+                        m.SentAtUtc
+                    })
                     .FirstOrDefault(),
                 TotalUnread = cp.Conversation.Messages.Count(m => m.SentAtUtc > cp.JoinedAtUtc),
                 LastRead = cp.Conversation.Messages
                     .Where(m => m.SentAtUtc <= cp.JoinedAtUtc)
-                    .Select(m => m.SequenceNumber)
-                    .DefaultIfEmpty(0)
-                    .Max()
-            })
-            .FirstOrDefaultAsync(cancellationToken);
-
-        if (conversation == null)
-            throw new NotFoundException("Conversation.NotFound");
+                    .Max(m => (int?)m.SequenceNumber) ?? 0
+            }).FirstOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("Conversation.NotFound");
 
         return new ConversationDetailsResponseDto
         {
             Id = conversation.Id.ToString(),
             Title = conversation.Title,
             ImageUrl = conversation.ImageUrl,
-            LastMessage = conversation.LastMessageId == default ? null : new ConversationLastMessageDto
+            LastMessage = conversation.LastMessage == null ? null : new ConversationLastMessageDto
             {
-                Id = conversation.LastMessageId.ToString(),
-                SequenceNumber = conversation.LastMessageSequence,
-                Text = conversation.LastMessageText ?? string.Empty,
-                SenderId = conversation.LastMessageSenderId,
-                SentAt = conversation.LastMessageSentAt
+                Id = conversation.LastMessage.Id,
+                SequenceNumber = conversation.LastMessage.SequenceNumber,
+                Text = conversation.LastMessage.Content ?? string.Empty,
+                SenderId = conversation.LastMessage.SenderUserId,
+                SentAt = conversation.LastMessage.SentAtUtc
             },
             LastReadSequence = conversation.LastRead,
             UnreadCount = conversation.TotalUnread
@@ -227,7 +224,8 @@ public class ChatService(
                 SequenceNumber = m.SequenceNumber,
                 Content = m.Content,
                 SentAtUtc = m.SentAtUtc,
-                SenderUserId = m.SenderUserId
+                SenderUserId = m.SenderUserId,
+                ConversationId = m.ConversationId
             })
             .Take(limit + 1)
             .ToListAsync(cancellationToken);

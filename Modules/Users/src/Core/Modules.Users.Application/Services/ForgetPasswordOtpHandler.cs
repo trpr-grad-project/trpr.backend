@@ -15,6 +15,7 @@ public class ForgetPasswordOtpHandler(IRepository<User> userRepository, IReposit
             throw new BadRequestException("Otp.Invalid", token.Id);
 
         token.IsRevoked = true;
+        user.Verify();
         userRepository.Update(user);
         tokenRepository.Update(token);
         await unitOfWork.SaveChangesAsync(cancellationToken);

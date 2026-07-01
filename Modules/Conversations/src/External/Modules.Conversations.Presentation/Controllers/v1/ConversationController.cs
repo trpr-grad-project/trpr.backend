@@ -28,6 +28,13 @@ namespace Modules.Conversations.Presentation.Controllers.v1
             return Ok(result);
         }
 
+        [HttpPost]
+        public async Task<ActionResult<ConversationDetailsResponseDto>> CreateConversation(CreateConversationRequestDto request)
+        {
+            var result = await chatService.CreateConversation(UserId, request);
+            return Ok(result);
+        }
+
         [HttpGet]
         public async Task<ActionResult<ConversationCursorPageDto>> GetConversations([FromQuery] GetConversationsQueryDto query)
         {

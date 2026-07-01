@@ -15,11 +15,11 @@ public class CreateUserOtpHandler(IRepository<User> userRepository, IRepository<
             throw new BadRequestException("Otp.Invalid", token.Id);
 
         token.IsRevoked = true;
-        user.IsVerified = true;
+        user.Verify();
         userRepository.Update(user);
         tokenRepository.Update(token);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         return tokenService.GenerateToken(user);
     }
 

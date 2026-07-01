@@ -21,5 +21,11 @@ public class UserConfig : IEntityTypeConfiguration<User>
             .IsRequired();
 
         builder.Property(u => u.AvatarUrl);
+
+        builder
+            .HasMany(x => x.Messages)
+            .WithOne(x => x.SenderUser)
+            .HasForeignKey(x => x.SenderUserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
