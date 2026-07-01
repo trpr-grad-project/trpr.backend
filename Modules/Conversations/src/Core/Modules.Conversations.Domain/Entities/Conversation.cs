@@ -5,12 +5,17 @@ namespace Modules.Conversations.Domain.Entities
 {
     public class Conversation : Entity
     {
-        public Guid Id { get; set; }
-        public string? ImageUrl { get; set; }
-        public string? Title { get; set; }
-        public Guid CreateByUserId { get; set; }
-        public virtual User CreateByUser { get; set; } = default!;
-        public Guid? LastMessageId { get; set; }
-        public virtual ICollection<ConversationParticipant> Participants { get; set; } = [];
+        public Guid Id { get; private set; } = Guid.CreateVersion7();
+        public int SequenceNumber { get; private set; } = 0;
+        public string? ImageUrl { get; private set; }
+        public string? Title { get; private set; }
+        public Guid CreateByUserId { get; private set; }
+        public virtual User CreateByUser { get; private set; } = default!;
+        public virtual ICollection<ConversationParticipant> Participants { get; private set; } = [];
+        public virtual ICollection<Message> Messages { get; private set; } = [];
+        public void IncrementSequenceNumber()
+        {
+            SequenceNumber++;
+        }
     }
 }

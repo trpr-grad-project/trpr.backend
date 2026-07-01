@@ -6,6 +6,7 @@ namespace Modules.Conversations.Domain.Entities
     public class Message : Entity
     {
         public Guid Id { get; private set; } = Guid.CreateVersion7();
+        public int SequenceNumber { get; private set; } = 1;
         public Guid ConversationId { get; private set; }
         public virtual Conversation Conversation { get; private set; } = default!;
         public Guid? SenderUserId { get; private set; }
@@ -21,6 +22,7 @@ namespace Modules.Conversations.Domain.Entities
                 Conversation = conversation,
                 SenderUserId = userId,
                 Content = content,
+                SequenceNumber = conversation.SequenceNumber++
             };
         }
     }

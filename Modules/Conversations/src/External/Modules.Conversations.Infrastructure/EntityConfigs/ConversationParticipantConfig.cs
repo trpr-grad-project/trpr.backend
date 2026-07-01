@@ -16,12 +16,6 @@ public class ConversationParticipantConfig : IEntityTypeConfiguration<Conversati
         builder.Property(cp => cp.JoinedAtUtc)
             .IsRequired();
 
-        builder.Property(cp => cp.IsAdmin)
-            .HasDefaultValue(false);
-
-        builder.Property(cp => cp.IsArchived)
-            .HasDefaultValue(false);
-
         builder
             .HasOne(cp => cp.Conversation)
             .WithMany(c => c.Participants)

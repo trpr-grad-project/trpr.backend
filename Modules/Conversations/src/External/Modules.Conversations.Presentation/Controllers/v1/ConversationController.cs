@@ -9,30 +9,44 @@ using Modules.Conversations.Application.Services;
 namespace Modules.Conversations.Presentation.Controllers.v1
 {
     [ApiController]
-    [Route("api/v1/conversation")]
+    [Authorize]
+    [Route("api/v1/conversations")]
     public class ConversationController(IAiChatService aiChatService, ChatService chatService) : ControllerBase
     {
         public Guid UserId => User.GetUserId();
 
-        [Authorize]
         [HttpPost("ai")]
         public async Task<ActionResult<MessageResponseDto>> GetPrompt(SendAiPromptRequestDto request)
         {
             MessageResponseDto result = await aiChatService.SendMessageAsync(UserId, request);
             return Ok(result);
         }
-        [HttpPost("conversation/{id}")]
-        public async Task<ActionResult<MessageResponseDto>> SendMessageToConversation(Guid id, SendMessageRequestDto request)
+        [HttpPost("{id}")]
+        public async Task<ActionResult<MessageListItemDto>> SendMessageToConversation(Guid id, SendMessageRequestDto request)
         {
-            MessageResponseDto result = await chatService.SendMessage(UserId, id, request);
+            MessageListItemDto result = await chatService.SendMessage(UserId, id, request);
             return Ok(result);
         }
 
-        [HttpPost("relay")]
-        public async Task<ActionResult<ICollection<MessageResponseDto>>> GetRelayMessage([FromBody] ICollection<LastConversationMessageDto> request)
+        [HttpGet]
+        public async Task<ActionResult<ConversationCursorPageDto>> GetConversations([FromQuery] GetConversationsQueryDto query)
         {
-            ICollection<MessageResponseDto> messages = await chatService.GetRelayMessagesAsync(UserId, request);
-            return Ok(messages);
+            var result = await chatService.GetConversationsAsync(UserId, query);
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ConversationDetailsResponseDto>> GetConversation(Guid id)
+        {
+            var result = await chatService.GetConversationDetailsAsync(UserId, id);
+            return Ok(result);
+        }
+
+        [HttpGet("{id}/messages")]
+        public async Task<ActionResult<MessageCursorPageDto>> GetConversationMessages(Guid id, [FromQuery] GetConversationMessagesQueryDto query)
+        {
+            var result = await chatService.GetConversationMessagesAsync(UserId, id, query);
+            return Ok(result);
         }
 
     }

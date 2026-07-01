@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Modules.Conversations.Application.Abstractions;
 using Modules.Conversations.Application.Dtos.Requests;
 using Modules.Conversations.Application.Dtos.Responses;
+using Modules.Conversations.Application.Helpers;
 using Modules.Conversations.Application.Interfaces;
 using Modules.Conversations.Domain.Entities;
 
@@ -13,72 +14,234 @@ public class ChatService(
     INotificationSender notificationSender,
     IUnitOfWork unitOfWork)
 {
-    public async Task<MessageResponseDto> SendMessage(Guid userId, Guid conversationId, SendMessageRequestDto request, CancellationToken cancellationToken = default)
+    public async Task<MessageListItemDto> SendMessage(Guid userId, Guid conversationId, SendMessageRequestDto request, CancellationToken cancellationToken = default)
     {
-        var conversation = await repositoryFactory.Repository<ConversationParticipant>()
-            .GetQueryable().Where(x =>
-                x.Id == conversationId && x.UserId == userId)
-            .Include(x => x.Conversation)
-            .Select(x => x.Conversation)
-            .FirstOrDefaultAsync(cancellationToken)
-                ?? throw new NotFoundException("Conversation.NotFound");
-
-        // Check if the user is a participant of the conversation
-        var participant = conversation.Participants.FirstOrDefault(p => p.UserId == userId)
-            ?? throw new NotFoundException("Conversation.ParticipantNotFound");
-
-        var messageEntity = Message.Create(conversation, userId, request.MessageContent);
-        // Save the message to the database
-        repositoryFactory.Repository<Message>().Add(messageEntity);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-        // Send the message to the recipients via SignalR
-        await notificationSender.SendMessageAsync(messageEntity, cancellationToken);
-
-        return new MessageResponseDto
+        try
         {
-            Id = messageEntity.Id.ToString(),
-            SenderUserId = messageEntity.SenderUserId,
-            Content = messageEntity.Content,
-            ConversationId = messageEntity.ConversationId
-        };
-    }
-    public async Task<ICollection<MessageResponseDto>> GetRelayMessagesAsync(Guid userId, ICollection<LastConversationMessageDto> lastConversationsMessages, CancellationToken cancellationToken = default)
-    {
-        var conversations = repositoryFactory.Repository<ConversationParticipant>()
-            .GetQueryable()
-            .Where(x => x.UserId == userId)
-            .Include(x => x.Conversation)
-            .Select(x => x.Conversation);
+            await unitOfWork.BeginTransactionAsync(cancellationToken);
 
-        var lastMessageConversation = lastConversationsMessages
-            .ToDictionary(x => x.ConversationId, x => x.LastMessageId);
-
-        var messages = new List<Message>();
-        foreach (var conversation in conversations)
-        {
-            var convoMessagesQuery = repositoryFactory
-                .Repository<Message>()
+            var isConversationParticipant = await repositoryFactory
+                .Repository<ConversationParticipant>()
                 .GetQueryable()
-                .Where(m => m.ConversationId == conversation.Id);
+                .AnyAsync(x =>
+                    x.ConversationId == conversationId &&
+                    x.UserId == userId,
+                    cancellationToken);
 
-            if (lastMessageConversation.TryGetValue(conversation.Id, out Guid lastMessageId))
+            if (!isConversationParticipant)
+                throw new NotFoundException("Conversation.NotFound");
+
+            var conversation = await repositoryFactory.Repository<Conversation>()
+                .GetForUpdateAsync(conversationId) ?? throw new NotFoundException("Conversation.NotFound");
+
+            var messageEntity = Message.Create(conversation, userId, request.MessageContent);
+            repositoryFactory.Repository<Message>().Add(messageEntity);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+            await notificationSender.SendMessageAsync(messageEntity, cancellationToken);
+            await unitOfWork.CommitTransactionAsync(cancellationToken);
+
+            return new MessageListItemDto
             {
-                convoMessagesQuery = convoMessagesQuery
-                    .Where(x => x.Id > lastMessageId)
-                    .OrderBy(m => m.SentAtUtc);
-            }
+                Id = messageEntity.Id,
+                Content = messageEntity.Content,
+                SentAtUtc = messageEntity.SentAtUtc,
+                SequenceNumber = messageEntity.SequenceNumber,
+                SenderUserId = messageEntity.SenderUserId
+            };
+        }
+        catch
+        {
+            await unitOfWork.RollbackTransactionAsync(cancellationToken);
+            throw;
+        }
+    }
 
-            var convoMessages = await convoMessagesQuery.ToListAsync(cancellationToken);
-            messages.AddRange(convoMessages);
+    public async Task<ConversationCursorPageDto> GetConversationsAsync(Guid userId, GetConversationsQueryDto query, CancellationToken cancellationToken = default)
+    {
+        var limit = Math.Clamp(query.Limit, 1, 100);
+
+        var conversationsQuery = repositoryFactory.Repository<ConversationParticipant>()
+            .GetQueryable()
+            .Where(cp => cp.UserId == userId)
+            .Select(cp => new
+            {
+                cp.Conversation.Id,
+                cp.Conversation.Title,
+                cp.Conversation.ImageUrl,
+                cp.JoinedAtUtc,
+                LastMessageId = cp.Conversation.Messages
+                    .OrderByDescending(m => m.SequenceNumber)
+                    .Select(m => m.Id)
+                    .FirstOrDefault(),
+                LastMessageSequence = cp.Conversation.Messages
+                    .OrderByDescending(m => m.SequenceNumber)
+                    .Select(m => m.SequenceNumber)
+                    .FirstOrDefault(),
+                LastMessageText = cp.Conversation.Messages
+                    .OrderByDescending(m => m.SequenceNumber)
+                    .Select(m => m.Content)
+                    .FirstOrDefault(),
+                LastMessageSenderId = cp.Conversation.Messages
+                    .OrderByDescending(m => m.SequenceNumber)
+                    .Select(m => m.SenderUserId)
+                    .FirstOrDefault(),
+                LastMessageSentAt = cp.Conversation.Messages
+                    .OrderByDescending(m => m.SequenceNumber)
+                    .Select(m => m.SentAtUtc)
+                    .FirstOrDefault(),
+                TotalUnread = cp.Conversation.Messages.Count(m => m.SentAtUtc > cp.JoinedAtUtc),
+                LastRead = cp.Conversation.Messages
+                    .Where(m => m.SentAtUtc <= cp.JoinedAtUtc)
+                    .Select(m => m.SequenceNumber)
+                    .DefaultIfEmpty(0)
+                    .Max()
+            });
+
+        if (query.Cursor.HasValue)
+            conversationsQuery = conversationsQuery.Where(c => c.Id < query.Cursor.Value);
+
+        var pageItems = await conversationsQuery
+            .OrderByDescending(c => c.Id)
+            .Take(limit + 1)
+            .ToListAsync(cancellationToken);
+
+        var hasMore = pageItems.Count > limit;
+        if (hasMore)
+            pageItems.RemoveAt(pageItems.Count - 1);
+
+        var items = pageItems.Select(item => new ConversationSummaryResponseDto
+        {
+            Id = item.Id,
+            Title = item.Title,
+            LastMessage = item.LastMessageId == default ? null : new ConversationLastMessageDto
+            {
+                Id = item.LastMessageId.ToString(),
+                SequenceNumber = item.LastMessageSequence,
+                Text = item.LastMessageText ?? string.Empty,
+                SenderId = item.LastMessageSenderId,
+                SentAt = item.LastMessageSentAt
+            },
+            LastReadSequence = item.LastRead,
+            UnreadCount = item.TotalUnread,
+        })
+        .ToList();
+
+        Guid? nextCursor = null;
+        if (hasMore && items.Any())
+        {
+            var last = items.Last();
+            nextCursor = last.Id;
         }
 
-        return [.. messages.Select(messageEntity => new MessageResponseDto
+        return new ConversationCursorPageDto
         {
-            Id = messageEntity.Id.ToString(),
-            SenderUserId = messageEntity.SenderUserId,
-            Content = messageEntity.Content,
-            ConversationId = messageEntity.ConversationId
-        })];
+            Items = items,
+            NextCursor = nextCursor
+        };
     }
 
+    public async Task<ConversationDetailsResponseDto> GetConversationDetailsAsync(Guid userId, Guid conversationId, CancellationToken cancellationToken = default)
+    {
+        var conversation = await repositoryFactory.Repository<ConversationParticipant>()
+            .GetQueryable()
+            .Where(cp => cp.UserId == userId && cp.ConversationId == conversationId)
+            .Select(cp => new
+            {
+                cp.Conversation.Id,
+                cp.Conversation.Title,
+                cp.Conversation.ImageUrl,
+                cp.JoinedAtUtc,
+                LastMessageId = cp.Conversation.Messages
+                    .OrderByDescending(m => m.SequenceNumber)
+                    .Select(m => m.Id)
+                    .FirstOrDefault(),
+                LastMessageSequence = cp.Conversation.Messages
+                    .OrderByDescending(m => m.SequenceNumber)
+                    .Select(m => m.SequenceNumber)
+                    .FirstOrDefault(),
+                LastMessageText = cp.Conversation.Messages
+                    .OrderByDescending(m => m.SequenceNumber)
+                    .Select(m => m.Content)
+                    .FirstOrDefault(),
+                LastMessageSenderId = cp.Conversation.Messages
+                    .OrderByDescending(m => m.SequenceNumber)
+                    .Select(m => m.SenderUserId)
+                    .FirstOrDefault(),
+                LastMessageSentAt = cp.Conversation.Messages
+                    .OrderByDescending(m => m.SequenceNumber)
+                    .Select(m => m.SentAtUtc)
+                    .FirstOrDefault(),
+                TotalUnread = cp.Conversation.Messages.Count(m => m.SentAtUtc > cp.JoinedAtUtc),
+                LastRead = cp.Conversation.Messages
+                    .Where(m => m.SentAtUtc <= cp.JoinedAtUtc)
+                    .Select(m => m.SequenceNumber)
+                    .DefaultIfEmpty(0)
+                    .Max()
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (conversation == null)
+            throw new NotFoundException("Conversation.NotFound");
+
+        return new ConversationDetailsResponseDto
+        {
+            Id = conversation.Id.ToString(),
+            Title = conversation.Title,
+            ImageUrl = conversation.ImageUrl,
+            LastMessage = conversation.LastMessageId == default ? null : new ConversationLastMessageDto
+            {
+                Id = conversation.LastMessageId.ToString(),
+                SequenceNumber = conversation.LastMessageSequence,
+                Text = conversation.LastMessageText ?? string.Empty,
+                SenderId = conversation.LastMessageSenderId,
+                SentAt = conversation.LastMessageSentAt
+            },
+            LastReadSequence = conversation.LastRead,
+            UnreadCount = conversation.TotalUnread
+        };
+    }
+
+    public async Task<MessageCursorPageDto> GetConversationMessagesAsync(Guid userId, Guid conversationId, GetConversationMessagesQueryDto query, CancellationToken cancellationToken = default)
+    {
+        var isParticipant = await repositoryFactory.Repository<ConversationParticipant>()
+            .GetQueryable()
+            .AnyAsync(x => x.ConversationId == conversationId && x.UserId == userId, cancellationToken);
+
+        if (!isParticipant)
+            throw new NotFoundException("Conversation.NotFound");
+
+        var limit = Math.Clamp(query.Limit, 1, 200);
+        var messagesQuery = repositoryFactory.Repository<Message>().GetQueryable()
+            .Where(m => m.ConversationId == conversationId);
+
+        if (query.AfterSequence.HasValue)
+        {
+            messagesQuery = messagesQuery.Where(m => m.SequenceNumber > query.AfterSequence.Value);
+        }
+
+        var messageItems = await messagesQuery
+            .OrderBy(m => m.SequenceNumber)
+            .Select(m => new MessageListItemDto
+            {
+                Id = m.Id,
+                SequenceNumber = m.SequenceNumber,
+                Content = m.Content,
+                SentAtUtc = m.SentAtUtc,
+                SenderUserId = m.SenderUserId
+            })
+            .Take(limit + 1)
+            .ToListAsync(cancellationToken);
+
+        var hasMore = messageItems.Count > limit;
+        if (hasMore)
+            messageItems.RemoveAt(messageItems.Count - 1);
+
+        int? nextCursor = hasMore ? messageItems.Last().SequenceNumber : null;
+
+        return new MessageCursorPageDto
+        {
+            Items = messageItems,
+            NextCursor = nextCursor
+        };
+    }
 }
