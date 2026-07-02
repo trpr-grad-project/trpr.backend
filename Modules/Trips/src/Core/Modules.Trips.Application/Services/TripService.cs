@@ -33,7 +33,7 @@ namespace Modules.Trips.Application.Services
                 PageSize = null
             });
             var theme = await repositoryFactory.Repository<Theme>().GetFirstOrDefaultByFilter(t => t.Id == requestDto.ThemeId)
-                ?? throw new NotFoundException("Theme.NotFound", requestDto.ThemeId);
+                ?? throw new NotFoundException("Theme.NotFound");
             return await tripSuggestionGenerator.GenerateTrip(
                 requestDto.StartDateUtc,
                 requestDto.NumberOfDays,
@@ -42,7 +42,7 @@ namespace Modules.Trips.Application.Services
         public async Task UpdateStatus(UpdateTripStatusRequestDto dto, CancellationToken cancellationToken)
         {
             var trip = await repositoryFactory.Repository<Trip>().GetFirstOrDefaultByFilter(t => t.Id == dto.Id)
-                ?? throw new NotFoundException("Trip.NotFound", dto.Id);
+                ?? throw new NotFoundException("Trip.NotFound");
             try
             {
                 if (dto.IsApproved)
@@ -60,11 +60,11 @@ namespace Modules.Trips.Application.Services
         public async Task<TripResponseDto> CreateTrip(CreateTripRequestDto dto, ICollection<string> roles, Guid userId, CancellationToken cancellationToken)
         {
             var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(User => User.Id == userId)
-                ?? throw new NotFoundException("User.NotFound", userId);
+                ?? throw new NotFoundException("User.NotFound");
             var segments = await GetPlacesAsync(dto.Segments);
             var creatorRoles = roles.Select(x => Enum.Parse<UserRole>(x)).Aggregate(UserRole.User, (a, b) => a | b);
             Theme theme = await repositoryFactory.Repository<Theme>().GetFirstOrDefaultByFilter(t => t.Id == dto.ThemeId)
-                ?? throw new NotFoundException("Theme.NotFound", dto.ThemeId);
+                ?? throw new NotFoundException("Theme.NotFound");
             var governorates = segments
                 .SelectMany(x => x)
                 .Select(x => x.Governorate)
@@ -152,7 +152,7 @@ namespace Modules.Trips.Application.Services
                     q => q.Include(p => p.Participants)
                         .ThenInclude(u => u.User),
                     q => q.Include(th => th.TripTheme))
-                ?? throw new NotFoundException("Trip.NotFound", tripId);
+                ?? throw new NotFoundException("Trip.NotFound");
 
             var dto = tripDetailsMapper.Map(trip);
             if (trip.UserId != userId)
@@ -233,14 +233,14 @@ namespace Modules.Trips.Application.Services
                 .GetFirstOrDefaultByFilter(
                     x => x.Id == dto.TripId && x.Status == TripStatus.Published && x.UserId == userId,
                     x => x.Include(x => x.Participants))
-                ?? throw new NotFoundException("Trip.NotFound", dto.TripId);
+                ?? throw new NotFoundException("Trip.NotFound");
 
             if(trip.UserId == dto.UserId)
                 throw new BadRequestException("Trip.CreatorCannotJoin");
 
             TripParticipant tripParticipant = trip.Participants
                 .FirstOrDefault(x => x.UserId == dto.UserId)
-                ?? throw new NotFoundException("TripParticipant.NotFound", userId);
+                ?? throw new NotFoundException("TripParticipant.NotFound");
 
             if (dto.IsApproved == false)
             {
@@ -283,7 +283,7 @@ namespace Modules.Trips.Application.Services
                 .Repository<Trip>()
                 .GetFirstOrDefaultByFilter(
                     x => x.Id == tripId && x.Status == TripStatus.Ready && x.UserId == userId)
-                ?? throw new NotFoundException("Trip.NotFound", tripId);
+                ?? throw new NotFoundException("Trip.NotFound");
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
                 trip.Start();
             else
@@ -296,7 +296,7 @@ namespace Modules.Trips.Application.Services
                 .Repository<Trip>()
                 .GetFirstOrDefaultByFilter(
                     x => x.Id == tripId && x.Status == TripStatus.Started && x.UserId == userId)
-                ?? throw new NotFoundException("Trip.NotFound", tripId);
+                ?? throw new NotFoundException("Trip.NotFound");
             trip.Complete();
             await unitOfWork.SaveChangesAsync();
         }

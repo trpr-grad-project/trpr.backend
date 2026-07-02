@@ -51,7 +51,7 @@ public class AdminUserService(
             .Include(u => u.Profile)
                 .ThenInclude(p => p.Vibes).ThenInclude(pv => pv.Vibe)
             .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken)
-            ?? throw new NotFoundException("User.NotFound", userId);
+            ?? throw new NotFoundException("User.NotFound");
 
         return MapToDto(user);
     }
@@ -59,7 +59,7 @@ public class AdminUserService(
     public async Task<UserResponseDto> UpdateUserAsync(Guid userId, UpdateUserRequestDto request, CancellationToken cancellationToken = default)
     {
         var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(u => u.Id == userId)
-            ?? throw new NotFoundException("User.NotFound", userId);
+            ?? throw new NotFoundException("User.NotFound");
 
         user.Update(request.FirstName, request.LastName);
 
@@ -72,7 +72,7 @@ public class AdminUserService(
     public async Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(u => u.Id == userId)
-            ?? throw new NotFoundException("User.NotFound", userId);
+            ?? throw new NotFoundException("User.NotFound");
 
         repositoryFactory.Repository<User>().Delete(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -83,7 +83,7 @@ public class AdminUserService(
         var user = await repositoryFactory.Repository<User>().GetQueryable()
             .Include(u => u.UserRoles)
             .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken)
-            ?? throw new NotFoundException("User.NotFound", userId);
+            ?? throw new NotFoundException("User.NotFound");
 
         var existingRoles = user.UserRoles.Select(ur => ur.Role).ToHashSet();
         var requestedRoles = request.Roles.ToHashSet();

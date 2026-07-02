@@ -17,7 +17,7 @@ namespace Modules.Users.Application.Projections
             var token = await usersDbContext
                 .Tokens
                 .Include(x => x.User)
-                .FirstOrDefaultAsync(t => t.Id == domainEvent.TokenId, cancellationToken) ?? throw new NotFoundException("Token.NotFound", domainEvent.TokenId);
+                .FirstOrDefaultAsync(t => t.Id == domainEvent.TokenId, cancellationToken) ?? throw new NotFoundException("Token.NotFound");
             if (token.Type == TokenType.Otp || token.Type == TokenType.ForgetPasswordOtp)
             {
                 var emailAdress =

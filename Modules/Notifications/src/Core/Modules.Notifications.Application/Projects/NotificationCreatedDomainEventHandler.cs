@@ -1,4 +1,5 @@
 using Common.Application.DomainEvents;
+using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Modules.Notifications.Application.Abstractions;
 using Modules.Notifications.Domain.DomainEvents;
@@ -15,7 +16,7 @@ public class NotificationCreatedDomainEventHandler(
         Notification notification =
             await notificationRepository
                 .GetFirstOrDefaultByFilter(x => x.Id == domainEvent.NotificationId, x => x.Include(x => x.User)) ??
-                throw new Exception($"Notification with ID {domainEvent.NotificationId} not found.");
+                throw new NotFoundException("Notification.NotFound.");
 
         if (notification.NotifyEmail)
         {            // Simulate sending email

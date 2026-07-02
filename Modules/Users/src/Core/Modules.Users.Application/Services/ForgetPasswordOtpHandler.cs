@@ -12,7 +12,7 @@ public class ForgetPasswordOtpHandler(IRepository<User> userRepository, IReposit
     public async Task<LoginUserResponseDto> VerifyOtpAsync(Token token, User user, string value, CancellationToken cancellationToken = default)
     {
         if (token.Value != value)
-            throw new BadRequestException("Otp.Invalid", token.Id);
+            throw new BadRequestException("Otp.Invalid");
 
         token.IsRevoked = true;
         user.Verify();

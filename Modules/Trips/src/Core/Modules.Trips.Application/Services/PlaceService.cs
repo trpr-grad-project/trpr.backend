@@ -50,14 +50,14 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
                     .Include(x => x.Governorate)
                     .Include(x => x.Category)
                     .Include(x => x.PlaceTags).ThenInclude(x => x.Tag))
-            ?? throw new NotFoundException("Place.NotFound", id);
+            ?? throw new NotFoundException("Place.NotFound");
 
         if (dto.CategoryId != null)
         {
             var category = await repositoryFactory
                 .Repository<Category>()
                 .GetFirstOrDefaultByFilter(c => c.Id == dto.CategoryId)
-                ?? throw new NotFoundException("Category.NotFound", dto.CategoryId);
+                ?? throw new NotFoundException("Category.NotFound");
             place.CategoryId = dto.CategoryId.Value;
         }
 
@@ -66,7 +66,7 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
             var governorate = await repositoryFactory
                 .Repository<Governorate>()
                 .GetFirstOrDefaultByFilter(g => g.Id == dto.GovernorateId)
-                ?? throw new NotFoundException("Governorate.NotFound", dto.GovernorateId);
+                ?? throw new NotFoundException("Governorate.NotFound");
             place.GovernorateId = dto.GovernorateId.Value;
         }
 
@@ -74,7 +74,7 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
         {
             foreach (var tagId in dto.TagIds)
                 _ = await repositoryFactory.Repository<Tag>().GetFirstOrDefaultByFilter(t => t.Id == tagId)
-                        ?? throw new NotFoundException("Tag.NotFound", tagId);
+                        ?? throw new NotFoundException("Tag.NotFound");
 
             place.PlaceTags.Clear();
             foreach (var tagId in dto.TagIds)
@@ -108,7 +108,7 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
                     .Include(x => x.Governorate)
                     .Include(x => x.Category)
                     .Include(x => x.PlaceTags).ThenInclude(x => x.Tag))
-            ?? throw new NotFoundException("Place.NotFound", place.Id);
+            ?? throw new NotFoundException("Place.NotFound");
 
         return place.ToPlaceDto();
     }
@@ -122,16 +122,16 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
         var category = await repositoryFactory
             .Repository<Category>()
             .GetFirstOrDefaultByFilter(c => c.Id == dto.CategoryId)
-            ?? throw new NotFoundException("Category.NotFound", dto.CategoryId);
+            ?? throw new NotFoundException("Category.NotFound");
 
         var governorate = await repositoryFactory
             .Repository<Governorate>()
             .GetFirstOrDefaultByFilter(g => g.Id == dto.GovernorateId)
-            ?? throw new NotFoundException("Governorate.NotFound", dto.GovernorateId);
+            ?? throw new NotFoundException("Governorate.NotFound");
 
         foreach (var tagId in dto.TagIds)
             _ = await repositoryFactory.Repository<Tag>().GetFirstOrDefaultByFilter(t => t.Id == tagId)
-                    ?? throw new NotFoundException("Tag.NotFound", tagId);
+                    ?? throw new NotFoundException("Tag.NotFound");
 
         var place = Place.Create(
             user,
@@ -168,7 +168,7 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
                     .Include(x => x.Governorate)
                     .Include(x => x.Category)
                     .Include(x => x.PlaceTags).ThenInclude(x => x.Tag))
-            ?? throw new NotFoundException("Place.NotFound", place.Id);
+            ?? throw new NotFoundException("Place.NotFound");
 
         return place.ToPlaceDto();
     }
@@ -245,7 +245,7 @@ public class PlaceService(IUnitOfWork unitOfWork, RepositoryFactory repositoryFa
                     includes: x => x.Include(p => p.Governorate)
                         .Include(p => p.Category)
                         .Include(p => p.PlaceTags).ThenInclude(p => p.Tag))
-                ?? throw new NotFoundException("Place.NotFound", placeId);
+                ?? throw new NotFoundException("Place.NotFound");
             places.Add(place);
         }
         return places;

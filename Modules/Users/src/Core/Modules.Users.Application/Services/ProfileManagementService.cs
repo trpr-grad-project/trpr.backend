@@ -26,7 +26,7 @@ public class ProfileManagementService(
         if (existingProfile != null)
         {
             logger.LogWarning("Profile already exists for user {UserId}", userId);
-            throw new ConflictException("Profile.Conflict", userId);
+            throw new ConflictException("Profile.Conflict");
         }
 
         await ValidateReferences(createRequest);
@@ -59,7 +59,7 @@ public class ProfileManagementService(
         if (profile == null)
         {
             logger.LogWarning("Profile not found for user {UserId}", userId);
-            throw new NotFoundException("Profile.NotFound", userId);
+            throw new NotFoundException("Profile.NotFound");
         }
 
         NotificationSettingsResponseDto? notificationSettings = null;
@@ -88,7 +88,7 @@ public class ProfileManagementService(
         if (profile == null)
         {
             logger.LogWarning("Profile not found for user {UserId}", userId);
-            throw new NotFoundException("Profile.NotFound", userId);
+            throw new NotFoundException("Profile.NotFound");
         }
 
         // Update languages

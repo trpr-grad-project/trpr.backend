@@ -29,7 +29,7 @@ IUnitOfWork unitOfWork)
         if (user != null && user.IsVerified)
         {
             logger.LogWarning("User creation failed. Identifier already exists: {Identifier}", user.Id);
-            throw new ConflictException("User.Conflict", user.Id);
+            throw new ConflictException("User.Conflict");
         }
         await RemoveUnVerifiedUserAsync(user, cancellationToken);
         var emailAdress = MailAddress.TryCreate(createUserRequestDto.Identifier, out var _) ? createUserRequestDto.Identifier : string.Format("{0}@trpr.com", createUserRequestDto.Identifier);
@@ -49,7 +49,7 @@ IUnitOfWork unitOfWork)
     }
     public async Task<OtpResponseDto> ForgetPasswordAsync(ForgetPasswordRequestIdentifierDto forgetPasswordRequestIdentifierDto, CancellationToken cancellationToken = default)
     {
-        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == forgetPasswordRequestIdentifierDto.Identifier) ?? throw new NotFoundException("User.NotFound", forgetPasswordRequestIdentifierDto.Identifier);
+        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == forgetPasswordRequestIdentifierDto.Identifier) ?? throw new NotFoundException("User.NotFound");
         var token = tokenFactory.CreateToken(TokenType.ForgetPasswordOtp, user);
         tokenRepository.Add(token);
         await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -59,7 +59,7 @@ IUnitOfWork unitOfWork)
     public async Task<LoginUserResponseDto> LoginUserAsync(LoginUserRequestDto loginUserRequestDto, CancellationToken cancellationToken = default)
     {
 
-        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == loginUserRequestDto.Identifier && x.IsVerified, x => x.Include(x => x.UserRoles).Include(x => x.Profile)) ?? throw new NotFoundException("User.NotFound", loginUserRequestDto.Identifier);
+        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == loginUserRequestDto.Identifier && x.IsVerified, x => x.Include(x => x.UserRoles).Include(x => x.Profile)) ?? throw new NotFoundException("User.NotFound");
 
         if (!BCrypt.Net.BCrypt.Verify(loginUserRequestDto.Password, user.PasswordHash))
         {
@@ -78,7 +78,7 @@ IUnitOfWork unitOfWork)
 
     public async Task UpdatePassword(Guid userId, UpdatePasswordRequestDto updatePasswordRequest, CancellationToken cancellationToken = default)
     {
-        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.Id == userId) ?? throw new NotFoundException("User.NotFound", userId);
+        var user = await userRepository.GetFirstOrDefaultByFilter(x => x.Id == userId) ?? throw new NotFoundException("User.NotFound");
         var PasswordHash = BCrypt.Net.BCrypt.HashPassword(updatePasswordRequest.Password);
         user.SetPasswordHash(PasswordHash);
         userRepository.Update(user);
@@ -99,12 +99,12 @@ IUnitOfWork unitOfWork)
                 logger.LogWarning(
                     "OTP verification failed. Invalid or expired OTP ID: {OtpId}",
                     verifyOtpRequestDto.Identifier);
-                throw new BadRequestException("Otp.Invalid", verifyOtpRequestDto.Identifier);
+                throw new BadRequestException("Otp.Invalid");
             }
             User user =
                 await userRepository.GetFirstOrDefaultByFilter(x => x.Id == otpToken.UserId,
                 x => x.Include(x => x.Profile)) ??
-                throw new NotFoundException("User.NotFound", otpToken.UserId);
+                throw new NotFoundException("User.NotFound");
             await unitOfWork
                 .SaveChangesAsync(cancellationToken);
             var otpHandler = otpHandlerFactory

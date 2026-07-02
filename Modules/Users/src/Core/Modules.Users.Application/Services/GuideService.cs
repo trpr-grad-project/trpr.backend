@@ -35,7 +35,7 @@ namespace Modules.Users.Application.Services
         public async Task<ActionResult<GuideUpgradeResponseDto>> UpgradeToGuide(Guid userId, GuideUpgradeRequestDto request, CancellationToken cancellationToken)
         {
             var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(u => u.Id == userId)
-                ?? throw new NotFoundException("User.NotFound", userId);
+                ?? throw new NotFoundException("User.NotFound");
             var documents = mapper.Map(request.Documents);
             GuideUpgradeRequest upgradeRequest = GuideUpgradeRequest.Create(userId, documents);
             repositoryFactory.Repository<GuideUpgradeRequest>().Add(upgradeRequest);
@@ -64,7 +64,7 @@ namespace Modules.Users.Application.Services
         {
             var upgradeRequest = await repositoryFactory.Repository<GuideUpgradeRequest>()
                 .GetFirstOrDefaultByFilter(u => u.Id == dto.UpgradeRequestId)
-                ?? throw new NotFoundException("UpgradeRequest.NotFound", dto.UpgradeRequestId);
+                ?? throw new NotFoundException("UpgradeRequest.NotFound");
             if (upgradeRequest.Status != ApproveStatus.Pending || dto.Status == ApproveStatus.Pending)
                 throw new ConflictException("Guide.Request");
             upgradeRequest.UpdateStatus(AdminId, upgradeRequest.userId, dto.Status, dto.RejectionReason);
@@ -86,7 +86,7 @@ namespace Modules.Users.Application.Services
         {
             var request = await repositoryFactory.Repository<GuideUpgradeRequest>()
                 .GetFirstOrDefaultByFilter(u => u.Id == upgradeRequestId)
-                ?? throw new NotFoundException("UpgradeRequest.NotFound", upgradeRequestId);
+                ?? throw new NotFoundException("UpgradeRequest.NotFound");
             var query = await repositoryFactory.Repository<GuideUpgradeRequest>().GetQueryable()
                     .Where(u => u.userId == request.userId)
                     .OrderBy(u => u.Status)

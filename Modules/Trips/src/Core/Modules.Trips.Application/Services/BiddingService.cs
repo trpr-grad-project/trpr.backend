@@ -21,7 +21,7 @@ namespace Modules.Trips.Application.Services
             var biddingRepository = repositoryFactory.Repository<TripBidding>();
 
             var trip = await tripRepository.GetFirstOrDefaultByFilter(x => x.Id == dto.TripId)
-                ?? throw new NotFoundException("Trip.NotFound", dto.TripId);
+                ?? throw new NotFoundException("Trip.NotFound");
 
             if (trip.Status != TripStatus.Bidding)
                 throw new ConflictException("Trip is not open for bidding.");
@@ -30,7 +30,7 @@ namespace Modules.Trips.Application.Services
                 throw new ConflictException("Trip owner cannot place a bid on their own trip.");
 
             var guide = await userRepository.GetFirstOrDefaultByFilter(x => x.Id == guideId)
-                ?? throw new NotFoundException("Guide.NotFound", guideId);
+                ?? throw new NotFoundException("Guide.NotFound");
 
             var existingBid = await biddingRepository.GetFirstOrDefaultByFilter(
                 b => b.TripId == dto.TripId && b.GuideId == guideId);
@@ -59,7 +59,7 @@ namespace Modules.Trips.Application.Services
         {
             var trip = await repositoryFactory.Repository<Trip>()
                 .GetFirstOrDefaultByFilter(t => t.Id == tripId)
-                ?? throw new NotFoundException("Trip.NotFound", tripId);
+                ?? throw new NotFoundException("Trip.NotFound");
 
             if (trip.UserId != requestingUserId)
                 throw new NotAuthorizedException("Trip.UnAuthorized");
@@ -100,14 +100,14 @@ namespace Modules.Trips.Application.Services
         {
             var trip = await repositoryFactory.Repository<Trip>()
                 .GetFirstOrDefaultByFilter(t => t.Id == tripId)
-                ?? throw new NotFoundException("Trip.NotFound", tripId);
+                ?? throw new NotFoundException("Trip.NotFound");
 
             if (trip.UserId != requestingUserId)
                 throw new NotAuthorizedException("UnAuthorized");
 
             var bidding = await repositoryFactory.Repository<TripBidding>()
                 .GetFirstOrDefaultByFilter(b => b.Id == biddingId && b.TripId == tripId)
-                ?? throw new NotFoundException("Bidding.NotFound", biddingId);
+                ?? throw new NotFoundException("Bidding.NotFound");
 
             try
             {

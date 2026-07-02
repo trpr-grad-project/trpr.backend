@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Application.Dtos;
+using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Modules.Users.Application.Abstractions;
@@ -103,7 +104,7 @@ public class SupportService(
         if (supportRequest == null)
         {
             logger.LogWarning("Support request not found with ID: {SupportRequestId}", supportRequestId);
-            throw new KeyNotFoundException($"Support request with ID {supportRequestId} not found");
+            throw new NotFoundException("SupportRequest.NotFound");
         }
 
         // Auto-update status to Read when viewed by admin

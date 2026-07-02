@@ -5,6 +5,7 @@ using Common.Application.DomainEvents;
 using Common.Application.EventBus;
 using Common.Domain.IntragationEvents;
 using Modules.Users.Application.Repositories;
+using Common.Application.Exceptions;
 
 namespace Modules.Users.Application.Projections;
 
@@ -16,7 +17,7 @@ public class UserCreatedDomainEventHandler(IRepository<User> userRepository, ILo
         if (user == null)
         {
             logger.LogError("User with ID {UserId} not found for UserCreatedDomainEvent", domainEvent.UserId);
-            throw new InvalidOperationException($"User with ID {domainEvent.UserId} not found.");
+            throw new NotFoundException("User.NotFound");
         }
         logger.LogInformation("User created with ID: {UserId}, Identifier: {Identifier}", domainEvent.UserId, user.UserName);
         await bus.PublishAsync<UserCreatedIntegrationEvent>(new UserCreatedIntegrationEvent(domainEvent.Id, domainEvent.CreatedOnUtc, user.Id, user.UserName, user.FirstName, user.LastName), cancellationToken);
