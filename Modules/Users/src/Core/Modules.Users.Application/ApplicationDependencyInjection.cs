@@ -27,6 +27,7 @@ public static class ApplicationDependencyInjection
 
         #region  services
         services.AddScoped<UserService>();
+        services.AddScoped<CompanyService>();
         services.AddScoped<AdminUserService>();
         services.AddScoped<GuideService>();
         services.AddScoped<SupportService>();
