@@ -57,46 +57,41 @@ namespace Modules.Trips.Application.Services
             repositoryFactory.Repository<Trip>().Update(trip);
             await unitOfWork.SaveChangesAsync(cancellationToken);
         }
-        public async Task<TripResponseDto> CreateTrip(CreateTripRequestDto dto, ICollection<string> roles, Guid userId, CancellationToken cancellationToken)
+        public async Task<TripResponseDto> CreateTripByCompany(CompanyCreateTripRequestDto dto, ICollection<string> roles, Guid userId, CancellationToken cancellationToken)
         {
-            var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(User => User.Id == userId)
-                ?? throw new NotFoundException("User.NotFound");
-            var segments = await GetPlacesAsync(dto.Segments);
-            var creatorRoles = roles.Select(x => Enum.Parse<UserRole>(x)).Aggregate(UserRole.User, (a, b) => a | b);
-            Theme theme = await repositoryFactory.Repository<Theme>().GetFirstOrDefaultByFilter(t => t.Id == dto.ThemeId)
-                ?? throw new NotFoundException("Theme.NotFound");
-            var governorates = segments
-                .SelectMany(x => x)
-                .Select(x => x.Governorate)
-                .DistinctBy(x => x.Id)
-                .ToList();
-            if (creatorRoles.HasFlag(UserRole.Guide) && !dto.GuideId.HasValue)
-                dto.GuideId = userId;
-            var trip = Trip.Create(
-                        userId,
-                        theme,
-                        creatorRoles,
-                        dto.Title,
-                        dto.AutoApprove,
-                        dto.Description,
-                        dto.Price,
-                        dto.Images,
-                        dto.TripVisibility,
-                        dto.PublishMode,
-                        segments,
-                        dto.MaxParticipantsCount,
-                        dto.GuideId,
-                        dto.Segments.Select(s => s.Duration).ToList(),
-                        user,
-                        governorates,
-                        dto.StartDate);
-            repositoryFactory.Repository<Trip>().Add(trip);
-            if (!creatorRoles.HasFlag(UserRole.Guide) || !creatorRoles.HasFlag(UserRole.Company))
-            {
-                var tripParticipant = TripParticipant.Create(trip.Id, userId);
-                tripParticipant.Approve();
-                repositoryFactory.Repository<TripParticipant>().Add(tripParticipant);
-            }
+            var trip = await CreateTripCore(dto, roles, userId,
+                TripVisibility.Public, TripPublishMode.DirectPublish,
+                guideId: dto.GuideId,
+                notFoundKey: "Company.NotFound",
+                cancellationToken);
+            await UpdateStatus(new UpdateTripStatusRequestDto { Id = trip.Id, IsApproved = true }, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+            return tripMapper.Map(trip);
+        }
+
+        public async Task<TripResponseDto> CreateTripByGuide(CreateTripRequestDto dto, ICollection<string> roles, Guid userId, CancellationToken cancellationToken)
+        {
+            // the creator is the guide
+            var trip = await CreateTripCore(dto, roles, userId,
+                TripVisibility.Public, TripPublishMode.DirectPublish,
+                guideId: userId,
+                notFoundKey: "Guide.NotFound",
+                cancellationToken);
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+            return tripMapper.Map(trip);
+        }
+        public async Task<TripResponseDto> CreateTripByUser(UserCreateTripRequestDto dto, ICollection<string> roles, Guid userId, CancellationToken cancellationToken)
+        {
+            var trip = await CreateTripCore(dto, roles, userId,
+                dto.TripVisibility, dto.PublishMode,
+                guideId: dto.GuideId,
+                notFoundKey: "User.NotFound",
+                cancellationToken);
+            var tripParticipant = TripParticipant.Create(trip.Id, userId);
+            tripParticipant.Approve();
+            repositoryFactory.Repository<TripParticipant>().Add(tripParticipant);
+
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return tripMapper.Map(trip);
         }
@@ -345,6 +340,55 @@ namespace Modules.Trips.Application.Services
             if (request.MaxPrice.HasValue)
                 query = query.Where(x => x.Price <= request.MaxPrice.Value);
             return query;
+        }
+
+        private async Task<Trip> CreateTripCore(
+            CreateTripRequestDto dto,
+            ICollection<string> roles,
+            Guid userId,
+            TripVisibility visibility,
+            TripPublishMode publishMode,
+            Guid? guideId,
+            string notFoundKey,
+            CancellationToken cancellationToken)
+        {
+            var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(u => u.Id == userId)
+                ?? throw new NotFoundException(notFoundKey);
+
+            var segments = await GetPlacesAsync(dto.Segments);
+            var creatorRoles = roles.Select(x => Enum.Parse<UserRole>(x)).Aggregate(UserRole.User, (a, b) => a | b);
+
+            var theme = await repositoryFactory.Repository<Theme>().GetFirstOrDefaultByFilter(t => t.Id == dto.ThemeId)
+                ?? throw new NotFoundException("Theme.NotFound");
+
+            var governorates = segments
+                .SelectMany(x => x)
+                .Select(x => x.Governorate)
+                .DistinctBy(x => x.Id)
+                .ToList();
+
+            var trip = Trip.Create(
+                userId,
+                theme,
+                creatorRoles,
+                dto.Title,
+                dto.AutoApprove,
+                dto.Description,
+                dto.Price,
+                dto.Images,
+                visibility,
+                publishMode,
+                segments,
+                dto.MaxParticipantsCount,
+                guideId,
+                dto.Segments.Select(s => s.Duration).ToList(),
+                user,
+                governorates,
+                dto.StartDate);
+
+            repositoryFactory.Repository<Trip>().Add(trip);
+
+            return trip;
         }
         #endregion
     }

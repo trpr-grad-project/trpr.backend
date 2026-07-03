@@ -16,7 +16,7 @@ public class NotificationCreatedDomainEventHandler(
         Notification notification =
             await notificationRepository
                 .GetFirstOrDefaultByFilter(x => x.Id == domainEvent.NotificationId, x => x.Include(x => x.User)) ??
-                throw new NotFoundException("Notification.NotFound.");
+                throw new NotFoundException("Notification.NotFound");
 
         if (notification.NotifyEmail)
         {            // Simulate sending email

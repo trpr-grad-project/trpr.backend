@@ -24,6 +24,13 @@ namespace Modules.Trips.Presentation.Controllers.v1
             var result = await tripService.GetTripSuggestion(requestDto);
             return Ok(result);
         }
+        [HttpPost("company")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<TripResponseDto>> CreateTripByCompany([FromBody] CompanyCreateTripRequestDto dto, CancellationToken cancellationToken)
+        {
+            var request = await tripService.CreateTripByCompany(dto, UserRoles, UserId, cancellationToken);
+            return Ok(request);
+        }
 
         [HttpGet("form-data")]
         [Authorize]
@@ -33,11 +40,18 @@ namespace Modules.Trips.Presentation.Controllers.v1
             return Ok(result);
         }
 
-        [HttpPost]
+        [HttpPost("user")]
         [Authorize]
-        public async Task<ActionResult<TripResponseDto>> CreateTrip([FromBody] CreateTripRequestDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<TripResponseDto>> CreateTripByUser([FromBody] UserCreateTripRequestDto dto, CancellationToken cancellationToken)
         {
-            var request = await tripService.CreateTrip(dto, UserRoles, UserId, cancellationToken);
+            var request = await tripService.CreateTripByUser(dto, UserRoles, UserId, cancellationToken);
+            return Ok(request);
+        }
+        [HttpPost("guide")]
+        [Authorize(Roles = "Guide")]
+        public async Task<ActionResult<TripResponseDto>> CreateTripByGuide([FromBody] UserCreateTripRequestDto dto, CancellationToken cancellationToken)
+        {
+            var request = await tripService.CreateTripByGuide(dto, UserRoles, UserId, cancellationToken);
             return Ok(request);
         }
         [HttpGet("home")]
@@ -85,7 +99,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
         [Authorize]
         public async Task<ActionResult<PaginationDto<TripResponseDto>>> GetMyTrips([FromQuery] SearchTripRequestDto requestDto, CancellationToken cancellationToken)
         {
-            var request = await tripService.GetTrips(requestDto, UserId, null, cancellationToken);
+            var request = await tripService.GetTrips(requestDto, UserId, requestDto.Status ?? null, cancellationToken);
             return Ok(request);
         }
 
