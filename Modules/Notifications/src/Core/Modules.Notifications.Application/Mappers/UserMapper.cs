@@ -20,3 +20,19 @@ public static class UserMapper
         };
     }
 }
+
+public static class NotificationMapper
+{
+    public static NotificationResponseDto ToResponseDto(this Notification notification)
+    {
+        if (notification == null) return null!;
+
+        return new NotificationResponseDto
+        {
+            Id = notification.Id,
+            Title = notification.Title,
+            Message = notification.Message,
+            SequenceNumber = notification.SequenceNumber
+        };
+    }
+}

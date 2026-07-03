@@ -36,7 +36,6 @@ namespace Modules.Users.Application.Projections
                 NotifyPhone: false,
                 NotifySystem: false,
                 TemplateType: TemplateTypeSwitch(tokenType),
-                ToUserIds: [],
                 ToEmails: emailAdresses,
                 ToPhoneNumbers: phoneNumbers,
                 KeyValuePairs: new Dictionary<string, string>

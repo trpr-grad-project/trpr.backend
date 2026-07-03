@@ -1,3 +1,4 @@
+using Common.Application.Dtos;
 using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

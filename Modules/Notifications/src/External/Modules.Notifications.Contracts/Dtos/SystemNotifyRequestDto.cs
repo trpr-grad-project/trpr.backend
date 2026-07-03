@@ -13,7 +13,11 @@ public record SystemNotifyRequestDto(
     bool NotifyPhone,
     bool NotifySystem,
     TemplateType TemplateType,
-    ICollection<Guid> ToUserIds,
     ICollection<string> ToEmails,
     ICollection<string> ToPhoneNumbers,
     IDictionary<string, string> KeyValuePairs);
+
+public record NotifyUsersRequestDto(
+    string Title,
+    string Message,
+    Guid[] ToUsersIds);

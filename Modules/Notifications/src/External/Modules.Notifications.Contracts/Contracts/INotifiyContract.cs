@@ -5,6 +5,7 @@ namespace Modules.Notifications.Contracts.Contracts;
 public interface INotifiyContract
 {
     public Task NotifyAsync(SystemNotifyRequestDto request, CancellationToken cancellationToken = default);
+    public Task NotifyUsersAsync(NotifyUsersRequestDto request, CancellationToken cancellationToken = default);
     public Task UpdateNotificationSettingsAsync(Guid userId, UpdateNotificationSettingsRequestDto request, CancellationToken cancellationToken = default);
     public Task<NotificationSettingsResponseDto> GetNotificationSettingsAsync(Guid userId, CancellationToken cancellationToken = default);
 }

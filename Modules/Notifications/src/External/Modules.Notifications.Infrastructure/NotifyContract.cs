@@ -25,12 +25,6 @@ public class NotifyContract(
 
         var (subject, content) = await LoadTemplate(request.TemplateType, cancellationToken);
 
-        ICollection<User> users =
-            repositoryFactory.Repository<User>().GetQueryable()
-            .Where(x => request.ToUserIds.Contains(x.Id))
-            .ToList();
-
-        await NotifyUsers(request, users, content, cancellationToken);
         await NotifyEmails(request, subject, content, cancellationToken);
         NotifyPhones(request, content, cancellationToken);
     }
@@ -82,12 +76,13 @@ public class NotifyContract(
         }
     }
 
-    private async Task NotifyUsers(SystemNotifyRequestDto request, ICollection<User> users, string content, CancellationToken cancellationToken)
+    private async Task NotifyUsers(ICollection<User> users,
+    string title, string content, CancellationToken cancellationToken)
     {
         foreach (var user in users)
         {
             var paredTemplate = Scriban.Template.Parse(content);
-            IEnumerable<KeyValuePair<string, string>> newKeyValuePairs = new Dictionary<string, string>(request.KeyValuePairs)
+            IEnumerable<KeyValuePair<string, string>> newKeyValuePairs = new Dictionary<string, string>()
             {
                 ["FirstName"] = user.FirstName,
                 ["LastName"] = user.LastName,
@@ -95,17 +90,14 @@ public class NotifyContract(
                 ["Email"] = user.Email ?? string.Empty,
                 ["PhoneNumber"] = user.PhoneNumber ?? string.Empty
             };
-            newKeyValuePairs = newKeyValuePairs.Union(request.KeyValuePairs);
             var renderedContent = paredTemplate.Render(newKeyValuePairs);
 
             var notification = Notification.Create(
+                title,
                 renderedContent,
-                ContentType.Html,
-                request.NotifyEmail,
-                request.NotifyPhone,
-                request.NotifySystem,
-                user.Id
+                user
             );
+            repositoryFactory.Repository<User>().Update(user);
             repositoryFactory.Repository<Notification>().Add(notification);
         }
         await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -133,5 +125,29 @@ public class NotifyContract(
             Messages = user.Messages,
             Promotions = user.Promotions
         };
+    }
+
+    public async Task NotifyUsersAsync(NotifyUsersRequestDto request, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await unitOfWork.BeginTransactionAsync(cancellationToken);
+            var users = await repositoryFactory.Repository<User>()
+                .GetForUpdateAsync(request.ToUsersIds);
+            if (users.Count != request.ToUsersIds.Length)
+            {
+                var foundUserIds = users.Select(x => x.Id).ToHashSet();
+                var notFoundUserIds = request.ToUsersIds.Where(id => !foundUserIds.Contains(id)).ToList();
+                throw new NotFoundException("User.NotFound", string.Join(", ", notFoundUserIds));
+            }
+
+            await NotifyUsers(users, request.Title, request.Message, cancellationToken);
+            await unitOfWork.CommitTransactionAsync(cancellationToken);
+        }
+        catch
+        {
+            await unitOfWork.RollbackTransactionAsync(cancellationToken);
+            throw;
+        }
     }
 }

@@ -13,6 +13,7 @@ using GeminiDotnet.Extensions.AI;
 using GeminiDotnet;
 using Modules.Conversations.Infrastructure.Services;
 using Modules.Conversations.Application.Interfaces;
+using Modules.Conversations.Contracts.Contracts;
 
 namespace Modules.Conversations.Infrastructure;
 
@@ -57,6 +58,7 @@ public static class InfrastructureDependencyInjection
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
         services.ConfigureOptions<ConfigureProcessOutboxJob>();
         services.ConfigureOptions<ConfigureProcessInboxJob>();
+        services.AddScoped<IConversationsContract, ConversationContract>();
         return services;
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Modules.Notifications.Infrastructure.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Notifications.Infrastructure.Migrations
 {
     [DbContext(typeof(NotificationsDbContext))]
-    partial class NotificationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260703131125_UpdateNotificationsEntity")]
+    partial class UpdateNotificationsEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,9 +178,6 @@ namespace Modules.Notifications.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_notifications");
 
-                    b.HasIndex("SequenceNumber")
-                        .HasDatabaseName("ix_notifications_sequence_number");
-
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_notifications_user_id");
 
@@ -208,10 +208,6 @@ namespace Modules.Notifications.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("last_name");
-
-                    b.Property<int>("LatestSequenceNumber")
-                        .HasColumnType("integer")
-                        .HasColumnName("latest_sequence_number");
 
                     b.Property<bool>("Messages")
                         .ValueGeneratedOnAdd()

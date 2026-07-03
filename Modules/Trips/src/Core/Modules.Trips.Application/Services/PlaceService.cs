@@ -7,6 +7,7 @@ using Modules.Trips.Application.Mappers;
 using Modules.Trips.Application.Repositories;
 using Modules.Trips.Domain.Entities;
 using Modules.Trips.Application.Helpers;
+using Common.Application.Dtos;
 
 namespace Modules.Trips.Application.Services;
 

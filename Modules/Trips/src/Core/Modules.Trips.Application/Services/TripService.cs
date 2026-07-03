@@ -57,9 +57,9 @@ namespace Modules.Trips.Application.Services
             repositoryFactory.Repository<Trip>().Update(trip);
             await unitOfWork.SaveChangesAsync(cancellationToken);
         }
-        public async Task<TripResponseDto> CreateTripByCompany(CompanyCreateTripRequestDto dto, ICollection<string> roles, Guid userId, CancellationToken cancellationToken)
+        public async Task<TripResponseDto> CreateTripByCompany(CompanyCreateTripRequestDto dto, Guid userId, CancellationToken cancellationToken)
         {
-            var trip = await CreateTripCore(dto, roles, userId,
+            var trip = await CreateTripCore(dto, UserRole.Company, userId,
                 TripVisibility.Public, TripPublishMode.DirectPublish,
                 guideId: dto.GuideId,
                 notFoundKey: "Company.NotFound",
@@ -69,10 +69,10 @@ namespace Modules.Trips.Application.Services
             return tripMapper.Map(trip);
         }
 
-        public async Task<TripResponseDto> CreateTripByGuide(CreateTripRequestDto dto, ICollection<string> roles, Guid userId, CancellationToken cancellationToken)
+        public async Task<TripResponseDto> CreateTripByGuide(CreateTripRequestDto dto, Guid userId, CancellationToken cancellationToken)
         {
             // the creator is the guide
-            var trip = await CreateTripCore(dto, roles, userId,
+            var trip = await CreateTripCore(dto, UserRole.Guide, userId,
                 TripVisibility.Public, TripPublishMode.DirectPublish,
                 guideId: userId,
                 notFoundKey: "Guide.NotFound",
@@ -81,9 +81,9 @@ namespace Modules.Trips.Application.Services
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return tripMapper.Map(trip);
         }
-        public async Task<TripResponseDto> CreateTripByUser(UserCreateTripRequestDto dto, ICollection<string> roles, Guid userId, CancellationToken cancellationToken)
+        public async Task<TripResponseDto> CreateTripByUser(UserCreateTripRequestDto dto, Guid userId, CancellationToken cancellationToken)
         {
-            var trip = await CreateTripCore(dto, roles, userId,
+            var trip = await CreateTripCore(dto, UserRole.User, userId,
                 dto.TripVisibility, dto.PublishMode,
                 guideId: dto.GuideId,
                 notFoundKey: "User.NotFound",
@@ -97,7 +97,6 @@ namespace Modules.Trips.Application.Services
         }
         public async Task<PaginationDto<TripResponseDto>> GetTrips(BaseSearchTripRequestDto request, Guid? userId = null, TripStatus? status = null, CancellationToken cancellationToken = default)
         {
-            // TODO FILTER BASED ON THE SEARCH REQUEST LATER
             IQueryable<Trip> trips = repositoryFactory.Repository<Trip>().GetQueryable()
                 .Include(x => x.TripTheme)
                 .Include(x => x.Segments).ThenInclude(s => s.Places).ThenInclude(p => p.Governorate)
@@ -230,7 +229,7 @@ namespace Modules.Trips.Application.Services
                     x => x.Include(x => x.Participants))
                 ?? throw new NotFoundException("Trip.NotFound");
 
-            if(trip.UserId == dto.UserId)
+            if (trip.UserId == dto.UserId)
                 throw new BadRequestException("Trip.CreatorCannotJoin");
 
             TripParticipant tripParticipant = trip.Participants
@@ -269,7 +268,7 @@ namespace Modules.Trips.Application.Services
                     .ExecuteDeleteAsync();
                 trip.Ready();
                 await unitOfWork.SaveChangesAsync();
-            } 
+            }
             return;
         }
         public async Task StartTrip(Guid tripId, Guid userId)
@@ -310,15 +309,13 @@ namespace Modules.Trips.Application.Services
 
         public static IQueryable<Trip> FilterByBaseSearchRequest(IQueryable<Trip> query, BaseSearchTripRequestDto request)
         {
-            if (request.TripType.HasValue)
-            {
-                if (request.TripType == TripType.ByGuides)
-                    query = query.Where(x => (x.CreatorRole & (UserRole.Guide | UserRole.Admin)) == UserRole.Guide);
-                else if (request.TripType == TripType.ByCompany)
-                    query = query.Where(x => (x.CreatorRole & UserRole.Company) == UserRole.Company);
-                else if (request.TripType == TripType.Shared)
-                    query = query.Where(x => (x.CreatorRole & UserRole.User) == UserRole.User);
-            }
+            if (request.TripType == TripType.ByGuides)
+                query = query.Where(x => (x.CreatorRole & UserRole.Guide) == UserRole.Guide);
+            else if (request.TripType == TripType.ByCompany)
+                query = query.Where(x => (x.CreatorRole & UserRole.Company) == UserRole.Company);
+            else if (request.TripType == TripType.Shared)
+                query = query.Where(x => (x.CreatorRole & UserRole.User) == UserRole.User);
+
 
             if (request.Longitude.HasValue && request.Latitude.HasValue && request.RadiusInMeters.HasValue)
             {
@@ -344,7 +341,7 @@ namespace Modules.Trips.Application.Services
 
         private async Task<Trip> CreateTripCore(
             CreateTripRequestDto dto,
-            ICollection<string> roles,
+            UserRole role,
             Guid userId,
             TripVisibility visibility,
             TripPublishMode publishMode,
@@ -356,7 +353,6 @@ namespace Modules.Trips.Application.Services
                 ?? throw new NotFoundException(notFoundKey);
 
             var segments = await GetPlacesAsync(dto.Segments);
-            var creatorRoles = roles.Select(x => Enum.Parse<UserRole>(x)).Aggregate(UserRole.User, (a, b) => a | b);
 
             var theme = await repositoryFactory.Repository<Theme>().GetFirstOrDefaultByFilter(t => t.Id == dto.ThemeId)
                 ?? throw new NotFoundException("Theme.NotFound");
@@ -370,7 +366,7 @@ namespace Modules.Trips.Application.Services
             var trip = Trip.Create(
                 userId,
                 theme,
-                creatorRoles,
+                role,
                 dto.Title,
                 dto.AutoApprove,
                 dto.Description,

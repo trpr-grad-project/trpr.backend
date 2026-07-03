@@ -7,39 +7,27 @@ namespace Modules.Notifications.Domain.Entities;
 public class Notification : Entity
 {
     public Guid Id { get; set; }
+    public string Title { get; set; } = string.Empty;
     public string Message { get; set; } = string.Empty;
+    public int SequenceNumber { get; set; }
     public ContentType ContentType { get; set; } = ContentType.Pure;
-    public bool NotifyEmail { get; set; }
-    public bool NotifyPhone { get; set; }
-    public bool NotifySystem { get; set; }
     public Guid UserId { get; set; }
     public virtual User User { get; set; } = default!;
     public static Notification Create(
+        string title,
         string message,
-        ContentType contentType,
-        bool notifyEmail,
-        bool notifyPhone,
-        bool notifySystem,
-        Guid userId)
+        User user)
     {
-        var notification = new Notification
+        var not = new Notification
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.CreateVersion7(),
+            Title = title,
             Message = message,
-            ContentType = contentType,
-            NotifyEmail = notifyEmail,
-            NotifyPhone = notifyPhone,
-            NotifySystem = notifySystem,
-            UserId = userId
+            ContentType = ContentType.Pure,
+            UserId = user.Id,
+            SequenceNumber = user.LatestSequenceNumber
         };
-
-        notification.RaiseDomainEvent(
-            new DomainEvents
-                .NotificationCreatedDomainEvent
-            {
-                NotificationId = notification.Id
-            });
-
-        return notification;
+        user.LatestSequenceNumber++;
+        return not;
     }
 }

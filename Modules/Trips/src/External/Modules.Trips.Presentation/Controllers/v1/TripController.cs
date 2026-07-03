@@ -28,7 +28,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<TripResponseDto>> CreateTripByCompany([FromBody] CompanyCreateTripRequestDto dto, CancellationToken cancellationToken)
         {
-            var request = await tripService.CreateTripByCompany(dto, UserRoles, UserId, cancellationToken);
+            var request = await tripService.CreateTripByCompany(dto, UserId, cancellationToken);
             return Ok(request);
         }
 
@@ -44,14 +44,14 @@ namespace Modules.Trips.Presentation.Controllers.v1
         [Authorize]
         public async Task<ActionResult<TripResponseDto>> CreateTripByUser([FromBody] UserCreateTripRequestDto dto, CancellationToken cancellationToken)
         {
-            var request = await tripService.CreateTripByUser(dto, UserRoles, UserId, cancellationToken);
+            var request = await tripService.CreateTripByUser(dto, UserId, cancellationToken);
             return Ok(request);
         }
         [HttpPost("guide")]
         [Authorize(Roles = "Guide")]
         public async Task<ActionResult<TripResponseDto>> CreateTripByGuide([FromBody] UserCreateTripRequestDto dto, CancellationToken cancellationToken)
         {
-            var request = await tripService.CreateTripByGuide(dto, UserRoles, UserId, cancellationToken);
+            var request = await tripService.CreateTripByGuide(dto, UserId, cancellationToken);
             return Ok(request);
         }
         [HttpGet("home")]

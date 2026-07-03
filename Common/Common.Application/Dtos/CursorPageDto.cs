@@ -1,4 +1,9 @@
-namespace Modules.Trips.Application.Dtos.Responses
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Common.Application.Dtos
 {
     public class CursorPageDto<TItem, TCursor>
     {
@@ -6,5 +11,4 @@ namespace Modules.Trips.Application.Dtos.Responses
         public TCursor? NextCursor { get; set; }
         public bool HasNextPage => NextCursor != null;
     }
-    public class PlacesCursorPageDto : CursorPageDto<PlaceDto, int> { }
 }

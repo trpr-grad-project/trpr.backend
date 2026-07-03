@@ -20,7 +20,6 @@ namespace Modules.Users.Application.Projections
                 NotifyPhone: true,
                 NotifySystem: true,
                 TemplateType: TemplateTypeSwitch(domainEvent.NewStatus),
-                ToUserIds: [domainEvent.UserId],
                 ToEmails: [],
                 ToPhoneNumbers: [],
                 KeyValuePairs: new Dictionary<string, string>
