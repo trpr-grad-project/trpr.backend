@@ -59,6 +59,7 @@ public static class InfrastructureDependencyInjection
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
         services.ConfigureOptions<ConfigureProcessOutboxJob>();
         services.ConfigureOptions<ConfigureProcessInboxJob>();
+        services.AddScoped<ITripHubSender, TripHubSender>();
         return services;
     }
 }

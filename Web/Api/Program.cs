@@ -5,8 +5,10 @@ using Common.Presentation;
 using Modules.Conversations.Infrastructure;
 using Modules.Conversations.Presentation.Hubs;
 using Modules.Notifications.Infrastructure;
+using Modules.Notifications.Presentation.Hubs;
 using Modules.Payments.Infrastructure;
 using Modules.Trips.Infrastructure;
+using Modules.Trips.Presentation.Hubs;
 using Modules.Users.Infrastructure;
 using Scalar.AspNetCore;
 using Serilog;
@@ -62,6 +64,8 @@ if (app.Environment.IsDevelopment())
     await app.ExecuteSeedingAsync();
 }
 app.MapHub<ChatHub>("chat-hub");
+app.MapHub<TripHub>("trip-hub");
+app.MapHub<NotificationHub>("notification-hub");
 app.UseLocalization();
 app.AddMiddlewares();
 app.UseHttpLogging();

@@ -22,6 +22,7 @@ public class NotificationHub(RepositoryFactory repositoryFactory) : Hub
             .OrderByDescending(x => x.Id)
             .FirstOrDefaultAsync();
         var notificationDto = notification?.ToResponseDto();
+        await Groups.AddToGroupAsync(Context.ConnectionId, UserId.ToString());
         await Clients.Caller.SendAsync("ReceiveNotification", notificationDto);
         await base.OnConnectedAsync();
     }

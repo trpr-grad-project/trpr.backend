@@ -1,5 +1,6 @@
 
 using Modules.Notifications.Domain.Abstractions;
+using Modules.Notifications.Domain.DomainEvents;
 using Modules.Notifications.Domain.ValueObjects;
 
 namespace Modules.Notifications.Domain.Entities;
@@ -28,6 +29,10 @@ public class Notification : Entity
             SequenceNumber = user.LatestSequenceNumber
         };
         user.LatestSequenceNumber++;
+        not.RaiseDomainEvent(new NotificationCreatedDomainEvent
+        {
+            Id = not.Id
+        });
         return not;
     }
 }
