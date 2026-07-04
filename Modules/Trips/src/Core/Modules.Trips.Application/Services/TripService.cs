@@ -174,13 +174,8 @@ namespace Modules.Trips.Application.Services
             if (trip.UserId == userId)
                 throw new BadRequestException("Trip.CreatorCannotJoin");
 
-            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
+            if (trip.Status == TripStatus.Ready)
             {
-                if (trip.Status != TripStatus.Ready)
-                {
-                    trip.Ready();
-                    await unitOfWork.SaveChangesAsync();
-                }
                 throw new BadRequestException("Trip.MaxParticipantsReached");
             }
 
@@ -195,10 +190,11 @@ namespace Modules.Trips.Application.Services
             if (trip.AutoApprove == true)
                 tripParticipant.Approve();
 
-            trip.Participants.Add(tripParticipant);
-            repositoryFactory.Repository<Trip>().Update(trip);
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
+            {
                 trip.Ready();
+            }
+            repositoryFactory.Repository<Trip>().Update(trip);
 
             await unitOfWork.SaveChangesAsync();
         }

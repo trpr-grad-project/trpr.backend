@@ -1,9 +1,11 @@
 using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Modules.Trips.Application.Dtos.Hub;
 using Modules.Trips.Application.Repositories;
 using Modules.Trips.Domain.Entities;
 using Modules.Trips.Domain.ValueObjects;
+using Rebus.Sagas.Idempotent;
 
 namespace Modules.Trips.Presentation.Hubs
 {
@@ -22,22 +24,20 @@ namespace Modules.Trips.Presentation.Hubs
             )
             .Select(x => x.Trip)
             .ToListAsync();
-            var tripCast = trips.Select(x => new
+            var tripCast = trips.Select(x => new TripHubDto
             {
-                x.Id,
-                x.Title,
-                x.Description,
-                x.StartDate,
-                x.ActualDuration,
-                x.ExpectedDuration,
-                x.Price,
-                x.Images,
-                x.Centroid,
-                x.TripVisibility,
-                x.MaxParticipantsCount,
-                x.GuideId,
+                Id = x.Id,
+                Title = x.Title,
+                Description = x.Description,
+                StartDate = x.StartDate,
+                ActualDuration = x.ActualDuration,
+                ExpectedDuration = x.ExpectedDuration,
+                Price = x.Price,
+                Images = x.Images,
+                MaxParticipantsCount = x.MaxParticipantsCount,
+                GuideId = x.GuideId,
                 Status = x.Status.ToString()
-            });
+            }).ToList();
             foreach (var trip in trips)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, trip.Id.ToString());
