@@ -58,6 +58,7 @@ namespace Modules.Trips.Domain.Entities
         {
             if (Status != TripStatus.Published)
                 throw new InvalidOperationException("Only trips in Published status can be marked as Ready.");
+            RaiseDomainEvent(new TripReadyDomainEvent(this.Id, this.Status));
             Status = TripStatus.Ready;
         }
 
