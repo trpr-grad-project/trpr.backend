@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Conversations.Infrastructure.Migrations
 {
     [DbContext(typeof(ConversationsDbContext))]
-    [Migration("20260518221416_IntialCreate")]
+    [Migration("20260704005244_IntialCreate")]
     partial class IntialCreate
     {
         /// <inheritdoc />
@@ -168,8 +168,9 @@ namespace Modules.Conversations.Infrastructure.Migrations
 
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.AiMessage", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
                         .HasColumnName("id");
 
                     b.Property<string>("Contnet")
@@ -185,18 +186,15 @@ namespace Modules.Conversations.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_on_utc");
 
-                    b.Property<string>("ParentMessageId")
-                        .HasColumnType("text")
-                        .HasColumnName("parent_message_id");
+                    b.Property<int>("Role")
+                        .HasColumnType("integer")
+                        .HasColumnName("role");
 
                     b.HasKey("Id")
                         .HasName("pk_ai_messages");
 
                     b.HasIndex("ConversationId")
                         .HasDatabaseName("ix_ai_messages_conversation_id");
-
-                    b.HasIndex("ParentMessageId")
-                        .HasDatabaseName("ix_ai_messages_parent_message_id");
 
                     b.ToTable("ai_messages", "cnv");
                 });
@@ -216,17 +214,13 @@ namespace Modules.Conversations.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("image_url");
 
-                    b.Property<Guid?>("LastMessageId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("last_message_id");
+                    b.Property<int>("SequenceNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("sequence_number");
 
                     b.Property<string>("Title")
                         .HasColumnType("text")
                         .HasColumnName("title");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer")
-                        .HasColumnName("type");
 
                     b.HasKey("Id")
                         .HasName("pk_conversations");
@@ -247,18 +241,6 @@ namespace Modules.Conversations.Infrastructure.Migrations
                     b.Property<Guid>("ConversationId")
                         .HasColumnType("uuid")
                         .HasColumnName("conversation_id");
-
-                    b.Property<bool>("IsAdmin")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_admin");
-
-                    b.Property<bool>("IsArchived")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_archived");
 
                     b.Property<DateTime>("JoinedAtUtc")
                         .HasColumnType("timestamp with time zone")
@@ -304,9 +286,9 @@ namespace Modules.Conversations.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("sent_at_utc");
 
-                    b.Property<int>("Type")
+                    b.Property<int>("SequenceNumber")
                         .HasColumnType("integer")
-                        .HasColumnName("type");
+                        .HasColumnName("sequence_number");
 
                     b.HasKey("Id")
                         .HasName("pk_messages");
@@ -318,44 +300,6 @@ namespace Modules.Conversations.Infrastructure.Migrations
                         .HasDatabaseName("ix_messages_sender_user_id");
 
                     b.ToTable("messages", "cnv");
-                });
-
-            modelBuilder.Entity("Modules.Conversations.Domain.Entities.MessageAttachment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("AttachmentName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("attachment_name");
-
-                    b.Property<long>("AttachmentSize")
-                        .HasColumnType("bigint")
-                        .HasColumnName("attachment_size");
-
-                    b.Property<int>("AttachmentType")
-                        .HasColumnType("integer")
-                        .HasColumnName("attachment_type");
-
-                    b.Property<Guid>("MessageId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("message_id");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("url");
-
-                    b.HasKey("Id")
-                        .HasName("pk_message_attachments");
-
-                    b.HasIndex("MessageId")
-                        .HasDatabaseName("ix_message_attachments_message_id");
-
-                    b.ToTable("message_attachments", "cnv");
                 });
 
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.User", b =>
@@ -411,15 +355,7 @@ namespace Modules.Conversations.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_ai_messages_ai_conversations_conversation_id");
 
-                    b.HasOne("Modules.Conversations.Domain.Entities.AiMessage", "ParentAiMessage")
-                        .WithMany("SubMessages")
-                        .HasForeignKey("ParentMessageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("fk_ai_messages_ai_messages_parent_message_id");
-
                     b.Navigation("AiConversation");
-
-                    b.Navigation("ParentAiMessage");
                 });
 
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.Conversation", b =>
@@ -458,16 +394,16 @@ namespace Modules.Conversations.Infrastructure.Migrations
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.Message", b =>
                 {
                     b.HasOne("Modules.Conversations.Domain.Entities.Conversation", "Conversation")
-                        .WithMany()
+                        .WithMany("Messages")
                         .HasForeignKey("ConversationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_messages_conversations_conversation_id");
 
                     b.HasOne("Modules.Conversations.Domain.Entities.User", "SenderUser")
-                        .WithMany()
+                        .WithMany("Messages")
                         .HasForeignKey("SenderUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("fk_messages_users_sender_user_id");
 
                     b.Navigation("Conversation");
@@ -475,41 +411,23 @@ namespace Modules.Conversations.Infrastructure.Migrations
                     b.Navigation("SenderUser");
                 });
 
-            modelBuilder.Entity("Modules.Conversations.Domain.Entities.MessageAttachment", b =>
-                {
-                    b.HasOne("Modules.Conversations.Domain.Entities.Message", "Message")
-                        .WithMany("Attachments")
-                        .HasForeignKey("MessageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_message_attachments_messages_message_id");
-
-                    b.Navigation("Message");
-                });
-
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.AiConversation", b =>
                 {
                     b.Navigation("Messages");
                 });
 
-            modelBuilder.Entity("Modules.Conversations.Domain.Entities.AiMessage", b =>
-                {
-                    b.Navigation("SubMessages");
-                });
-
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.Conversation", b =>
                 {
-                    b.Navigation("Participants");
-                });
+                    b.Navigation("Messages");
 
-            modelBuilder.Entity("Modules.Conversations.Domain.Entities.Message", b =>
-                {
-                    b.Navigation("Attachments");
+                    b.Navigation("Participants");
                 });
 
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.User", b =>
                 {
                     b.Navigation("ConversationParticipants");
+
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

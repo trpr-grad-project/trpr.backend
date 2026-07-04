@@ -17,18 +17,10 @@ public class AiMessageConfig : IEntityTypeConfiguration<AiMessage>
             .IsRequired();
 
         builder.HasIndex(am => am.ConversationId);
-        builder.HasIndex(am => am.ParentMessageId);
-
         builder
             .HasOne(am => am.AiConversation)
             .WithMany(ac => ac.Messages)
             .HasForeignKey(am => am.ConversationId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder
-            .HasOne(am => am.ParentAiMessage)
-            .WithMany(pm => pm.SubMessages)
-            .HasForeignKey(am => am.ParentMessageId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

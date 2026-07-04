@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Modules.Payments.Infrastructure.Data;
+using Modules.Notifications.Infrastructure.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Modules.Payments.Infrastructure.Migrations
+namespace Modules.Notifications.Infrastructure.Migrations
 {
-    [DbContext(typeof(PaymentsDbContext))]
-    [Migration("20260611225653_IntialCreate")]
+    [DbContext(typeof(NotificationsDbContext))]
+    [Migration("20260704005306_IntialCreate")]
     partial class IntialCreate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace Modules.Payments.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("pay")
+                .HasDefaultSchema("ntf")
                 .HasAnnotation("ProductVersion", "10.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -39,7 +39,7 @@ namespace Modules.Payments.Infrastructure.Migrations
                     b.HasKey("Id", "HandlerName")
                         .HasName("pk_inbox_consumer_messages");
 
-                    b.ToTable("inbox_consumer_messages", "pay");
+                    b.ToTable("inbox_consumer_messages", "ntf");
                 });
 
             modelBuilder.Entity("Common.Infrastructure.Inbox.InboxMessage", b =>
@@ -79,7 +79,7 @@ namespace Modules.Payments.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_inbox_messages");
 
-                    b.ToTable("inbox_messages", "pay");
+                    b.ToTable("inbox_messages", "ntf");
                 });
 
             modelBuilder.Entity("Common.Infrastructure.Outbox.OutboxConsumerMessage", b =>
@@ -95,7 +95,7 @@ namespace Modules.Payments.Infrastructure.Migrations
                     b.HasKey("Id", "HandlerName")
                         .HasName("pk_outbox_consumer_messages");
 
-                    b.ToTable("outbox_consumer_messages", "pay");
+                    b.ToTable("outbox_consumer_messages", "ntf");
                 });
 
             modelBuilder.Entity("Common.Infrastructure.Outbox.OutboxMessage", b =>
@@ -135,10 +135,59 @@ namespace Modules.Payments.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_outbox_messages");
 
-                    b.ToTable("outbox_messages", "pay");
+                    b.ToTable("outbox_messages", "ntf");
                 });
 
-            modelBuilder.Entity("Modules.Payments.Domain.Entities.User", b =>
+            modelBuilder.Entity("Modules.Notifications.Domain.Entities.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("ContentType")
+                        .HasColumnType("integer")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("message");
+
+                    b.Property<int>("SequenceNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("sequence_number");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime>("UpdatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_notifications");
+
+                    b.HasIndex("SequenceNumber")
+                        .HasDatabaseName("ix_notifications_sequence_number");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_notifications_user_id");
+
+                    b.ToTable("notifications", "ntf");
+                });
+
+            modelBuilder.Entity("Modules.Notifications.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -163,9 +212,31 @@ namespace Modules.Payments.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("last_name");
 
+                    b.Property<int>("LatestSequenceNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("latest_sequence_number");
+
+                    b.Property<bool>("Messages")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("messages");
+
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text")
                         .HasColumnName("phone_number");
+
+                    b.Property<bool>("Promotions")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("promotions");
+
+                    b.Property<bool>("TripUpdates")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("trip_updates");
 
                     b.Property<DateTime>("UpdatedAtUTC")
                         .HasColumnType("timestamp with time zone")
@@ -179,16 +250,24 @@ namespace Modules.Payments.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_users");
 
-                    b.HasIndex("Email")
-                        .HasDatabaseName("ix_users_email");
+                    b.ToTable("users", "ntf");
+                });
 
-                    b.HasIndex("PhoneNumber")
-                        .HasDatabaseName("ix_users_phone_number");
+            modelBuilder.Entity("Modules.Notifications.Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("Modules.Notifications.Domain.Entities.User", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_notifications_users_user_id");
 
-                    b.HasIndex("UserName")
-                        .HasDatabaseName("ix_users_user_name");
+                    b.Navigation("User");
+                });
 
-                    b.ToTable("users", "pay");
+            modelBuilder.Entity("Modules.Notifications.Domain.Entities.User", b =>
+                {
+                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }

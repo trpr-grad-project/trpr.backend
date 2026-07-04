@@ -9,11 +9,14 @@ using Modules.Conversations.Infrastructure.Inbox;
 using Modules.Conversations.Infrastructure.Outbox;
 using Modules.Conversations.Application.Abstractions;
 using Microsoft.Extensions.AI;
-using GeminiDotnet.Extensions.AI;
-using GeminiDotnet;
 using Modules.Conversations.Infrastructure.Services;
 using Modules.Conversations.Application.Interfaces;
 using Modules.Conversations.Contracts.Contracts;
+using OpenAI;
+using OpenAI.Chat;
+using System.ClientModel;
+using System.ClientModel.Primitives;
+using Modules.Conversations.Infrastructure.Delegates;
 
 namespace Modules.Conversations.Infrastructure;
 
@@ -23,10 +26,17 @@ public static class InfrastructureDependencyInjection
     {
         services.AddSingleton<IChatClient>(sp =>
         {
-            var baseClient = new GeminiChatClient(new GeminiClientOptions
-            {
-                ApiKey = configuration["Conversations:Gemini:ApiKey"]!,
-            });
+            IChatClient baseClient =
+                new ChatClient(
+                    model: configuration["Conversations:OpenRouter:Model"]!,
+                    new ApiKeyCredential(configuration["Conversations:OpenRouter:ApiKey"]!),
+                    new OpenAIClientOptions
+                    {
+                        Endpoint = new Uri(configuration["Conversations:OpenRouter:baseUrl"]!),
+                    }
+                )
+                .AsIChatClient();
+
             return new ChatClientBuilder(baseClient)
                 .UseFunctionInvocation()
                 .Build();

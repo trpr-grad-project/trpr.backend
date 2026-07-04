@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Users.Infrastructure.Migrations
 {
     [DbContext(typeof(UsersDbContext))]
-    [Migration("20260626120937_AddSupportRequests")]
-    partial class AddSupportRequests
+    [Migration("20260704005337_IntialCreate")]
+    partial class IntialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -136,6 +136,73 @@ namespace Modules.Users.Infrastructure.Migrations
                         .HasName("pk_outbox_messages");
 
                     b.ToTable("outbox_messages", "usr");
+                });
+
+            modelBuilder.Entity("CompanyUser", b =>
+                {
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("company_id");
+
+                    b.Property<Guid>("GuidesId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("guides_id");
+
+                    b.HasKey("CompanyId", "GuidesId")
+                        .HasName("pk_company_guides");
+
+                    b.HasIndex("GuidesId")
+                        .HasDatabaseName("ix_company_guides_guides_id");
+
+                    b.ToTable("companyGuides", "usr");
+                });
+
+            modelBuilder.Entity("Modules.Users.Domain.Entities.Company", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Identifier")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("identifier");
+
+                    b.Property<string>("Logo")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("logo");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<DateTime>("UpdatedAtUTC")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at_utc");
+
+                    b.HasKey("Id")
+                        .HasName("pk_company");
+
+                    b.HasIndex("Identifier")
+                        .IsUnique()
+                        .HasDatabaseName("ix_company_identifier");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_company_name");
+
+                    b.ToTable("company", "usr");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Document", b =>
@@ -794,6 +861,23 @@ namespace Modules.Users.Infrastructure.Migrations
                             Thumbnail = "@/assets/vibes/family.png",
                             UpdatedAtUTC = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
+                });
+
+            modelBuilder.Entity("CompanyUser", b =>
+                {
+                    b.HasOne("Modules.Users.Domain.Entities.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_company_guides_company_company_id");
+
+                    b.HasOne("Modules.Users.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("GuidesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_company_guides_users_guides_id");
                 });
 
             modelBuilder.Entity("Modules.Users.Domain.Entities.Document", b =>

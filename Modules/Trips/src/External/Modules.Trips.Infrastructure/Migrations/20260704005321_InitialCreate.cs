@@ -167,49 +167,14 @@ namespace Modules.Trips.Infrastructure.Migrations
                     last_name = table.Column<string>(type: "text", nullable: false),
                     email = table.Column<string>(type: "text", nullable: true),
                     phone_number = table.Column<string>(type: "text", nullable: true),
+                    rating = table.Column<double>(type: "double precision", nullable: true),
+                    rating_count = table.Column<int>(type: "integer", nullable: true),
                     created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_user", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "places",
-                schema: "trp",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
-                    rating = table.Column<double>(type: "double precision", nullable: true),
-                    average_visit_time = table.Column<double>(type: "double precision", nullable: true),
-                    osrm_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    visit_count = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
-                    rate_count = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
-                    category_id = table.Column<int>(type: "integer", nullable: false),
-                    governorate_id = table.Column<int>(type: "integer", nullable: false),
-                    location = table.Column<Point>(type: "geography (Point, 4326)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_places", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_places_categories_category_id",
-                        column: x => x.category_id,
-                        principalSchema: "trp",
-                        principalTable: "categories",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "fk_places_governorates_governorate_id",
-                        column: x => x.governorate_id,
-                        principalSchema: "trp",
-                        principalTable: "governorates",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -273,6 +238,50 @@ namespace Modules.Trips.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "places",
+                schema: "trp",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
+                    rating = table.Column<double>(type: "double precision", nullable: true),
+                    average_visit_time = table.Column<double>(type: "double precision", nullable: true),
+                    osrm_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    visit_count = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    rate_count = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    category_id = table.Column<int>(type: "integer", nullable: false),
+                    governorate_id = table.Column<int>(type: "integer", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    location = table.Column<Point>(type: "geography (Point, 4326)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_places", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_places_categories_category_id",
+                        column: x => x.category_id,
+                        principalSchema: "trp",
+                        principalTable: "categories",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "fk_places_governorates_governorate_id",
+                        column: x => x.governorate_id,
+                        principalSchema: "trp",
+                        principalTable: "governorates",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "fk_places_user_user_id",
+                        column: x => x.user_id,
+                        principalSchema: "trp",
+                        principalTable: "user",
+                        principalColumn: "id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "trip",
                 schema: "trp",
                 columns: table => new
@@ -280,24 +289,35 @@ namespace Modules.Trips.Infrastructure.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     theme_id = table.Column<int>(type: "integer", nullable: false),
+                    auto_approve = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatorRole = table.Column<int>(type: "integer", nullable: false),
                     title = table.Column<string>(type: "text", nullable: false),
                     description = table.Column<string>(type: "text", nullable: false),
                     price = table.Column<double>(type: "double precision", precision: 10, scale: 2, nullable: false),
+                    start_date = table.Column<DateOnly>(type: "date", nullable: false),
                     actual_duration = table.Column<double>(type: "double precision", nullable: false),
                     expected_duration = table.Column<double>(type: "double precision", nullable: false),
                     images = table.Column<string[]>(type: "text[]", nullable: false),
+                    centroid = table.Column<Point>(type: "geography (Point, 4326)", nullable: false),
                     trip_visibility = table.Column<int>(type: "integer", nullable: false),
                     max_participants_count = table.Column<int>(type: "integer", nullable: false),
                     guide_id = table.Column<Guid>(type: "uuid", nullable: true),
-                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     rejection_reason = table.Column<string>(type: "text", nullable: true),
                     publish_mode = table.Column<int>(type: "integer", nullable: false),
-                    status = table.Column<int>(type: "integer", nullable: false)
+                    status = table.Column<int>(type: "integer", nullable: false),
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_trip", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_trip_themes_theme_id",
+                        column: x => x.theme_id,
+                        principalSchema: "trp",
+                        principalTable: "themes",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_trip_user_user_id",
                         column: x => x.user_id,
@@ -341,6 +361,7 @@ namespace Modules.Trips.Infrastructure.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     order = table.Column<int>(type: "integer", nullable: false),
+                    duration = table.Column<double>(type: "double precision", nullable: false),
                     trip_id = table.Column<Guid>(type: "uuid", nullable: false),
                     created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -353,6 +374,38 @@ namespace Modules.Trips.Infrastructure.Migrations
                         column: x => x.trip_id,
                         principalSchema: "trp",
                         principalTable: "trip",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "trip_bidding",
+                schema: "trp",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    trip_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    guide_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    proposed_price = table.Column<double>(type: "double precision", nullable: false),
+                    proposal_message = table.Column<string>(type: "text", nullable: true),
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_trip_bidding", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_trip_bidding_trip_trip_id",
+                        column: x => x.trip_id,
+                        principalSchema: "trp",
+                        principalTable: "trip",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_trip_bidding_user_guide_id",
+                        column: x => x.guide_id,
+                        principalSchema: "trp",
+                        principalTable: "user",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -391,6 +444,9 @@ namespace Modules.Trips.Infrastructure.Migrations
                 {
                     trip_id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    approved = table.Column<bool>(type: "boolean", nullable: false),
+                    rating = table.Column<double>(type: "double precision", nullable: true),
+                    review = table.Column<string>(type: "text", nullable: true),
                     created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -603,6 +659,12 @@ namespace Modules.Trips.Infrastructure.Migrations
                 .Annotation("Npgsql:IndexMethod", "GIST");
 
             migrationBuilder.CreateIndex(
+                name: "ix_places_user_id",
+                schema: "trp",
+                table: "places",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_tags_name",
                 schema: "trp",
                 table: "tags",
@@ -634,6 +696,13 @@ namespace Modules.Trips.Infrastructure.Migrations
                 column: "theme_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_trip_centroid",
+                schema: "trp",
+                table: "trip",
+                column: "centroid")
+                .Annotation("Npgsql:IndexMethod", "GIST");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_trip_price",
                 schema: "trp",
                 table: "trip",
@@ -656,6 +725,19 @@ namespace Modules.Trips.Infrastructure.Migrations
                 schema: "trp",
                 table: "trip",
                 column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_trip_bidding_guide_id",
+                schema: "trp",
+                table: "trip_bidding",
+                column: "guide_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_trip_bidding_trip_id_guide_id",
+                schema: "trp",
+                table: "trip_bidding",
+                columns: new[] { "trip_id", "guide_id" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_trip_governorate_governorate_id",
@@ -710,6 +792,10 @@ namespace Modules.Trips.Infrastructure.Migrations
                 schema: "trp");
 
             migrationBuilder.DropTable(
+                name: "trip_bidding",
+                schema: "trp");
+
+            migrationBuilder.DropTable(
                 name: "trip_governorate",
                 schema: "trp");
 
@@ -730,10 +816,6 @@ namespace Modules.Trips.Infrastructure.Migrations
                 schema: "trp");
 
             migrationBuilder.DropTable(
-                name: "themes",
-                schema: "trp");
-
-            migrationBuilder.DropTable(
                 name: "trip",
                 schema: "trp");
 
@@ -743,6 +825,10 @@ namespace Modules.Trips.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "governorates",
+                schema: "trp");
+
+            migrationBuilder.DropTable(
+                name: "themes",
                 schema: "trp");
 
             migrationBuilder.DropTable(

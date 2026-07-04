@@ -17,6 +17,24 @@ namespace Modules.Users.Infrastructure.Migrations
                 name: "usr");
 
             migrationBuilder.CreateTable(
+                name: "company",
+                schema: "usr",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    identifier = table.Column<string>(type: "text", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    logo = table.Column<string>(type: "text", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: false),
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_company", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "inbox_consumer_messages",
                 schema: "usr",
                 columns: table => new
@@ -122,7 +140,6 @@ namespace Modules.Users.Infrastructure.Migrations
                     first_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     last_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     password_hash = table.Column<string>(type: "text", nullable: false),
-                    role = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     two_factor_enabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     is_verified = table.Column<bool>(type: "boolean", nullable: false),
                     created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -148,6 +165,33 @@ namespace Modules.Users.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_vibes", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "companyGuides",
+                schema: "usr",
+                columns: table => new
+                {
+                    company_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    guides_id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_company_guides", x => new { x.company_id, x.guides_id });
+                    table.ForeignKey(
+                        name: "fk_company_guides_company_company_id",
+                        column: x => x.company_id,
+                        principalSchema: "usr",
+                        principalTable: "company",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_company_guides_users_guides_id",
+                        column: x => x.guides_id,
+                        principalSchema: "usr",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -204,6 +248,31 @@ namespace Modules.Users.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SupportRequests",
+                schema: "usr",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    subject = table.Column<string>(type: "text", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: false),
+                    status = table.Column<int>(type: "integer", nullable: false),
+                    created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_support_requests", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_support_requests_users_user_id",
+                        column: x => x.user_id,
+                        principalSchema: "usr",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tokens",
                 schema: "usr",
                 columns: table => new
@@ -222,6 +291,26 @@ namespace Modules.Users.Infrastructure.Migrations
                     table.PrimaryKey("pk_tokens", x => x.id);
                     table.ForeignKey(
                         name: "fk_tokens_users_user_id",
+                        column: x => x.user_id,
+                        principalSchema: "usr",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserRoles",
+                schema: "usr",
+                columns: table => new
+                {
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    role = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_user_roles", x => new { x.user_id, x.role });
+                    table.ForeignKey(
+                        name: "fk_user_roles_users_user_id",
                         column: x => x.user_id,
                         principalSchema: "usr",
                         principalTable: "users",
@@ -380,6 +469,25 @@ namespace Modules.Users.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "ix_company_identifier",
+                schema: "usr",
+                table: "company",
+                column: "identifier",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_company_name",
+                schema: "usr",
+                table: "company",
+                column: "name");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_company_guides_guides_id",
+                schema: "usr",
+                table: "companyGuides",
+                column: "guides_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_document_guide_request_id",
                 schema: "usr",
                 table: "document",
@@ -410,6 +518,24 @@ namespace Modules.Users.Infrastructure.Migrations
                 column: "vibe_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_support_requests_status",
+                schema: "usr",
+                table: "SupportRequests",
+                column: "status");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_support_requests_subject",
+                schema: "usr",
+                table: "SupportRequests",
+                column: "subject");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_support_requests_user_id",
+                schema: "usr",
+                table: "SupportRequests",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_tokens_user_id",
                 schema: "usr",
                 table: "tokens",
@@ -426,6 +552,10 @@ namespace Modules.Users.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "companyGuides",
+                schema: "usr");
+
             migrationBuilder.DropTable(
                 name: "document",
                 schema: "usr");
@@ -459,7 +589,19 @@ namespace Modules.Users.Infrastructure.Migrations
                 schema: "usr");
 
             migrationBuilder.DropTable(
+                name: "SupportRequests",
+                schema: "usr");
+
+            migrationBuilder.DropTable(
                 name: "tokens",
+                schema: "usr");
+
+            migrationBuilder.DropTable(
+                name: "UserRoles",
+                schema: "usr");
+
+            migrationBuilder.DropTable(
+                name: "company",
                 schema: "usr");
 
             migrationBuilder.DropTable(

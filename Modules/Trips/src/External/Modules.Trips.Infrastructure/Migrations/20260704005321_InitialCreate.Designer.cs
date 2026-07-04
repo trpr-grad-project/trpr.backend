@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Trips.Infrastructure.Migrations
 {
     [DbContext(typeof(TripsDbContext))]
-    [Migration("20260624161803_UpdatePlaces")]
-    partial class UpdatePlaces
+    [Migration("20260704005321_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -264,9 +264,9 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at_utc");
 
-                    b.Property<DateTime>("DayDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("day_date");
+                    b.Property<double>("Duration")
+                        .HasColumnType("double precision")
+                        .HasColumnName("duration");
 
                     b.Property<int>("Order")
                         .HasColumnType("integer")
@@ -927,10 +927,6 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("end_date");
-
                     b.Property<double>("ExpectedDuration")
                         .HasColumnType("double precision")
                         .HasColumnName("expected_duration");
@@ -961,8 +957,8 @@ namespace Modules.Trips.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("rejection_reason");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone")
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date")
                         .HasColumnName("start_date");
 
                     b.Property<int>("Status")

@@ -10,6 +10,7 @@ using Modules.Notifications.Infrastructure.Outbox;
 using Modules.Notifications.Infrastructure.Options;
 using Modules.Notifications.Infrastructure.Services;
 using Modules.Notifications.Application.Services;
+using Modules.Notifications.Application.Interfaces;
 
 namespace Modules.Notifications.Infrastructure;
 
@@ -30,6 +31,7 @@ public static class InfrastructureDependencyInjection
         });
         services.AddScoped<PublishOutboxMessagesInterceptor>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<INotificationHubSender, NotificationHubSender>();
         services.Configure<OutBoxOptions>(configuration.GetSection("Notifications:OutBox"));
         services.Configure<InBoxOptions>(configuration.GetSection("Notifications:Inbox"));
         services.Configure<EmailOptions>(configuration.GetSection("Notifications:Email"));

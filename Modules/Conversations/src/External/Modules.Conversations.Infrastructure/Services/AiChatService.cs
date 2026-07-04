@@ -46,34 +46,16 @@ namespace Modules.Conversations.Infrastructure.Services
                 request.ConversationId == null ? AiConversation.Create(userId) : await repositoryFactory
                 .Repository<AiConversation>()
                 .GetQueryable()
+                .Include(x => x.Messages)
                 .Where(x => x.Id == request.ConversationId && x.UserId == userId)
-                .Select(x => new AiConversation
-                {
-                    Id = x.Id,
-                    UserId = x.UserId,
-                    Messages = x.Messages
-                        .Where(m => m.ParentMessageId == null)
-                        .OrderBy(m => m.Id)
-                        .Take(5)
-                        .Select(m => new AiMessage
-                        {
-                            Id = m.Id,
-                            ParentMessageId = m.ParentMessageId,
-                            Contnet = m.Contnet,
-                            SubMessages = m.SubMessages
-                                .OrderBy(sm => sm.CreatedOnUtc)
-                                .ToList()
-                        })
-                        .ToList()
-                })
                 .FirstOrDefaultAsync(cancellationToken: cancellationToken)
                 ?? throw new NotFoundException("Conversation.NotFound");
 
             ICollection<ChatMessage> chatHistory = conversation
                 .Messages
-                .SelectMany(
-                    m => new[] { m }.Concat(m.SubMessages)
-                ).ToList().ToChatMessage();
+                .OrderBy(x => x.Id)
+                .Select(x => x.ToChatMessage(conversation))
+                .ToList();
 
             var userPrompt = new ChatMessage(ChatRole.User, request.Prompt);
 
@@ -86,14 +68,14 @@ namespace Modules.Conversations.Infrastructure.Services
                 messages: messagesToBeSent,
                 options: GenerateChatOptions(),
                 cancellationToken: cancellationToken);
-
-            var aiMessage = userPrompt.ToAiMessage(conversation, response.Messages);
+            var userMessage = userPrompt.ToAiMessage(conversation);
+            var aiMessage = response.Messages.Last().ToAiMessage(conversation);
 
             if (request.ConversationId == null)
                 repositoryFactory.Repository<AiConversation>().Add(conversation);
             else
                 repositoryFactory.Repository<AiConversation>().Attach(conversation);
-
+            repositoryFactory.Repository<AiMessage>().Add(userMessage);
             repositoryFactory.Repository<AiMessage>().Add(aiMessage);
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return new MessageResponseDto
@@ -101,7 +83,7 @@ namespace Modules.Conversations.Infrastructure.Services
                 Id = aiMessage.Id,
                 ConversationId = aiMessage.ConversationId,
                 SenderUserId = null,
-                Content = response.Messages.LastOrDefault(x => x.Role == ChatRole.Assistant)?.Text ?? "NoResponse"
+                Content = aiMessage.Contnet
             };
 
         }
@@ -109,9 +91,6 @@ namespace Modules.Conversations.Infrastructure.Services
         {
             return new ChatOptions
             {
-                ModelId = "gemini-3-flash-preview",
-                Temperature = 0.7f,
-                TopP = 0.9f,
                 Tools = [
                     AIFunctionFactory.Create(
                         name : "get_weather",

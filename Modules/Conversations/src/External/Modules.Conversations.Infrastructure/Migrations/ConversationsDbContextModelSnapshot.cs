@@ -165,8 +165,9 @@ namespace Modules.Conversations.Infrastructure.Migrations
 
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.AiMessage", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
                         .HasColumnName("id");
 
                     b.Property<string>("Contnet")
@@ -182,18 +183,15 @@ namespace Modules.Conversations.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_on_utc");
 
-                    b.Property<string>("ParentMessageId")
-                        .HasColumnType("text")
-                        .HasColumnName("parent_message_id");
+                    b.Property<int>("Role")
+                        .HasColumnType("integer")
+                        .HasColumnName("role");
 
                     b.HasKey("Id")
                         .HasName("pk_ai_messages");
 
                     b.HasIndex("ConversationId")
                         .HasDatabaseName("ix_ai_messages_conversation_id");
-
-                    b.HasIndex("ParentMessageId")
-                        .HasDatabaseName("ix_ai_messages_parent_message_id");
 
                     b.ToTable("ai_messages", "cnv");
                 });
@@ -354,15 +352,7 @@ namespace Modules.Conversations.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_ai_messages_ai_conversations_conversation_id");
 
-                    b.HasOne("Modules.Conversations.Domain.Entities.AiMessage", "ParentAiMessage")
-                        .WithMany("SubMessages")
-                        .HasForeignKey("ParentMessageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("fk_ai_messages_ai_messages_parent_message_id");
-
                     b.Navigation("AiConversation");
-
-                    b.Navigation("ParentAiMessage");
                 });
 
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.Conversation", b =>
@@ -421,11 +411,6 @@ namespace Modules.Conversations.Infrastructure.Migrations
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.AiConversation", b =>
                 {
                     b.Navigation("Messages");
-                });
-
-            modelBuilder.Entity("Modules.Conversations.Domain.Entities.AiMessage", b =>
-                {
-                    b.Navigation("SubMessages");
                 });
 
             modelBuilder.Entity("Modules.Conversations.Domain.Entities.Conversation", b =>
