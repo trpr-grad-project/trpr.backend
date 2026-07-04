@@ -1,4 +1,5 @@
 using Modules.Trips.Domain.Abstractions;
+using Modules.Trips.Domain.Events;
 using Modules.Trips.Domain.ValueObjects;
 
 namespace Modules.Trips.Domain.Entities
@@ -18,7 +19,9 @@ namespace Modules.Trips.Domain.Entities
                 Status = TripStatus.Ready;
             else
                 Status = TripStatus.Published;
-
+            RaiseDomainEvent(
+                new TripStatusUpdatedDomainEVent(this.Id, TripStatus.Bidding)
+            );
         }
         public void Approve()
         {
@@ -28,6 +31,9 @@ namespace Modules.Trips.Domain.Entities
                 Status = TripStatus.Published;
             else
                 Status = TripStatus.Bidding;
+            RaiseDomainEvent(
+                new TripStatusUpdatedDomainEVent(this.Id, TripStatus.UnderReview)
+            );
         }
         public void Reject(string reason)
         {
@@ -35,24 +41,36 @@ namespace Modules.Trips.Domain.Entities
                 throw new InvalidOperationException("Only trips under review can be rejected.");
             Status = TripStatus.Rejected;
             RejectionReason = reason;
+            RaiseDomainEvent(
+                new TripStatusUpdatedDomainEVent(this.Id, TripStatus.UnderReview)
+            );
         }
         public void Complete()
         {
-            if (Status != TripStatus.Bidding && Status != TripStatus.Started)
+            if (Status != TripStatus.Started)
                 throw new InvalidOperationException("Only Bidding or Started trips can be Finished.");
             Status = TripStatus.Finished;
+            RaiseDomainEvent(
+                new TripStatusUpdatedDomainEVent(this.Id, TripStatus.Started)
+            );
         }
         public void Start()
         {
             if (Status != TripStatus.Published)
                 throw new InvalidOperationException("Only published trips can be started.");
             Status = TripStatus.Started;
+            RaiseDomainEvent(
+               new TripStatusUpdatedDomainEVent(this.Id, TripStatus.Published)
+           );
         }
         public void Cancel()
         {
             if (Status == TripStatus.Canceled)
                 throw new InvalidOperationException("Trip is already canceled.");
             Status = TripStatus.Canceled;
+            RaiseDomainEvent(
+                new TripStatusUpdatedDomainEVent(this.Id, TripStatus.Canceled)
+            );
         }
         public void Ready()
         {
@@ -60,6 +78,9 @@ namespace Modules.Trips.Domain.Entities
                 throw new InvalidOperationException("Only trips in Published status can be marked as Ready.");
             RaiseDomainEvent(new TripReadyDomainEvent(this.Id, this.Status));
             Status = TripStatus.Ready;
+            RaiseDomainEvent(
+              new TripStatusUpdatedDomainEVent(this.Id, TripStatus.Published)
+            );
         }
 
     }
