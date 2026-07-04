@@ -9,6 +9,8 @@ using Modules.Trips.Application.Repositories;
 using Modules.Trips.Domain.Entities;
 using Modules.Notifications.Contracts.Dtos;
 using Modules.Trips.Domain.Events;
+using Microsoft.EntityFrameworkCore;
+using Modules.Trips.Domain.ValueObjects;
 
 namespace Modules.Trips.Application.Projections
 {
@@ -18,14 +20,28 @@ namespace Modules.Trips.Application.Projections
         {
             var trip = await repositoryFactory
                 .Repository<Trip>()
-                .GetFirstOrDefaultByFilter(x => x.Id == domainEvent.TripId) ?? throw new NotFoundException("Trip.NotFound");
-
+                .GetFirstOrDefaultByFilter(x => x.Id == domainEvent.TripId, x => x.Include(x => x.Participants)) ?? throw new NotFoundException("Trip.NotFound");
+            Guid[] participantIds =
+                (
+                    trip.Status == TripStatus.Started
+                    || trip.Status == TripStatus.Ready
+                ) ? [.. trip
+                    .Participants
+                    .Select(
+                        x => x.UserId
+                    )
+                    .Concat(
+                        [trip.UserId]
+                    )] : [trip.UserId];
             await notifiyContract.NotifyUsersAsync(new NotifyUsersRequestDto(
                     $"Trip {trip.Title} Status Updated",
                     $"The status of your trip \"{trip.Title}\" has changed from {domainEvent.OldTripStatus} to {trip.Status}.",
-                    [trip.UserId]
+                    participantIds
                 )
             , cancellationToken);
+
+
+
         }
     }
 }
