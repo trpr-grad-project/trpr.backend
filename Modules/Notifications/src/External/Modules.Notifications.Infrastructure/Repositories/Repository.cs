@@ -24,7 +24,7 @@ namespace Modules.Notifications.Infrastructure.Repositories
             context.Set<TEntity>().Attach(entity);
         }
 
-        public async Task<List<TEntity>> GetForUpdateAsync(params object[] ids)
+        public async Task<List<TEntity>> GetForUpdateAsync<T>(T[] ids)
         {
             var idList = ids.ToList();
 
@@ -60,7 +60,7 @@ namespace Modules.Notifications.Infrastructure.Repositories
                 """;
 
             return await context.Set<TEntity>()
-                .FromSqlRaw(sql, idList.ToArray())
+                .FromSqlRaw(sql, idList.Cast<object>().ToArray())
                 .ToListAsync();
         }
 

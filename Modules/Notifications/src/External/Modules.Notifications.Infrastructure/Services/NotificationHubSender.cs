@@ -12,11 +12,10 @@ namespace Modules.Notifications.Infrastructure.Services
         {
             await hubContext
                 .Clients
-                .User(
+                .Group(
                     notification
                     .UserId
-                    .ToString()
-                )
+                    .ToString())
                 .SendAsync("NotificationCreated", notification.ToResponseDto(), cancellationToken);
         }
     }

@@ -9,10 +9,12 @@ using Modules.Notifications.Application.Services;
 namespace Modules.Notifications.Presentation.Controllers.v1
 {
     [Authorize]
-    [Route("[controller]")]
+    [ApiController]
+    [Route("api/v1/notifications")]
     public class NotificationController(NotificationService notificationService) : ControllerBase
     {
         public Guid UserId => User.GetUserId();
+        [HttpGet]
         public async Task<ActionResult<CursorPageDto<NotificationResponseDto, Guid?>>> Get([FromQuery] QueryNotificationsRequestDto request)
         {
             var result = await notificationService.GetNotificationsAsync(UserId, request);
