@@ -56,11 +56,11 @@ namespace Modules.Trips.Domain.Entities
         }
         public void Start()
         {
-            if (Status != TripStatus.Published)
+            if (Status != TripStatus.Ready)
                 throw new InvalidOperationException("Only published trips can be started.");
             Status = TripStatus.Started;
             RaiseDomainEvent(
-               new TripStatusUpdatedDomainEVent(this.Id, TripStatus.Published)
+               new TripStatusUpdatedDomainEVent(this.Id, TripStatus.Ready)
            );
         }
         public void Cancel()

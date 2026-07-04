@@ -274,10 +274,8 @@ namespace Modules.Trips.Application.Services
                 .GetFirstOrDefaultByFilter(
                     x => x.Id == tripId && x.Status == TripStatus.Ready && x.UserId == userId)
                 ?? throw new NotFoundException("Trip.NotFound");
-            if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved))
-                trip.Start();
-            else
-                throw new BadRequestException("Trip.MaxParticipantsNotReached");
+
+            trip.Start();
             await unitOfWork.SaveChangesAsync();
         }
         public async Task EndTrip(Guid tripId, Guid userId)
