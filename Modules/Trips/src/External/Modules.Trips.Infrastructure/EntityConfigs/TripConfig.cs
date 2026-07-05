@@ -42,11 +42,16 @@ namespace Modules.Trips.Infrastructure.EntityConfigs
                 .IsRequired();
 
             builder.Property(x => x.CreatorRole).HasConversion<int>().HasColumnName("CreatorRole")
-                        .IsRequired();
+                .IsRequired();
 
-            builder.HasOne(t => t.CreatedByUser)
+            builder.HasOne(x => x.CreatedByUser)
                 .WithMany(u => u.CreatedTrips)
-                .HasForeignKey(t => t.UserId)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Guide)
+                .WithMany(u => u.GuidedTrips)
+                .HasForeignKey(x => x.GuideId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // One-to-Many: Trip -> Days

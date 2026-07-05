@@ -47,10 +47,10 @@ namespace Modules.Trips.Domain.Entities
             int maxParticipantCount,
             Guid? guideId,
             List<double> duration,
-            User user,
             ICollection<Governorate> governorates,
             DateTime startDate,
-            DateTime endDate)
+            DateTime endDate
+            )
         {
             Trip newTrip = new()
             {
@@ -68,7 +68,6 @@ namespace Modules.Trips.Domain.Entities
                 TripVisibility = tripVisibility,
                 MaxParticipantsCount = maxParticipantCount,
                 GuideId = guideId,
-                CreatedByUser = user,
                 Status = TripStatus.UnderReview,
                 StartDate = startDate,
                 EndDate = endDate,

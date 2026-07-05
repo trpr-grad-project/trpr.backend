@@ -175,7 +175,8 @@ namespace Modules.Trips.Application.Services
                 .Repository<Trip>()
                 .GetFirstOrDefaultByFilter(
                     x => x.Id == tripId && x.Status == TripStatus.Published,
-                    x => x.Include(x => x.Participants))
+                    x => x.Include(x => x.Participants).ThenInclude(x => x.User)
+                    .Include(x => x.Guide))
                 ?? throw new NotFoundException("Trip.NotFound");
 
             if (trip.UserId == userId)
@@ -186,8 +187,9 @@ namespace Modules.Trips.Application.Services
                 throw new BadRequestException("Trip.MaxParticipantsReached");
             }
 
-            TripParticipant? tripParticipant = trip.Participants
-                .FirstOrDefault(x => x.UserId == userId);
+            TripParticipant? tripParticipant = await repositoryFactory.Repository<TripParticipant>().GetFirstOrDefaultByFilter(
+                x => x.TripId == tripId && x.UserId == userId, includes: x => x.Include(x => x.User)
+            );
 
             if (tripParticipant != null)
                 return;
@@ -195,7 +197,10 @@ namespace Modules.Trips.Application.Services
             tripParticipant = TripParticipant.Create(tripId, userId);
             repositoryFactory.Repository<TripParticipant>().Add(tripParticipant);
             if (trip.AutoApprove == true)
+            {
+                await Pay(trip, trip.Price, tripParticipant.User);
                 tripParticipant.Approve();
+            }
 
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
             {
@@ -242,9 +247,9 @@ namespace Modules.Trips.Application.Services
             if (trip.UserId == dto.UserId)
                 throw new BadRequestException("Trip.CreatorCannotJoin");
 
-            TripParticipant tripParticipant = trip.Participants
-                .FirstOrDefault(x => x.UserId == dto.UserId)
-                ?? throw new NotFoundException("TripParticipant.NotFound");
+            TripParticipant? tripParticipant = await repositoryFactory.Repository<TripParticipant>().GetFirstOrDefaultByFilter(
+                x => x.TripId == trip.Id && x.UserId == dto.UserId, includes: x => x.Include(x => x.User)
+                ) ?? throw new NotFoundException("TripParticipant.NotFound");
 
             if (dto.IsApproved == false)
             {
@@ -269,6 +274,7 @@ namespace Modules.Trips.Application.Services
                 return;
 
             tripParticipant.Approve();
+            await Pay(trip, trip.Price, tripParticipant.User);
             repositoryFactory.Repository<TripParticipant>().Update(tripParticipant);
             await unitOfWork.SaveChangesAsync();
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
@@ -312,12 +318,19 @@ namespace Modules.Trips.Application.Services
         #region Helpers
         private async Task Pay(Trip trip, double price, User joiningUser) 
         {
-            if(trip.CreatorRole.HasFlag(UserRole.User) && trip.GuideId != null)
+            if(trip.CreatorRole.HasFlag(UserRole.Company))
+            {
+                await payContract.Pay(trip.Id.ToString(), joiningUser.Id, price, $"Paid {price} to Company {trip.CreatedByUser!.FirstName}");
+                await payContract.Gain(trip.Id.ToString(),
+                    trip.UserId, price,
+                    $"Recieved {price} from User {joiningUser.FirstName + joiningUser.LastName} on Trip {trip.Id}");
+            }
+            else if (trip.GuideId != null)
             {
                 await payContract.Pay(trip.Id.ToString(), joiningUser.Id, trip.Price, $"Paid {trip.Price} to Guide {trip.Guide!.FirstName + trip.Guide.LastName}");
                 await payContract.Gain(trip.Id.ToString(),
-                    trip.GuideId.Value, trip.Price,
-                    $"Recieved {trip.Price} from User {joiningUser.FirstName + joiningUser.LastName} from Trip {trip.Id}");
+                    trip.GuideId!.Value, trip.Price,
+                    $"Recieved {trip.Price} from User {joiningUser.FirstName + joiningUser.LastName} on Trip {trip.Id}");
             }
         }
         private async Task<IDictionary<DateTime,ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
@@ -381,7 +394,7 @@ namespace Modules.Trips.Application.Services
 
             var theme = await repositoryFactory.Repository<Theme>().GetFirstOrDefaultByFilter(t => t.Id == dto.ThemeId)
                 ?? throw new NotFoundException("Theme.NotFound");
-
+            var guide = guideId.HasValue ? await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(u => u.Id == guideId.Value) : null;
             var governorates = segments
                 .SelectMany(x => x.Value)
                 .Select(x => x.Governorate)
@@ -402,7 +415,6 @@ namespace Modules.Trips.Application.Services
                 dto.MaxParticipantsCount,
                 guideId,
                 dto.Segments.Select(s => s.Duration).ToList(),
-                user,
                 governorates,
                 dto.StartDate,
                 dto.EndDate);

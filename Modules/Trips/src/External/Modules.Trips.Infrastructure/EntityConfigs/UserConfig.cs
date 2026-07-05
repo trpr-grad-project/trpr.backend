@@ -15,11 +15,6 @@ namespace Modules.Trips.Infrastructure.EntityConfigs
         {
             builder.HasKey(u => u.Id);
 
-            builder.HasMany(t => t.CreatedTrips)
-                .WithOne(t => t.CreatedByUser)
-                .HasForeignKey(t => t.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasMany(u => u.JoinedTrips)
                 .WithOne(tp => tp.User)
                 .HasForeignKey(tp => tp.UserId)
