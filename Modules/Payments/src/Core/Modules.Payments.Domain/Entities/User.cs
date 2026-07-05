@@ -11,6 +11,7 @@ public class User : Entity
     public string LastName { get; set; } = string.Empty;
     public string? Email { get; set; }
     public string? PhoneNumber { get; set; }
+    public double Balance { get; private set; } = 0;
     public static User Create(Guid Id, string UserName, string FirstName, string LastName)
     {
         return new User
@@ -24,4 +25,13 @@ public class User : Entity
         };
     }
 
+    public void Charge(double ammount)
+    {
+        Balance -= ammount;
+    }
+
+    public void Recive(double ammount)
+    {
+        Balance += ammount;
+    }
 }

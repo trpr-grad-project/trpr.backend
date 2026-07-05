@@ -7,6 +7,7 @@ using Modules.Payments.Infrastructure.Data;
 using Modules.Payments.Infrastructure.Repositories;
 using Modules.Payments.Infrastructure.Inbox;
 using Modules.Payments.Infrastructure.Outbox;
+using Modules.Payments.Contracts.Contracts;
 
 namespace Modules.Payments.Infrastructure;
 
@@ -38,6 +39,7 @@ public static class InfrastructureDependencyInjection
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
         services.ConfigureOptions<ConfigureProcessOutboxJob>();
         services.ConfigureOptions<ConfigureProcessInboxJob>();
+        services.AddScoped<IPayContract, PayContract>();
         return services;
     }
 }
