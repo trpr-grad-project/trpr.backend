@@ -10,6 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Debug host
+        run: |
+          echo "Length: ${#HOST}"
+        env:
+          HOST: ${{ secrets.SERVER_HOST }}
+      
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1
         with:
