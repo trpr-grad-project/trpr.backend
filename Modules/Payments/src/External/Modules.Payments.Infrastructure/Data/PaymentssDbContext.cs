@@ -14,7 +14,6 @@ public class PaymentsDbContext(DbContextOptions<PaymentsDbContext> options) : Db
 {
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Transaction> Transactions { get; set; }
-    public virtual DbSet<TransactionUser> TransactionUsers { get; set; }
     private IDbContextTransaction? _transaction;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
