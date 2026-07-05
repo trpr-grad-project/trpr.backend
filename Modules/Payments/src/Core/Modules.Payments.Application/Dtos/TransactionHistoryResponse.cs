@@ -6,5 +6,5 @@ using Modules.Payments.Domain.ValueObjects;
 
 namespace Modules.Payments.Application.Dtos
 {
-    public sealed record TransactionHistoryResponse(Guid Id, string? RefNumber, ActionStatus Status, double Amount, DateTime CreatedAtUtc);
+    public sealed record TransactionHistoryResponse(Guid Id, string? RefNumber, ActionStatus Status, double Amount, DateTime CreatedAtUtc, string? Note);
 }

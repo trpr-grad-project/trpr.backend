@@ -55,7 +55,8 @@ public class PaymentsController(
                 x.RefNumber,
                 x.Status,
                 x.Balance,
-                x.CreatedAtUTC))
+                x.CreatedAtUTC,
+                x.Note))
             .ToList();
 
         Guid? nextCursor = null;
