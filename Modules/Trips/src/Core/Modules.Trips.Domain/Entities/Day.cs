@@ -24,6 +24,7 @@ namespace Modules.Trips.Domain.Entities
                 Id = Guid.NewGuid(),
                 Order = order,
                 Duration = duration,
+                DayDate = dayTime,
                 TripId = tripId,
                 Places = places
             };

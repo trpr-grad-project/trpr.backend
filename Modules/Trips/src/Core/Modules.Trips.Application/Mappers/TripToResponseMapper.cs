@@ -26,7 +26,7 @@ namespace Modules.Trips.Application.Mappers
                 Description = source.Description,
                 Price = source.Price,
                 ImagesUrls = imagePaths,
-                TripTime = source.Segments.Count.ToString() + " Day(s)",
+                TripTime = ((source.EndDate - source.StartDate).Days + 1).ToString() + " Day(s)",
                 TripVisibility = source.TripVisibility,
                 EndDate = source.EndDate,
                 Status = source.Status,

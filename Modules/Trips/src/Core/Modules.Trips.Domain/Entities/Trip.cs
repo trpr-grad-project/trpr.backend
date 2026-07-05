@@ -30,6 +30,7 @@ namespace Modules.Trips.Domain.Entities
         public virtual ICollection<TripBidding> Bids { get; set; } = [];
         public int MaxParticipantsCount { get; set; }
         public Guid? GuideId { get; set; }
+        public User? Guide { get; set; }
         public ICollection<TripParticipant> Participants { get; set; } = [];
         public static Trip Create(
             Guid userId,

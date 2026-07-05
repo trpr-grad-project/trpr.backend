@@ -1,5 +1,6 @@
 using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Modules.Payments.Contracts.Contracts;
 using Modules.Trips.Application.Abstractions;
 using Modules.Trips.Application.Dtos;
 using Modules.Trips.Application.Dtos.Requests;
@@ -12,7 +13,7 @@ using Modules.Trips.Domain.ValueObjects;
 
 namespace Modules.Trips.Application.Services
 {
-    public class BiddingService(RepositoryFactory repositoryFactory, IUnitOfWork unitOfWork)
+    public class BiddingService(RepositoryFactory repositoryFactory, IUnitOfWork unitOfWork, IPayContract payContract)
     {
         public async Task PlaceBidAsync(CreateBiddingRequestDto dto, Guid guideId, CancellationToken cancellationToken = default)
         {
@@ -99,20 +100,25 @@ namespace Modules.Trips.Application.Services
         public async Task SelectBidAsync(Guid tripId, Guid biddingId, Guid requestingUserId, CancellationToken cancellationToken = default)
         {
             var trip = await repositoryFactory.Repository<Trip>()
-                .GetFirstOrDefaultByFilter(t => t.Id == tripId)
+                .GetFirstOrDefaultByFilter(t => t.Id == tripId, includes: q => q.Include(x => x.CreatedByUser))
                 ?? throw new NotFoundException("Trip.NotFound");
 
             if (trip.UserId != requestingUserId)
                 throw new NotAuthorizedException("UnAuthorized");
 
             var bidding = await repositoryFactory.Repository<TripBidding>()
-                .GetFirstOrDefaultByFilter(b => b.Id == biddingId && b.TripId == tripId)
+                .GetFirstOrDefaultByFilter(b => b.Id == biddingId && b.TripId == tripId, includes: q => q.Include(x => x.Guide))
                 ?? throw new NotFoundException("Bidding.NotFound");
 
             try
             {
                 trip.SelectGuide(bidding.GuideId);
                 trip.Price = bidding.ProposedPrice;
+                await payContract.Pay(trip.Id.ToString(), trip.UserId, trip.Price,$"Paid {trip.Price} to Guide {bidding.Guide.FirstName + bidding.Guide.LastName}");
+                await payContract.Gain(trip.Id.ToString(),
+                    bidding.GuideId,
+                    trip.Price,
+                    $"Received {trip.Price} from User {trip.CreatedByUser.FirstName + trip.CreatedByUser.LastName} from Trip {trip.Id}");
             }
             catch (InvalidOperationException ex)
             {

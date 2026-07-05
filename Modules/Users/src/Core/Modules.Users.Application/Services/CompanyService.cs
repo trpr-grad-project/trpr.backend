@@ -28,6 +28,7 @@ namespace Modules.Users.Application.Services
             var newUser = User.Create(dto.Identifier, dto.Name,"", passwordHash);
             newUser.Verify();
             userRepository.Add(newUser);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
             var addrole = await adminUserService.AssignRolesAsync(newUser.Id, new AssignRolesRequestDto { Roles = { Role.Company } } , cancellationToken);
             var companyRepository = repositoryFactory.Repository<Company>();
             var company = Company.Create(newUser.Id, newUser.UserName, newUser.FirstName,dto.Logo, dto.Description);
@@ -45,7 +46,7 @@ namespace Modules.Users.Application.Services
         public async Task<CompanyResponseDto> GetCompanyById(Guid id, CancellationToken cancellationToken = default)
         {
             var companyRepository = repositoryFactory.Repository<Company>();
-            var company = await companyRepository.GetFirstOrDefaultByFilter(x => x.Id == id);
+            var company = await companyRepository.GetFirstOrDefaultByFilter(x => x.Id == id, includes: q => q.Include(x => x.Guides));
             if (company == null)
             {
                 throw new NotFoundException("Company.NotFound");
@@ -94,7 +95,7 @@ namespace Modules.Users.Application.Services
         public async Task<List<UserResponseDto>> GetGuidesBelongingToCompany(Guid companyId, CancellationToken cancellationToken = default)
         {
             var companyRepository = repositoryFactory.Repository<Company>();
-            var company = await companyRepository.GetFirstOrDefaultByFilter(x => x.Id == companyId);
+            var company = await companyRepository.GetFirstOrDefaultByFilter(x => x.Id == companyId, includes: q => q.Include(x => x.Guides));
             if (company == null)
             {
                 throw new NotFoundException("Company.NotFound");
@@ -111,7 +112,7 @@ namespace Modules.Users.Application.Services
             {
                 throw new NotFoundException("Company.NotFound");
             }
-            var guide = await userRepository.GetFirstOrDefaultByFilter(x => x.Id == guideId);
+            var guide = await userRepository.GetFirstOrDefaultByFilter(x => x.Id == guideId, includes: q => q.Include(x => x.UserRoles));
             if (guide == null)
             {
                 throw new NotFoundException("User.NotFound");

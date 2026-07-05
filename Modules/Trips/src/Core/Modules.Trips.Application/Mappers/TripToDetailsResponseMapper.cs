@@ -40,7 +40,7 @@ namespace Modules.Trips.Application.Mappers
                 RejectionReason = source.RejectionReason,
                 StartDate = source.StartDate,
                 EndDate = source.EndDate,
-                TripTime = source.Segments.Count.ToString() + "Day(s)",
+                TripTime = ((source.EndDate - source.StartDate).Days + 1).ToString() + " Day(s)",
                 PendingParticipants = source.Participants
                     .Where(p => p.Approved == false)
                     .Select(p => new UserResponseDto

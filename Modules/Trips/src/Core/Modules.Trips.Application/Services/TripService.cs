@@ -6,6 +6,7 @@ using Modules.Conversations.Contracts.Contracts;
 using Modules.Conversations.Contracts.Dtos;
 using Modules.Notifications.Contracts.Contracts;
 using Modules.Notifications.Contracts.Dtos;
+using Modules.Payments.Contracts.Contracts;
 using Modules.Trips.Application.Abstractions;
 using Modules.Trips.Application.Dtos;
 using Modules.Trips.Application.Dtos.Requests;
@@ -25,7 +26,8 @@ namespace Modules.Trips.Application.Services
         ITripSuggestionGenerator tripSuggestionGenerator,
         IMapper<Trip, TripResponseDto> tripMapper,
         IMapper<Trip, TripDetailsResponseDto> tripDetailsMapper,
-        IConversationsContract conversationsContract)
+        IConversationsContract conversationsContract,
+        IPayContract payContract)
     {
         public async Task<object> GetTripSuggestion(TripSuggestionRequestDto requestDto)
         {
@@ -291,7 +293,7 @@ namespace Modules.Trips.Application.Services
             Trip trip = await repositoryFactory
                 .Repository<Trip>()
                 .GetFirstOrDefaultByFilter(
-                    x => x.Id == tripId && x.Status == TripStatus.Ready && x.UserId == userId)
+                    x => x.Id == tripId && x.Status == TripStatus.Published && x.UserId == userId)
                 ?? throw new NotFoundException("Trip.NotFound");
             trip.Start();
             await unitOfWork.SaveChangesAsync();
@@ -308,6 +310,16 @@ namespace Modules.Trips.Application.Services
         }
 
         #region Helpers
+        private async Task Pay(Trip trip, double price, User joiningUser) 
+        {
+            if(trip.CreatorRole.HasFlag(UserRole.User) && trip.GuideId != null)
+            {
+                await payContract.Pay(trip.Id.ToString(), joiningUser.Id, trip.Price, $"Paid {trip.Price} to Guide {trip.Guide!.FirstName + trip.Guide.LastName}");
+                await payContract.Gain(trip.Id.ToString(),
+                    trip.GuideId.Value, trip.Price,
+                    $"Recieved {trip.Price} from User {joiningUser.FirstName + joiningUser.LastName} from Trip {trip.Id}");
+            }
+        }
         private async Task<IDictionary<DateTime,ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
         {
             IDictionary<DateTime, ICollection<Place>> places = new Dictionary<DateTime, ICollection<Place>>();
