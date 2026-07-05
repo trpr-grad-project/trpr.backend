@@ -7,9 +7,9 @@ namespace Modules.Trips.Application.Dtos.Requests
     {
         public int ThemeId { get; set; }
         public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public double Price { get; set; }
-        public DateOnly StartDate { get; set; }
+        public string Description { get; set; } = string.Empty; 
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public List<DayDto> Segments { get; set; } = [];
         public List<string> Images { get; set; } = [];
         public int MaxParticipantsCount { get; set; }
@@ -23,8 +23,13 @@ namespace Modules.Trips.Application.Dtos.Requests
         public Guid? GuideId { get; set; }
     }
 
-    public class  CompanyCreateTripRequestDto : CreateTripRequestDto
+    public class CompanyCreateTripRequestDto : CreateTripRequestDto
     {
+        public double Price { get; set; }
         public Guid GuideId { get; set; }
+    }
+    public class GuideCreateTripRequestDto : CreateTripRequestDto
+    {
+        public double Price { get; set; }
     }
 }

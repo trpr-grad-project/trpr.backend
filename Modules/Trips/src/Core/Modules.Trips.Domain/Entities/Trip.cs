@@ -18,7 +18,8 @@ namespace Modules.Trips.Domain.Entities
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; }
-        public DateOnly StartDate { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public double ActualDuration { get; set; }
         public double ExpectedDuration { get; set; }
         public ICollection<string> Images { get; set; } = [];
@@ -41,13 +42,14 @@ namespace Modules.Trips.Domain.Entities
             ICollection<string> images,
             TripVisibility tripVisibility,
             TripPublishMode publishMode,
-            ICollection<ICollection<Place>> segments,
+            IDictionary<DateTime,ICollection<Place>> segments,
             int maxParticipantCount,
             Guid? guideId,
             List<double> duration,
             User user,
             ICollection<Governorate> governorates,
-            DateOnly startDate)
+            DateTime startDate,
+            DateTime endDate)
         {
             Trip newTrip = new()
             {
@@ -68,6 +70,7 @@ namespace Modules.Trips.Domain.Entities
                 CreatedByUser = user,
                 Status = TripStatus.UnderReview,
                 StartDate = startDate,
+                EndDate = endDate,
             };
             foreach (double dur in duration)
             {
@@ -77,13 +80,13 @@ namespace Modules.Trips.Domain.Entities
             int order = 1;
             foreach (var segment in segments)
             {
-                Day day = Day.Create(order, duration[order - 1], newTrip.Id, segment);
+                Day day = Day.Create(order, duration[order - 1], segment.Key, newTrip.Id, segment.Value);
                 days.Add(day);
             }
             newTrip.Segments = days;
             MultiPoint points = new(
                 [.. segments
-                    .SelectMany(s => s)
+                    .SelectMany(s => s.Value)
                     .Select(p => p.Location)]
                 )
             { SRID = 4326 };

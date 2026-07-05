@@ -32,6 +32,14 @@ namespace Modules.Trips.Presentation.Controllers.v1
             return Ok(request);
         }
 
+        [HttpGet("explore")]
+        [Authorize]
+        public async Task<ActionResult<PaginationDto<TripResponseDto>>> ExploreTrips([FromQuery] BaseSearchTripRequestDto requestDto, CancellationToken cancellationToken)
+        {
+            var request = await tripService.GetTrips(requestDto, null, TripStatus.Published, cancellationToken);
+            return Ok(request);
+        }
+
         [HttpGet("form-data")]
         [Authorize]
         public async Task<ActionResult<ThemeFormDataDto>> GetTripFormDate()
@@ -49,7 +57,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
         }
         [HttpPost("guide")]
         [Authorize(Roles = "Guide")]
-        public async Task<ActionResult<TripResponseDto>> CreateTripByGuide([FromBody] UserCreateTripRequestDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<TripResponseDto>> CreateTripByGuide([FromBody] GuideCreateTripRequestDto dto, CancellationToken cancellationToken)
         {
             var request = await tripService.CreateTripByGuide(dto, UserId, cancellationToken);
             return Ok(request);

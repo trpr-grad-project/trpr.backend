@@ -13,7 +13,6 @@ namespace Modules.Users.Application.Services;
 public class ProfileManagementService(
     IUsersDbContext context,
     IUnitOfWork unitOfWork,
-    INotifiyContract notifyContract,
     ILogger<ProfileManagementService> logger)
 {
     public async Task<ProfileResponseDto> CreateProfileAsync(Guid userId, CreateProfileRequestDto createRequest, CancellationToken cancellationToken = default)
@@ -62,17 +61,7 @@ public class ProfileManagementService(
             throw new NotFoundException("Profile.NotFound");
         }
 
-        NotificationSettingsResponseDto? notificationSettings = null;
-        try
-        {
-            notificationSettings = await notifyContract.GetNotificationSettingsAsync(userId, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            logger.LogWarning(ex, "Failed to fetch notification settings for user {UserId}", userId);
-        }
-
-        return ProfileMapper.ToProfileResponseDto(profile, notificationSettings);
+        return ProfileMapper.ToProfileResponseDto(profile);
     }
 
     public async Task<ProfileResponseDto> UpdateProfileAsync(Guid userId, UpdateProfileBulkRequestDto updateRequest, CancellationToken cancellationToken = default)
@@ -100,19 +89,9 @@ public class ProfileManagementService(
 
         logger.LogInformation("Profile updated successfully for user {UserId}", userId);
 
-        if (updateRequest.NotificationSettings != null)
-        {
-            var notifSettings = new UpdateNotificationSettingsRequestDto
-            {
-                TripUpdates = updateRequest.NotificationSettings.TripUpdates,
-                Messages = updateRequest.NotificationSettings.Messages,
-                Promotions = updateRequest.NotificationSettings.Promotions
-            };
-            await notifyContract.UpdateNotificationSettingsAsync(userId, notifSettings, cancellationToken);
-        }
-
         // Reload the profile with all related data
         return await GetProfileByUserIdAsync(userId, cancellationToken);
+        
     }
 
     private static void UpdateProfileLanguages(Profile profile, List<int>? languageIds)

@@ -12,7 +12,8 @@ namespace Modules.Trips.Application.Dtos.Responses
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; }
         public bool AutoApprove { get; set; }
-        public DateOnly StartDate { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public string TripTime { get; set; } = string.Empty;
         public ICollection<string> ImagesUrls { get; set; } = [];
         public TripVisibility TripVisibility { get; set; }

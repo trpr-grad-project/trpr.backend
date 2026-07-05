@@ -2,6 +2,10 @@
 using Common.Application.Dtos;
 using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Modules.Conversations.Contracts.Contracts;
+using Modules.Conversations.Contracts.Dtos;
+using Modules.Notifications.Contracts.Contracts;
+using Modules.Notifications.Contracts.Dtos;
 using Modules.Trips.Application.Abstractions;
 using Modules.Trips.Application.Dtos;
 using Modules.Trips.Application.Dtos.Requests;
@@ -20,7 +24,8 @@ namespace Modules.Trips.Application.Services
         BiddingService biddingService,
         ITripSuggestionGenerator tripSuggestionGenerator,
         IMapper<Trip, TripResponseDto> tripMapper,
-        IMapper<Trip, TripDetailsResponseDto> tripDetailsMapper)
+        IMapper<Trip, TripDetailsResponseDto> tripDetailsMapper,
+        IConversationsContract conversationsContract)
     {
         public async Task<object> GetTripSuggestion(TripSuggestionRequestDto requestDto)
         {
@@ -59,7 +64,7 @@ namespace Modules.Trips.Application.Services
         }
         public async Task<TripResponseDto> CreateTripByCompany(CompanyCreateTripRequestDto dto, Guid userId, CancellationToken cancellationToken)
         {
-            var trip = await CreateTripCore(dto, UserRole.Company, userId,
+            var trip = await CreateTripCore(dto, UserRole.Company, userId, dto.Price,
                 TripVisibility.Public, TripPublishMode.DirectPublish,
                 guideId: dto.GuideId,
                 notFoundKey: "Company.NotFound",
@@ -69,10 +74,10 @@ namespace Modules.Trips.Application.Services
             return tripMapper.Map(trip);
         }
 
-        public async Task<TripResponseDto> CreateTripByGuide(CreateTripRequestDto dto, Guid userId, CancellationToken cancellationToken)
+        public async Task<TripResponseDto> CreateTripByGuide(GuideCreateTripRequestDto dto, Guid userId, CancellationToken cancellationToken)
         {
             // the creator is the guide
-            var trip = await CreateTripCore(dto, UserRole.Guide, userId,
+            var trip = await CreateTripCore(dto, UserRole.Guide, userId, dto.Price,
                 TripVisibility.Public, TripPublishMode.DirectPublish,
                 guideId: userId,
                 notFoundKey: "Guide.NotFound",
@@ -83,7 +88,7 @@ namespace Modules.Trips.Application.Services
         }
         public async Task<TripResponseDto> CreateTripByUser(UserCreateTripRequestDto dto, Guid userId, CancellationToken cancellationToken)
         {
-            var trip = await CreateTripCore(dto, UserRole.User, userId,
+            var trip = await CreateTripCore(dto, UserRole.User, userId, 0,
                 dto.TripVisibility, dto.PublishMode,
                 guideId: dto.GuideId,
                 notFoundKey: "User.NotFound",
@@ -193,6 +198,13 @@ namespace Modules.Trips.Application.Services
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
             {
                 trip.Ready();
+                await conversationsContract.CreateConversation(new CreateConversationDto
+                {
+                    userId = userId,
+                    Title = trip.Title,
+                    ImageUrl = null,
+                    ParticipantUserIds = trip.Participants.Select(x => x.UserId).ToList()
+                });
             }
             repositoryFactory.Repository<Trip>().Update(trip);
 
@@ -263,6 +275,13 @@ namespace Modules.Trips.Application.Services
                     .Where(x => x.TripId == trip.Id && x.Approved == false)
                     .ExecuteDeleteAsync();
                 trip.Ready();
+                await conversationsContract.CreateConversation(new CreateConversationDto
+                {
+                    userId = userId,
+                    Title = trip.Title,
+                    ImageUrl = null,
+                    ParticipantUserIds = trip.Participants.Select(x => x.UserId).ToList()
+                });
                 await unitOfWork.SaveChangesAsync();
             }
             return;
@@ -274,7 +293,6 @@ namespace Modules.Trips.Application.Services
                 .GetFirstOrDefaultByFilter(
                     x => x.Id == tripId && x.Status == TripStatus.Ready && x.UserId == userId)
                 ?? throw new NotFoundException("Trip.NotFound");
-
             trip.Start();
             await unitOfWork.SaveChangesAsync();
         }
@@ -290,13 +308,13 @@ namespace Modules.Trips.Application.Services
         }
 
         #region Helpers
-        private async Task<ICollection<ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
+        private async Task<IDictionary<DateTime,ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
         {
-            ICollection<ICollection<Place>> places = [];
+            IDictionary<DateTime, ICollection<Place>> places = new Dictionary<DateTime, ICollection<Place>>();
             foreach (var day in source)
             {
                 ICollection<Place> dayPlaces = await placeService.GetPlacesAsync(day.PlacesIds);
-                places.Add(dayPlaces);
+                places.Add(day.DayDate, dayPlaces);
             }
             return places;
         }
@@ -337,6 +355,7 @@ namespace Modules.Trips.Application.Services
             CreateTripRequestDto dto,
             UserRole role,
             Guid userId,
+            double price,
             TripVisibility visibility,
             TripPublishMode publishMode,
             Guid? guideId,
@@ -352,11 +371,10 @@ namespace Modules.Trips.Application.Services
                 ?? throw new NotFoundException("Theme.NotFound");
 
             var governorates = segments
-                .SelectMany(x => x)
+                .SelectMany(x => x.Value)
                 .Select(x => x.Governorate)
                 .DistinctBy(x => x.Id)
                 .ToList();
-
             var trip = Trip.Create(
                 userId,
                 theme,
@@ -364,7 +382,7 @@ namespace Modules.Trips.Application.Services
                 dto.Title,
                 dto.AutoApprove,
                 dto.Description,
-                dto.Price,
+                price,
                 dto.Images,
                 visibility,
                 publishMode,
@@ -374,7 +392,8 @@ namespace Modules.Trips.Application.Services
                 dto.Segments.Select(s => s.Duration).ToList(),
                 user,
                 governorates,
-                dto.StartDate);
+                dto.StartDate,
+                dto.EndDate);
 
             repositoryFactory.Repository<Trip>().Add(trip);
 

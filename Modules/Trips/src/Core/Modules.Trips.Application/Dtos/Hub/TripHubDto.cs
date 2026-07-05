@@ -10,7 +10,8 @@ namespace Modules.Trips.Application.Dtos.Hub
         public Guid Id { get; init; }
         public string Title { get; init; } = default!;
         public string? Description { get; init; }
-        public DateOnly StartDate { get; init; }
+        public DateTime StartDate { get; init; }
+        public DateTime EndDate { get; init; }
         public double? ActualDuration { get; init; }
         public double ExpectedDuration { get; init; }
         public double Price { get; init; }

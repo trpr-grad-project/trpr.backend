@@ -19,7 +19,7 @@ namespace Modules.Trips.Presentation.Hubs
             .Include(x => x.Trip)
             .Where(x =>
                 (x.UserId == UserId) &&
-                (x.Trip.StartDate == DateOnly.FromDateTime(DateTime.UtcNow)) &&
+                (x.Trip.StartDate == DateTime.UtcNow) &&
                 (x.Trip.Status == TripStatus.Started || x.Trip.Status == TripStatus.Ready)
             )
             .Select(x => x.Trip)

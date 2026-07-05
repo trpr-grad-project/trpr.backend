@@ -6,7 +6,7 @@ namespace Modules.Users.Application.Helpers;
 
 public static class ProfileMapper
 {
-    public static ProfileResponseDto ToProfileResponseDto(Profile profile, NotificationSettingsResponseDto? notificationSettings = null)
+    public static ProfileResponseDto ToProfileResponseDto(Profile profile)
     {
         return new ProfileResponseDto
         {
@@ -15,12 +15,7 @@ public static class ProfileMapper
             Languages = [.. profile.Languages.Select(x => x.Language.ToLanguageResponseDto())],
             Interests = [.. profile.Interests.Select(x => x.Interest.ToInterestResponseDto())],
             Vibes = [.. profile.Vibes.Select(x => x.Vibe.ToVibeResponseDto())],
-            NotificationSettings = notificationSettings == null ? null : new ProfileNotificationSettingsDto
-            {
-                TripUpdates = notificationSettings.TripUpdates,
-                Messages = notificationSettings.Messages,
-                Promotions = notificationSettings.Promotions
-            }
+        
         };
     }
 

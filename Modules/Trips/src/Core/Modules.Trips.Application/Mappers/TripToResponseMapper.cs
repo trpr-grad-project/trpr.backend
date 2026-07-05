@@ -26,8 +26,9 @@ namespace Modules.Trips.Application.Mappers
                 Description = source.Description,
                 Price = source.Price,
                 ImagesUrls = imagePaths,
-                TripTime = source.Segments.Max(x => x.Order).ToString() + " Day(s)",
+                TripTime = source.Segments.Count.ToString() + " Day(s)",
                 TripVisibility = source.TripVisibility,
+                EndDate = source.EndDate,
                 Status = source.Status,
                 AutoApprove = source.AutoApprove,
                 Segments = source
@@ -37,6 +38,7 @@ namespace Modules.Trips.Application.Mappers
                     {
                         Day = idx + 1,
                         Duration = x.Duration,
+                        DayDate = x.DayDate,
                         Places = x.Places.Select(p => p.ToPlaceDto()).ToList()
                     }).ToList(),
                 MaxParticipantsCount = source.MaxParticipantsCount,

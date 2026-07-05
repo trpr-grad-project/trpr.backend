@@ -112,6 +112,7 @@ namespace Modules.Trips.Application.Services
             try
             {
                 trip.SelectGuide(bidding.GuideId);
+                trip.Price = bidding.ProposedPrice;
             }
             catch (InvalidOperationException ex)
             {

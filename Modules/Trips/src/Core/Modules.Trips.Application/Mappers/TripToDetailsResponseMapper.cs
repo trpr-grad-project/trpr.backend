@@ -39,7 +39,8 @@ namespace Modules.Trips.Application.Mappers
                 PublishMode = source.PublishMode,
                 RejectionReason = source.RejectionReason,
                 StartDate = source.StartDate,
-                TripTime = source.Segments.Max(x => x.Order).ToString() + "Day(s)",
+                EndDate = source.EndDate,
+                TripTime = source.Segments.Count.ToString() + "Day(s)",
                 PendingParticipants = source.Participants
                     .Where(p => p.Approved == false)
                     .Select(p => new UserResponseDto
@@ -71,6 +72,7 @@ namespace Modules.Trips.Application.Mappers
                     {
                         Day = idx + 1,
                         Duration = x.Duration,
+                        DayDate = x.DayDate,
                         Places = x.Places.Select(p => p.ToPlaceDto()).ToList()
                     }).ToList(),
                 MaxParticipantsCount = source.MaxParticipantsCount,
