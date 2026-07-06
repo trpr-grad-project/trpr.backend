@@ -4,6 +4,7 @@ using Modules.Trips.Infrastructure.Dtos.Requests;
 using Modules.Trips.Infrastructure.Dtos.Responses;
 using Modules.Trips.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Modules.Trips.Infrastructure.Clients;
 
@@ -29,6 +30,8 @@ public class TripPlanClient
         var url = $"{baseUrl}/plan";
         HttpResponseMessage httpResponseMessage = await HttpClient.PostAsJsonAsync(url, request, cancellationToken);
         Logger.LogInformation("Trip plan request sent to {Url} with payload: {@Request}", url, request);
+        string responseBody = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken);
+        string response2Body = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken);
         if (!httpResponseMessage.IsSuccessStatusCode)
         {
             string responseContent = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken);

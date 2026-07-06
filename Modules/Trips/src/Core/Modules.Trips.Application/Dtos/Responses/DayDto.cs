@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.SignalR;
+
 namespace Modules.Trips.Application.Dtos.Responses;
 
 public class DayResponseDto

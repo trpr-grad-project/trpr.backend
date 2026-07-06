@@ -5,22 +5,21 @@ namespace Modules.Trips.Application.Services
 {
     public interface ITripSuggestionGenerator
     {
-        public Task<object> GenerateTrip(DateTime startDate, int numberOfDays, Theme theme, ICollection<PlaceDto> places);
+        public Task<Dictionary<int, RankedItinerary>> GenerateTrip(DateTime startDate, int numberOfDays, Theme theme, ICollection<PlaceDto> places);
     }
 
     public class AiTripSuggestionGenerator(
-        IAiTripSuggestionService aiTripSuggestionService
     ) : ITripSuggestionGenerator
     {
-        public Task<object> GenerateTrip(DateTime startDate, int numberOfDays, Theme theme, ICollection<PlaceDto> places)
+        public async Task<Dictionary<int, RankedItinerary>> GenerateTrip(DateTime startDate, int numberOfDays, Theme theme, ICollection<PlaceDto> places)
         {
-            return aiTripSuggestionService.GenerateTripPlan(startDate, theme, places, numberOfDays);
+            throw new NotImplementedException("Not implemented yet");
         }
     }
 
     public class AlgorithmicSuggestionGenerator(IThemeProvider themeProvider, IItineraryRecommendationEngine itineraryRecommendationEngine) : ITripSuggestionGenerator
     {
-        public async Task<object> GenerateTrip(DateTime startDate, int numberOfDays, Theme theme, ICollection<PlaceDto> places)
+        public async Task<Dictionary<int, RankedItinerary>> GenerateTrip(DateTime startDate, int numberOfDays, Theme theme, ICollection<PlaceDto> places)
         {
             var themeDefinition = themeProvider
                 .Get(theme.Id);

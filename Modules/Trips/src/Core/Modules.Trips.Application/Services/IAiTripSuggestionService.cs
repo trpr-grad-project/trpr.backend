@@ -5,5 +5,5 @@ using Modules.Trips.Domain.Entities;
 
 public interface IAiTripSuggestionService
 {
-    Task<object> GenerateTripPlan(DateTime startDate, Theme theme, ICollection<PlaceDto> places, int numberOfDays);
+    Task<List<List<SuggestedPlaceDto>>> GenerateTripPlan(DateTime startDate, Theme theme, ICollection<PlaceDto> places, int numberOfDays);
 }
