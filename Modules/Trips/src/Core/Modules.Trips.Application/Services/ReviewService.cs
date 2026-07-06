@@ -113,8 +113,8 @@ namespace Modules.Trips.Application.Services
             await usersContract.UpdateUserRating(new UpdateUserRatingDto
             {
                 UserId = user.Id,
-                Rating = user.Rating!.Value,
-                RatingCount = user.RatingCount!.Value,
+                Rating = user.Rating,
+                RatingCount = user.RatingCount,
                 Review = review
             });
         }

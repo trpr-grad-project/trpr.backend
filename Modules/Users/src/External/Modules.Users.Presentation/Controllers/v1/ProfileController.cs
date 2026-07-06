@@ -32,6 +32,15 @@ namespace Modules.Users.Presentation.Controllers.v1
             var result = await adminUserService.GetUserByIdAsync(UserId, cancellationToken);
             return Ok(result);
         }
+        /// <summary>
+        /// Get user profile with all languages, interests, and vibes
+        /// </summary>
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<UserResponseDto>> GetProfile([FromRoute] Guid id,CancellationToken cancellationToken)
+        {
+            var profile = await adminUserService.GetUserByIdAsync(id, cancellationToken);
+            return Ok(profile);
+        }
 
         /// <summary>
         /// Update profile with languages, interests, and vibes in bulk

@@ -19,10 +19,14 @@ namespace Modules.Users.Application
             {
                 throw new NotFoundException("User.NotFound");
             }
-            user!.Rating = request.Rating;
+            user.Rating = request.Rating;
             user.RatingCount = request.RatingCount;
-            if(request.Review != null)
-                user.Reviews!.Add(request.Review);
+
+            if (request.Review != null)
+            {
+                user.Reviews ??= new List<string>();
+                user.Reviews.Add(request.Review);
+            }
             await unitOfWork.SaveChangesAsync();
         }
     }
