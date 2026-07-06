@@ -32,6 +32,9 @@ namespace Modules.Trips.Domain.Entities
         public Guid? GuideId { get; set; }
         public User? Guide { get; set; }
         public ICollection<TripParticipant> Participants { get; set; } = [];
+        public virtual ICollection<TripRating> TripRatings { get; set; } = [];
+        public double AverageRating { get; set; } = 0;
+        public int TotalRatings { get; set; } = 0;
         public static Trip Create(
             Guid userId,
             Theme theme,
@@ -103,6 +106,16 @@ namespace Modules.Trips.Domain.Entities
             }
             newTrip.TripGovernorates = tripGovernorates;
             return newTrip;
+        }
+
+        public void UpdateRating(double newRating)
+        {
+            if (newRating < 0 || newRating > 5)
+                throw new ArgumentException("Rating must be between 0 and 5", nameof(newRating));
+
+            // Update aggregate rating
+            AverageRating = ((AverageRating * TotalRatings) + newRating) / (TotalRatings + 1);
+            TotalRatings++;
         }
 
         // update method for adding/removing participants
