@@ -1,3 +1,4 @@
+using Common.Application.Exceptions;
 using Modules.Trips.Application.Dtos.Responses;
 using Modules.Trips.Domain.Entities;
 
@@ -37,7 +38,7 @@ namespace Modules.Trips.Application.Services
                 .GeneratePlans([.. places], categoryLimits, 11);
                 RankedItinerary rankedItinerary = itineraryRecommendationEngine
                     .Rank(placess, themeDefinition)
-                    .First();
+                    .FirstOrDefault() ?? throw new NotFoundException("Trip.NotFound");
                 rankedItineraries[numberOfDay] = rankedItinerary;
                 var placesToRemoveIds = rankedItinerary.Itinerary.Places.Select(x => x.Id).ToList();
                 var placesToRemove = places.Where(x => placesToRemoveIds.Contains(x.Id)).ToList();
