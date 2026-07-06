@@ -12,7 +12,7 @@ using Modules.Trips.Domain.Entities;
 namespace Modules.Trips.Presentation.Controllers.v1
 {
     [ApiController]
-    [Route("api/review")]
+    [Route("api/v1/review")]
     public class ReviewController(ReviewService reviewService) : ControllerBase
     {
         public Guid UserId => User.GetUserId();
