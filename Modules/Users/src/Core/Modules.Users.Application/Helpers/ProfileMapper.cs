@@ -6,7 +6,7 @@ namespace Modules.Users.Application.Helpers;
 
 public static class ProfileMapper
 {
-    public static ProfileResponseDto ToProfileResponseDto(Profile profile)
+    public static ProfileResponseDto ToProfileResponseDto(Profile profile, string avatar)
     {
         return new ProfileResponseDto
         {
@@ -15,7 +15,7 @@ public static class ProfileMapper
             Languages = [.. profile.Languages.Select(x => x.Language.ToLanguageResponseDto())],
             Interests = [.. profile.Interests.Select(x => x.Interest.ToInterestResponseDto())],
             Vibes = [.. profile.Vibes.Select(x => x.Vibe.ToVibeResponseDto())],
-        
+            AvatarUrl = avatar
         };
     }
 

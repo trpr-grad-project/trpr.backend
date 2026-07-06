@@ -125,5 +125,13 @@ namespace Modules.Users.Application.Services
             companyRepository.Update(company);
             await unitOfWork.SaveChangesAsync(cancellationToken);
         }
+
+        public async Task<List<UserResponseDto>> GetAllGuides(CancellationToken cancellationToken)
+        {
+            var userRepository = repositoryFactory.Repository<User>();
+            var guides = await userRepository.GetByExpWhereAsync(x => x.UserRoles.Any(r => r.Role == Role.Guide));
+            return guides.Select(x => x.ToResponseDto()).ToList();
+        }
+        
     }
 }
