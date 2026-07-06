@@ -156,47 +156,5 @@ namespace Modules.Trips.Presentation.Controllers.v1
             await tripService.EndTrip(id, UserId);
             return NoContent();
         }
-
-        [HttpPost("{tripId:guid}/review")]
-        [Authorize]
-        public async Task<ActionResult> SubmitReview(
-            [FromRoute] Guid tripId,
-            [FromBody] ReviewTripRequestDto request,
-            CancellationToken cancellationToken)
-        {
-            await tripService.SubmitReviewAsync(tripId, UserId, request, cancellationToken);
-            return NoContent();
-        }
-
-        [HttpGet("{tripId:guid}/reviews")]
-        [Authorize]
-        public async Task<ActionResult<ICollection<ReviewResponseDto>>> GetTripReviews(
-            [FromRoute] Guid tripId,
-            CancellationToken cancellationToken)
-        {
-            var reviews = await tripService.GetTripReviewsAsync(tripId, cancellationToken);
-            return Ok(reviews);
-        }
-
-        [HttpPost("{tripId:guid}/rating")]
-        [Authorize]
-        public async Task<ActionResult> SubmitTripRating(
-            [FromRoute] Guid tripId,
-            [FromBody] SubmitTripRatingRequestDto request,
-            CancellationToken cancellationToken)
-        {
-            await tripService.SubmitTripRatingAsync(tripId, UserId, request, cancellationToken);
-            return NoContent();
-        }
-
-        [HttpGet("{tripId:guid}/ratings")]
-        [Authorize]
-        public async Task<ActionResult<ICollection<TripRatingResponseDto>>> GetTripRatings(
-            [FromRoute] Guid tripId,
-            CancellationToken cancellationToken)
-        {
-            var ratings = await tripService.GetTripRatingsAsync(tripId, cancellationToken);
-            return Ok(ratings);
-        }
     }
 }

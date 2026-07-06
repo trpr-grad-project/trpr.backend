@@ -1,10 +1,11 @@
-using Microsoft.Extensions.DependencyInjection;
-using Modules.Users.Application.Interfaces;
-using Modules.Users.Application.Services;
-using Modules.Users.Application.Options;
-using Modules.Users.Application.Factories;
-using Modules.Users.Domain.ValueObjects;
 using Common.Application.DomainEvents.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Modules.Users.Application.Factories;
+using Modules.Users.Application.Interfaces;
+using Modules.Users.Application.Options;
+using Modules.Users.Application.Services;
+using Modules.Users.Contracts.Contracts;
+using Modules.Users.Domain.ValueObjects;
 
 namespace Modules.Users.Application;
 
@@ -35,6 +36,7 @@ public static class ApplicationDependencyInjection
         services.AddScoped<OtpHandlerFactory>();
         services.AddKeyedScoped<ITokenHandler, ForgetPasswordOtpHandler>(TokenType.ForgetPasswordOtp);
         services.AddKeyedScoped<ITokenHandler, CreateUserOtpHandler>(TokenType.Otp);
+        services.AddScoped<IUsersContract, UpdateUserRatingContract>();
         #endregion
 
         return services;

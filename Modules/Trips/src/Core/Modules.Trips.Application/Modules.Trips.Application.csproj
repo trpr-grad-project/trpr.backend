@@ -2,6 +2,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Conversations\src\External\Modules.Conversations.Contracts\Modules.Conversations.Contracts.csproj" />
     <ProjectReference Include="..\..\..\..\Payments\src\External\Modules.Payments.Contracts\Modules.Payments.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\..\Users\src\External\Modules.Users.Contracts\Modules.Users.Contracts.csproj" />
     <ProjectReference Include="..\Modules.Trips.Domain\Modules.Trips.Domain.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\Common.Application\Common.Application.csproj" />
     <ProjectReference Include="..\..\External\Modules.Trips.Contracts\Modules.Trips.Contracts.csproj" />

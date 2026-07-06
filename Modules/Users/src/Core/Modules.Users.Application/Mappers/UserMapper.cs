@@ -37,7 +37,9 @@ namespace Modules.Users.Application.Mappers
                         Thumbnail = pv.Vibe.Thumbnail,
                         Description = pv.Vibe.Description,
                         Name = pv.Vibe.Name
-                    }).ToList()
+                    }).ToList(),
+                    Rating = user.Profile.Rating,
+                    Reviews = user.Profile.Reviews,
                 };
                 return new UserResponseDto
                 {

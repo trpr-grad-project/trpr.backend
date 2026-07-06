@@ -13,8 +13,6 @@ public class User : Entity
     public string PasswordHash { get; private set; } = string.Empty;
     public bool TwoFactorEnabled { get; private set; } = false;
     public bool IsVerified { get; private set; } = false;
-    public double? Rating { get; set; } = null;
-    public int? RatingCount { get; set; } = null;
     public virtual Profile Profile { get; set; } = default!;
     public virtual ICollection<Token> Tokens { get; set; } = [];
     public virtual ICollection<UserRole> UserRoles { get; set; } = [];

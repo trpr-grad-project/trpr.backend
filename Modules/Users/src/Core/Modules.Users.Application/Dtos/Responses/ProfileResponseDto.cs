@@ -35,6 +35,8 @@ public class ProfileResponseDto
 {
     public Guid Id { get; set; }
     public string Bio { get; set; } = string.Empty;
+    public double? Rating { get; set; }
+    public List<string>? Reviews { get; set; }
     public List<LanguageResponseDto> Languages { get; set; } = new();
     public List<InterestResponseDto> Interests { get; set; } = new();
     public List<VibeResponseDto> Vibes { get; set; } = new();

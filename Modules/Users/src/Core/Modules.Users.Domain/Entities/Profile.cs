@@ -11,7 +11,9 @@ namespace Modules.Users.Domain.Entities
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
         public virtual User User { get; set; } = default!;
-
+        public double? Rating { get; set; } = null;
+        public int? RatingCount { get; set; } = null;
+        public List<string>? Reviews { get; set; } = new List<string>();
         // Navigation properties
         public virtual ICollection<ProfileLanguage> Languages { get; set; } = new List<ProfileLanguage>();
         public virtual ICollection<ProfileInterest> Interests { get; set; } = new List<ProfileInterest>();
