@@ -56,7 +56,7 @@ namespace Modules.Trips.Domain.Entities
         }
         public void Start()
         {
-            if (Status != TripStatus.Ready)
+            if (Status != TripStatus.Ready && Status != TripStatus.Published)
                 throw new InvalidOperationException("Only published trips can be started.");
             Status = TripStatus.Started;
             RaiseDomainEvent(

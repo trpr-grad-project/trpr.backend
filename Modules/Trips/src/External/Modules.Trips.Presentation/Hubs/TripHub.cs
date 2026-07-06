@@ -14,13 +14,15 @@ namespace Modules.Trips.Presentation.Hubs
         public Guid UserId => Context.User!.GetUserId();
         public async override Task OnConnectedAsync()
         {
+            var today = DateTime.UtcNow.Date;
+            var tomorrow = today.AddDays(1);
             var trips = await repositoryFactory.Repository<TripParticipant>()
             .GetQueryable()
             .Include(x => x.Trip)
+            .Where(x => x.UserId == UserId)
             .Where(x =>
-                (x.UserId == UserId) &&
-                (x.Trip.StartDate == DateTime.UtcNow) &&
-                (x.Trip.Status == TripStatus.Started || x.Trip.Status == TripStatus.Ready)
+                (x.Trip.StartDate >= today && x.Trip.StartDate < tomorrow && x.Trip.Status == TripStatus.Ready) ||
+                (x.Trip.Status == TripStatus.Started)
             )
             .Select(x => x.Trip)
             .ToListAsync();
@@ -46,6 +48,17 @@ namespace Modules.Trips.Presentation.Hubs
             await base.OnConnectedAsync();
         }
 
+        public async Task UpdateLocation(Guid tripId, double latitude, double longitude)
+        {
+            await Clients.OthersInGroup(tripId.ToString())
+                .SendAsync("LocationUpdated", new
+                {
+                    UserId,
+                    TripId = tripId,
+                    Latitude = latitude,
+                    Longitude = longitude
+                });
+        }
         public async override Task OnDisconnectedAsync(Exception? exception)
         {
 
