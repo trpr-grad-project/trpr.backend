@@ -31,7 +31,7 @@ namespace Modules.Trips.Application.Services
         IConversationsContract conversationsContract,
         IPayContract payContract)
     {
-        public async Task<object> GetTripSuggestion(TripSuggestionRequestDto requestDto)
+        public async Task<List<List<SuggestedPlaceDto>>> GetTripSuggestion(TripSuggestionRequestDto requestDto)
         {
             var places = await placeService.GetPlacesAsync(null, new GetPlacesQueryDto
             {

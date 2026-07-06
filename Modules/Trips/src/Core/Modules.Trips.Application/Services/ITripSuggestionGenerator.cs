@@ -5,20 +5,20 @@ namespace Modules.Trips.Application.Services
 {
     public interface ITripSuggestionGenerator
     {
-        public Task<object> GenerateTrip(DateTime startDate, int numberOfDays, Theme theme, ICollection<PlaceDto> places);
+        public Task<List<List<SuggestedPlaceDto>>> GenerateTrip(DateTime startDate, int numberOfDays, Theme theme, ICollection<PlaceDto> places);
     }
 
     public class AiTripSuggestionGenerator(
         IAiTripSuggestionService aiTripSuggestionService
     ) : ITripSuggestionGenerator
     {
-        public Task<object> GenerateTrip(DateTime startDate, int numberOfDays, Theme theme, ICollection<PlaceDto> places)
+        public async Task<List<List<SuggestedPlaceDto>>> GenerateTrip(DateTime startDate, int numberOfDays, Theme theme, ICollection<PlaceDto> places)
         {
-            return aiTripSuggestionService.GenerateTripPlan(startDate, theme, places, numberOfDays);
+            return await aiTripSuggestionService.GenerateTripPlan(startDate, theme, places, numberOfDays);
         }
     }
 
-    public class AlgorithmicSuggestionGenerator(IThemeProvider themeProvider, IItineraryRecommendationEngine itineraryRecommendationEngine) : ITripSuggestionGenerator
+    public class AlgorithmicSuggestionGenerator(IThemeProvider themeProvider, IItineraryRecommendationEngine itineraryRecommendationEngine)
     {
         public async Task<object> GenerateTrip(DateTime startDate, int numberOfDays, Theme theme, ICollection<PlaceDto> places)
         {

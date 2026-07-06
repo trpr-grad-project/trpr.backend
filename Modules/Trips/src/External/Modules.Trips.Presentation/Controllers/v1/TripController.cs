@@ -19,7 +19,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
         public ICollection<string> UserRoles => User.GetRoles();
         [HttpGet("suggestion")]
         [Authorize]
-        public async Task<ActionResult<object>> GetTripSuggestion([FromQuery] TripSuggestionRequestDto requestDto)
+        public async Task<ActionResult<List<List<SuggestedPlaceDto>>>> GetTripSuggestion([FromQuery] TripSuggestionRequestDto requestDto)
         {
             var result = await tripService.GetTripSuggestion(requestDto);
             return Ok(result);
