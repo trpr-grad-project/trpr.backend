@@ -155,7 +155,8 @@ namespace Modules.Trips.Application.Services
                     q => q.Include(t => t.CreatedByUser),
                     q => q.Include(p => p.Participants)
                         .ThenInclude(u => u.User),
-                    q => q.Include(th => th.TripTheme))
+                    q => q.Include(th => th.TripTheme),
+                    q => q.Include(g => g.Guide))
                 ?? throw new NotFoundException("Trip.NotFound");
 
             var dto = tripDetailsMapper.Map(trip);

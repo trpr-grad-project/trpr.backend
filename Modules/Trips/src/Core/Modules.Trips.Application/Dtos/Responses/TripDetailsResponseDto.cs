@@ -6,6 +6,7 @@ namespace Modules.Trips.Application.Dtos.Responses
     {
         public Guid Id { get; set; }
         public UserResponseDto CreatedByUser { get; set; } = default!;
+        public UserResponseDto? Guide { get; set; } = null;
         public List<string> CreatorRoles { get; set; } = default!;
         public string Theme { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
