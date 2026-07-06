@@ -18,7 +18,7 @@ public static class ApplicationDependencyInjection
         services.AddScoped<TripService>();
         services.AddScoped<BiddingService>();
         services.AddScoped<ReviewService>();
-        services.AddScoped<ITripSuggestionGenerator, AiTripSuggestionGenerator>();
+        services.AddScoped<ITripSuggestionGenerator, AlgorithmicSuggestionGenerator>();
         services.AddScoped<ICategoryScorer, CategoryScorer>();
         services.AddScoped<IThemeProvider, ThemeProvider>();
         services.AddScoped<ITagScorer, TagScorer>();
