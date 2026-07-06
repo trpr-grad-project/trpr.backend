@@ -16,7 +16,10 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureScalar();
 builder.Services.AddControllers();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddConfigurations(builder.Configuration,
     "Users",
