@@ -19,10 +19,10 @@ namespace Modules.Trips.Presentation.Hubs
             var trips = await repositoryFactory.Repository<TripParticipant>()
             .GetQueryable()
             .Include(x => x.Trip)
+            .Where(x => x.UserId == UserId)
             .Where(x =>
-                (x.UserId == UserId) &&
-                (x.Trip.StartDate >= today && x.Trip.StartDate < tomorrow) &&
-                (x.Trip.Status == TripStatus.Started || x.Trip.Status == TripStatus.Ready)
+                (x.Trip.StartDate >= today && x.Trip.StartDate < tomorrow && x.Trip.Status == TripStatus.Ready) ||
+                (x.Trip.Status == TripStatus.Started)
             )
             .Select(x => x.Trip)
             .ToListAsync();
