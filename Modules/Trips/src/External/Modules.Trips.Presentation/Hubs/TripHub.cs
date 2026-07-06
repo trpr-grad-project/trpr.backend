@@ -46,6 +46,17 @@ namespace Modules.Trips.Presentation.Hubs
             await base.OnConnectedAsync();
         }
 
+        public async Task UpdateLocation(Guid tripId, double latitude, double longitude)
+        {
+            await Clients.OthersInGroup(tripId.ToString())
+                .SendAsync("LocationUpdated", new
+                {
+                    UserId,
+                    TripId = tripId,
+                    Latitude = latitude,
+                    Longitude = longitude
+                });
+        }
         public async override Task OnDisconnectedAsync(Exception? exception)
         {
 
