@@ -50,6 +50,13 @@ namespace Modules.Users.Presentation.Controllers.v1
             var guides = await companyService.GetGuidesBelongingToCompany(id, cancellationToken);
             return Ok(guides);
         }
+        [HttpGet("guides")]
+        public async Task<ActionResult<List<UserResponseDto>>> GetAllGuides(
+            CancellationToken cancellationToken)
+        {
+            var guides = await companyService.GetAllGuides(cancellationToken);
+            return Ok(guides);
+        }
 
         [HttpPost("{id:guid}/guides/{guideId:guid}")]
         public async Task<IActionResult> AddGuideToCompany(

@@ -87,7 +87,6 @@ namespace Modules.Trips.Application.Services
                 notFoundKey: "Guide.NotFound",
                 cancellationToken);
 
-            await unitOfWork.SaveChangesAsync(cancellationToken);
             return tripMapper.Map(trip);
         }
         public async Task<TripResponseDto> CreateTripByUser(UserCreateTripRequestDto dto, Guid userId, CancellationToken cancellationToken)
@@ -212,7 +211,9 @@ namespace Modules.Trips.Application.Services
                     userId = userId,
                     Title = trip.Title,
                     ImageUrl = null,
-                    ParticipantUserIds = trip.Participants.Select(x => x.UserId).ToList()
+                    ParticipantUserIds = trip.Participants.Select(x => x.UserId)
+                        .Concat(trip.GuideId.HasValue ? new Guid[] { trip.GuideId.Value } : Array.Empty<Guid>())
+                        .ToList()
                 });
             }
             repositoryFactory.Repository<Trip>().Update(trip);
@@ -290,7 +291,9 @@ namespace Modules.Trips.Application.Services
                     userId = userId,
                     Title = trip.Title,
                     ImageUrl = null,
-                    ParticipantUserIds = trip.Participants.Select(x => x.UserId).ToList()
+                    ParticipantUserIds = trip.Participants.Select(x => x.UserId)
+                        .Concat(trip.GuideId.HasValue ? new Guid[] { trip.GuideId.Value } : Array.Empty<Guid>())
+                        .ToList()
                 });
                 await unitOfWork.SaveChangesAsync();
             }
@@ -301,7 +304,7 @@ namespace Modules.Trips.Application.Services
             Trip trip = await repositoryFactory
                 .Repository<Trip>()
                 .GetFirstOrDefaultByFilter(
-                    x => x.Id == tripId && x.Status == TripStatus.Published && x.UserId == userId)
+                    x => x.Id == tripId && (x.Status == TripStatus.Published || x.Status == TripStatus.Ready) && x.UserId == userId)
                 ?? throw new NotFoundException("Trip.NotFound");
             trip.Start();
             await unitOfWork.SaveChangesAsync();
@@ -316,121 +319,11 @@ namespace Modules.Trips.Application.Services
             trip.Complete();
             await unitOfWork.SaveChangesAsync();
         }
-
-        #region Helpers
-        private async Task Pay(Trip trip, double price, User joiningUser) 
-        {
-            if(trip.CreatorRole.HasFlag(UserRole.Company))
-            {
-                await payContract.Pay(trip.Id.ToString(), joiningUser.Id, price, $"Paid {price} to Company {trip.CreatedByUser!.FirstName}");
-                await payContract.Gain(trip.Id.ToString(),
-                    trip.UserId, price,
-                    $"Recieved {price} from User {joiningUser.FirstName + joiningUser.LastName} on Trip {trip.Id}");
-            }
-            else if (trip.GuideId != null)
-            {
-                await payContract.Pay(trip.Id.ToString(), joiningUser.Id, trip.Price, $"Paid {trip.Price} to Guide {trip.Guide!.FirstName + trip.Guide.LastName}");
-                await payContract.Gain(trip.Id.ToString(),
-                    trip.GuideId!.Value, trip.Price,
-                    $"Recieved {trip.Price} from User {joiningUser.FirstName + joiningUser.LastName} on Trip {trip.Id}");
-            }
-        }
-        private async Task<IDictionary<DateTime,ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
-        {
-            IDictionary<DateTime, ICollection<Place>> places = new Dictionary<DateTime, ICollection<Place>>();
-            foreach (var day in source)
-            {
-                ICollection<Place> dayPlaces = await placeService.GetPlacesAsync(day.PlacesIds);
-                places.Add(day.DayDate, dayPlaces);
-            }
-            return places;
-        }
-
-        public static IQueryable<Trip> FilterByBaseSearchRequest(IQueryable<Trip> query, BaseSearchTripRequestDto request)
-        {
-            if (request.TripType == TripType.ByGuides)
-                query = query.Where(x => (x.CreatorRole & UserRole.Guide) == UserRole.Guide);
-            else if (request.TripType == TripType.ByCompany)
-                query = query.Where(x => (x.CreatorRole & UserRole.Company) == UserRole.Company);
-            else if (request.TripType == TripType.Shared)
-                query = query.Where(x => (x.CreatorRole & UserRole.User) == UserRole.User);
-
-
-            if (request.Longitude.HasValue && request.Latitude.HasValue && request.RadiusInMeters.HasValue)
-            {
-                var point = PointUtils
-                    .PointFromCoordinates(
-                        request.Longitude.Value,
-                        request.Latitude.Value);
-                query = query.Where(x => x.Centroid.Distance(point) <= request.RadiusInMeters.Value);
-            }
-
-            if (request.ThemeId.HasValue)
-                query = query.Where(x => x.TripTheme.Id == request.ThemeId.Value);
-            if (request.GovernorateId.HasValue)
-                query = query.Where(x => x.TripGovernorates.Any(g => g.GovernorateId == request.GovernorateId.Value));
-            if (!string.IsNullOrEmpty(request.Title))
-                query = query.Where(x => x.Title.Contains(request.Title));
-            if (request.MinPrice.HasValue)
-                query = query.Where(x => x.Price >= request.MinPrice.Value);
-            if (request.MaxPrice.HasValue)
-                query = query.Where(x => x.Price <= request.MaxPrice.Value);
-            return query;
-        }
-
-        private async Task<Trip> CreateTripCore(
-            CreateTripRequestDto dto,
-            UserRole role,
-            Guid userId,
-            double price,
-            TripVisibility visibility,
-            TripPublishMode publishMode,
-            Guid? guideId,
-            string notFoundKey,
-            CancellationToken cancellationToken)
-        {
-            var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(u => u.Id == userId)
-                ?? throw new NotFoundException(notFoundKey);
-
-            var segments = await GetPlacesAsync(dto.Segments);
-
-            var theme = await repositoryFactory.Repository<Theme>().GetFirstOrDefaultByFilter(t => t.Id == dto.ThemeId)
-                ?? throw new NotFoundException("Theme.NotFound");
-            var guide = guideId.HasValue ? await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(u => u.Id == guideId.Value) : null;
-            var governorates = segments
-                .SelectMany(x => x.Value)
-                .Select(x => x.Governorate)
-                .DistinctBy(x => x.Id)
-                .ToList();
-            var trip = Trip.Create(
-                userId,
-                theme,
-                role,
-                dto.Title,
-                dto.AutoApprove,
-                dto.Description,
-                price,
-                dto.Images,
-                visibility,
-                publishMode,
-                segments,
-                dto.MaxParticipantsCount,
-                guideId,
-                dto.Segments.Select(s => s.Duration).ToList(),
-                governorates,
-                dto.StartDate,
-                dto.EndDate);
-
-            repositoryFactory.Repository<Trip>().Add(trip);
-
-            return trip;
-        }
-
         public async Task SubmitReviewAsync(
-            Guid tripId,
-            Guid reviewerId,
-            ReviewTripRequestDto request,
-            CancellationToken cancellationToken = default)
+           Guid tripId,
+           Guid reviewerId,
+           ReviewTripRequestDto request,
+           CancellationToken cancellationToken = default)
         {
             // Validate trip exists and is completed
             var trip = await repositoryFactory.Repository<Trip>()
@@ -456,8 +349,8 @@ namespace Modules.Trips.Application.Services
             var revieweeParticipant = trip.Participants.FirstOrDefault(p => p.UserId == request.RevieweeId);
 
             // Determine if reviewee is in the trip (participant, guide, or creator)
-            bool isValidReviewee = revieweeParticipant != null || 
-                                    request.RevieweeId == trip.GuideId || 
+            bool isValidReviewee = revieweeParticipant != null ||
+                                    request.RevieweeId == trip.GuideId ||
                                     request.RevieweeId == trip.UserId;
 
             if (!isValidReviewee)
@@ -466,8 +359,8 @@ namespace Modules.Trips.Application.Services
             // Check if review already exists
             var existingReview = await repositoryFactory.Repository<TripReview>()
                 .GetFirstOrDefaultByFilter(
-                    r => r.TripId == tripId && 
-                         r.ReviewerId == reviewerId && 
+                    r => r.TripId == tripId &&
+                         r.ReviewerId == reviewerId &&
                          r.RevieweeId == request.RevieweeId);
 
             if (existingReview != null)
@@ -592,6 +485,115 @@ namespace Modules.Trips.Application.Services
                 r.Rating,
                 r.Review
             )).ToList();
+        }
+
+        #region Helpers
+        private async Task Pay(Trip trip, double price, User joiningUser) 
+        {
+            if(trip.CreatorRole.HasFlag(UserRole.Company))
+            {
+                await payContract.Pay(trip.Id.ToString(), joiningUser.Id, price, $"Paid {price} to Company {trip.CreatedByUser!.FirstName}");
+                await payContract.Gain(trip.Id.ToString(),
+                    trip.UserId, price,
+                    $"Recieved {price} from User {joiningUser.FirstName + joiningUser.LastName} on Trip {trip.Id}");
+            }
+            else if (trip.GuideId != null)
+            {
+                await payContract.Pay(trip.Id.ToString(), joiningUser.Id, trip.Price, $"Paid {trip.Price} to Guide {trip.Guide!.FirstName + trip.Guide.LastName}");
+                await payContract.Gain(trip.Id.ToString(),
+                    trip.GuideId!.Value, trip.Price,
+                    $"Recieved {trip.Price} from User {joiningUser.FirstName + joiningUser.LastName} on Trip {trip.Id}");
+            }
+        }
+        private async Task<IDictionary<DateTime,ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
+        {
+            IDictionary<DateTime, ICollection<Place>> places = new Dictionary<DateTime, ICollection<Place>>();
+            foreach (var day in source)
+            {
+                ICollection<Place> dayPlaces = await placeService.GetPlacesAsync(day.PlacesIds);
+                places.Add(day.DayDate, dayPlaces);
+            }
+            return places;
+        }
+
+        public static IQueryable<Trip> FilterByBaseSearchRequest(IQueryable<Trip> query, BaseSearchTripRequestDto request)
+        {
+            if (request.TripType == TripType.ByGuides)
+                query = query.Where(x => (x.CreatorRole & UserRole.Guide) == UserRole.Guide);
+            else if (request.TripType == TripType.ByCompany)
+                query = query.Where(x => (x.CreatorRole & UserRole.Company) == UserRole.Company);
+            else if (request.TripType == TripType.Shared)
+                query = query.Where(x => (x.CreatorRole & UserRole.User) == UserRole.User);
+
+
+            if (request.Longitude.HasValue && request.Latitude.HasValue && request.RadiusInMeters.HasValue)
+            {
+                var point = PointUtils
+                    .PointFromCoordinates(
+                        request.Longitude.Value,
+                        request.Latitude.Value);
+                query = query.Where(x => x.Centroid.Distance(point) <= request.RadiusInMeters.Value);
+            }
+
+            if (request.ThemeId.HasValue)
+                query = query.Where(x => x.TripTheme.Id == request.ThemeId.Value);
+            if (request.GovernorateId.HasValue)
+                query = query.Where(x => x.TripGovernorates.Any(g => g.GovernorateId == request.GovernorateId.Value));
+            if (!string.IsNullOrEmpty(request.Title))
+                query = query.Where(x => x.Title.Contains(request.Title));
+            if (request.MinPrice.HasValue)
+                query = query.Where(x => x.Price >= request.MinPrice.Value);
+            if (request.MaxPrice.HasValue)
+                query = query.Where(x => x.Price <= request.MaxPrice.Value);
+            return query;
+        }
+
+        private async Task<Trip> CreateTripCore(
+            CreateTripRequestDto dto,
+            UserRole role,
+            Guid userId,
+            double price,
+            TripVisibility visibility,
+            TripPublishMode publishMode,
+            Guid? guideId,
+            string notFoundKey,
+            CancellationToken cancellationToken)
+        {
+            var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(u => u.Id == userId)
+                ?? throw new NotFoundException(notFoundKey);
+
+            var segments = await GetPlacesAsync(dto.Segments);
+
+            var theme = await repositoryFactory.Repository<Theme>().GetFirstOrDefaultByFilter(t => t.Id == dto.ThemeId)
+                ?? throw new NotFoundException("Theme.NotFound");
+            var guide = guideId.HasValue ? await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(u => u.Id == guideId.Value) : null;
+            var governorates = segments
+                .SelectMany(x => x.Value)
+                .Select(x => x.Governorate)
+                .DistinctBy(x => x.Id)
+                .ToList();
+            var trip = Trip.Create(
+                userId,
+                theme,
+                role,
+                dto.Title,
+                dto.AutoApprove,
+                dto.Description,
+                price,
+                dto.Images,
+                visibility,
+                publishMode,
+                segments,
+                dto.MaxParticipantsCount,
+                guideId,
+                dto.Segments.Select(s => s.Duration).ToList(),
+                governorates,
+                dto.StartDate,
+                dto.EndDate);
+
+            repositoryFactory.Repository<Trip>().Add(trip);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+            return trip;
         }
         #endregion
     }

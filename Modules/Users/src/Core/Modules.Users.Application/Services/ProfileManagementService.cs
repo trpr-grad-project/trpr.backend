@@ -1,3 +1,4 @@
+using Common.Application.Buckets;
 using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,8 @@ namespace Modules.Users.Application.Services;
 public class ProfileManagementService(
     IUsersDbContext context,
     IUnitOfWork unitOfWork,
-    ILogger<ProfileManagementService> logger)
+    ILogger<ProfileManagementService> logger,
+    IFileService fileService)
 {
     public async Task<ProfileResponseDto> CreateProfileAsync(Guid userId, CreateProfileRequestDto createRequest, CancellationToken cancellationToken = default)
     {
@@ -33,6 +35,14 @@ public class ProfileManagementService(
         UpdateProfileLanguages(profile, createRequest.LanguageIds);
         UpdateProfileInterests(profile, createRequest.InterestIds);
         UpdateProfileVibes(profile, createRequest.VibeIds);
+        if (!string.IsNullOrEmpty(createRequest.Bio))
+        {
+            profile.Bio = createRequest.Bio;
+        }
+        if (!string.IsNullOrEmpty(createRequest.AvatarUrl))
+        {
+            profile.AvatarUrl = createRequest.AvatarUrl;
+        }
         context.Profiles.Add(profile);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -60,8 +70,8 @@ public class ProfileManagementService(
             logger.LogWarning("Profile not found for user {UserId}", userId);
             throw new NotFoundException("Profile.NotFound");
         }
-
-        return ProfileMapper.ToProfileResponseDto(profile);
+        
+        return ProfileMapper.ToProfileResponseDto(profile, fileService.ResolveUrl(profile.AvatarUrl));
     }
 
     public async Task<ProfileResponseDto> UpdateProfileAsync(Guid userId, UpdateProfileBulkRequestDto updateRequest, CancellationToken cancellationToken = default)
@@ -84,6 +94,14 @@ public class ProfileManagementService(
         UpdateProfileLanguages(profile, updateRequest.LanguageIds);
         UpdateProfileInterests(profile, updateRequest.InterestIds);
         UpdateProfileVibes(profile, updateRequest.VibeIds);
+        if(!string.IsNullOrEmpty(updateRequest.Bio))
+        {
+            profile.Bio = updateRequest.Bio;
+        }
+        if(!string.IsNullOrEmpty(updateRequest.AvatarUrl))
+        {
+            profile.AvatarUrl = updateRequest.AvatarUrl;
+        }
         context.Profiles.Update(profile);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

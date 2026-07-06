@@ -38,7 +38,7 @@ public class ProfileResponseDto
     public List<LanguageResponseDto> Languages { get; set; } = new();
     public List<InterestResponseDto> Interests { get; set; } = new();
     public List<VibeResponseDto> Vibes { get; set; } = new();
-    public ProfileNotificationSettingsDto? NotificationSettings { get; set; }
+    public string AvatarUrl { get; set; } = string.Empty;
 }
 
 public class ProfileLookupResponseDto

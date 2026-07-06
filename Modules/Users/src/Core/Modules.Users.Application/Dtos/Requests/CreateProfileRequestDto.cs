@@ -6,4 +6,5 @@ public class CreateProfileRequestDto
     public List<int> LanguageIds { get; set; } = [];
     public List<int> InterestIds { get; set; } = [];
     public List<int> VibeIds { get; set; } = [];
+    public string AvatarUrl { get; set; } = string.Empty;
 }
