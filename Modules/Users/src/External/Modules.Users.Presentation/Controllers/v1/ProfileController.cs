@@ -12,7 +12,7 @@ namespace Modules.Users.Presentation.Controllers.v1
     [ApiController]
     [Authorize]
     [Route("api/v1/[controller]")]
-    public class ProfileController(ProfileManagementService profileManagementService, UserService userService, ILogger<ProfileController> logger) : ControllerBase
+    public class ProfileController(ProfileManagementService profileManagementService, UserService userService, ILogger<ProfileController> logger, AdminUserService adminUserService) : ControllerBase
     {
         public Guid UserId => User.GetUserId();
         /// <summary>
@@ -26,15 +26,11 @@ namespace Modules.Users.Presentation.Controllers.v1
             var profile = await profileManagementService.CreateProfileAsync(UserId, createRequest, cancellationToken);
             return Ok(profile);
         }
-
-        /// <summary>
-        /// Get user profile with all languages, interests, and vibes
-        /// </summary>
-        [HttpGet("me")]
-        public async Task<ActionResult<ProfileResponseDto>> GetProfile(CancellationToken cancellationToken)
+        [HttpGet("my-profile")]
+        public async Task<ActionResult<UserResponseDto>> GetMyProfile(CancellationToken cancellationToken)
         {
-            var profile = await profileManagementService.GetProfileByUserIdAsync(UserId, cancellationToken);
-            return Ok(profile);
+            var result = await adminUserService.GetUserByIdAsync(UserId, cancellationToken);
+            return Ok(result);
         }
 
         /// <summary>

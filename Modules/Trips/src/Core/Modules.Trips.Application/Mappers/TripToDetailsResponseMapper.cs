@@ -1,5 +1,6 @@
 using Common.Application;
 using Common.Application.Buckets;
+using Modules.Trips.Application.Dtos.Requests;
 using Modules.Trips.Application.Dtos.Responses;
 using Modules.Trips.Domain.Entities;
 
@@ -10,6 +11,20 @@ namespace Modules.Trips.Application.Mappers
         public TripDetailsResponseDto Map(Trip source)
         {
             ICollection<string> imagePaths = fileService.ResolveUrls(source.Images);
+            UserResponseDto? guide = new UserResponseDto();
+            if (source.Guide != null)
+                guide = new UserResponseDto
+                {
+                    Id = source.Guide.Id,
+                    UserName = source.Guide.UserName,
+                    FirstName = source.Guide.FirstName,
+                    LastName = source.Guide.LastName,
+                    Email = source.Guide.Email,
+                    PhoneNumber = source.Guide.PhoneNumber,
+                    Rating = source.Guide.Rating,
+                };
+            else
+                guide = null;
             return new TripDetailsResponseDto
             {
                 Id = source.Id,
@@ -23,6 +38,7 @@ namespace Modules.Trips.Application.Mappers
                     PhoneNumber = source.CreatedByUser.PhoneNumber,
                     Rating = source.CreatedByUser.Rating,
                 },
+                Guide = guide,
                 AutoApprove = source.AutoApprove,
                 GuideId = source.GuideId,
                 Theme = source.TripTheme.Name,
