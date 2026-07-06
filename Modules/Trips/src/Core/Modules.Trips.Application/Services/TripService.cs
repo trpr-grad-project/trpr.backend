@@ -99,9 +99,9 @@ namespace Modules.Trips.Application.Services
             var tripParticipant = TripParticipant.Create(trip.Id, userId);
             tripParticipant.Approve();
             repositoryFactory.Repository<TripParticipant>().Add(tripParticipant);
-            if(trip.TripVisibility == TripVisibility.Private)
+            if (trip.TripVisibility == TripVisibility.Private)
                 await UpdateStatus(new UpdateTripStatusRequestDto { Id = trip.Id, IsApproved = true }, cancellationToken);
-            
+
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return tripMapper.Map(trip);
         }
@@ -306,9 +306,11 @@ namespace Modules.Trips.Application.Services
             Trip trip = await repositoryFactory
                 .Repository<Trip>()
                 .GetFirstOrDefaultByFilter(
-                    x => x.Id == tripId && (x.Status == TripStatus.Published || x.Status == TripStatus.Ready) && x.UserId == userId)
+                    x => x.Id == tripId &&
+                    (x.Status == TripStatus.Published || x.Status == TripStatus.Ready) && x.UserId == userId
+                    , x => x.Include(x => x.Participants))
                 ?? throw new NotFoundException("Trip.NotFound");
-            if(trip.Status != TripStatus.Ready)
+            if (trip.Status != TripStatus.Ready)
             {
                 await conversationsContract.CreateConversation(new CreateConversationDto
                 {
@@ -335,9 +337,9 @@ namespace Modules.Trips.Application.Services
         }
 
         #region Helpers
-        private async Task Pay(Trip trip, double price, User joiningUser) 
+        private async Task Pay(Trip trip, double price, User joiningUser)
         {
-            if(trip.CreatorRole.HasFlag(UserRole.Company))
+            if (trip.CreatorRole.HasFlag(UserRole.Company))
             {
                 await payContract.Pay(trip.Id.ToString(), joiningUser.Id, price, $"Paid {price} to Company {trip.CreatedByUser!.FirstName}");
                 await payContract.Gain(trip.Id.ToString(),
@@ -352,7 +354,7 @@ namespace Modules.Trips.Application.Services
                     $"Recieved {trip.Price} from User {joiningUser.FirstName + joiningUser.LastName} on Trip {trip.Id}");
             }
         }
-        private async Task<IDictionary<DateTime,ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
+        private async Task<IDictionary<DateTime, ICollection<Place>>> GetPlacesAsync(ICollection<DayDto> source)
         {
             IDictionary<DateTime, ICollection<Place>> places = new Dictionary<DateTime, ICollection<Place>>();
             foreach (var day in source)
