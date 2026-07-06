@@ -99,7 +99,9 @@ namespace Modules.Trips.Application.Services
             var tripParticipant = TripParticipant.Create(trip.Id, userId);
             tripParticipant.Approve();
             repositoryFactory.Repository<TripParticipant>().Add(tripParticipant);
-
+            if(trip.TripVisibility == TripVisibility.Private)
+                await UpdateStatus(new UpdateTripStatusRequestDto { Id = trip.Id, IsApproved = true }, cancellationToken);
+            
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return tripMapper.Map(trip);
         }
@@ -306,6 +308,18 @@ namespace Modules.Trips.Application.Services
                 .GetFirstOrDefaultByFilter(
                     x => x.Id == tripId && (x.Status == TripStatus.Published || x.Status == TripStatus.Ready) && x.UserId == userId)
                 ?? throw new NotFoundException("Trip.NotFound");
+            if(trip.Status == TripStatus.Published)
+            {
+                await conversationsContract.CreateConversation(new CreateConversationDto
+                {
+                    userId = userId,
+                    Title = trip.Title,
+                    ImageUrl = null,
+                    ParticipantUserIds = trip.Participants.Select(x => x.UserId)
+                        .Concat(trip.GuideId.HasValue ? new Guid[] { trip.GuideId.Value } : Array.Empty<Guid>())
+                        .ToList()
+                });
+            }
             trip.Start();
             await unitOfWork.SaveChangesAsync();
         }
