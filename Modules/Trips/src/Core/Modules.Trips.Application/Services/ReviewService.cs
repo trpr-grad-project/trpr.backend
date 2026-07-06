@@ -72,16 +72,17 @@ namespace Modules.Trips.Application.Services
                 request.Review);
 
             repositoryFactory.Repository<TripReview>().Add(review);
-
+            
             // If reviewee is a participant, update their rating on trip
             if (revieweeParticipant != null)
             {
                 revieweeParticipant.MakeReview(request.Rating, request.Review);
                 repositoryFactory.Repository<TripParticipant>().Update(revieweeParticipant);
-
+                var user = await repositoryFactory.Repository<User>().GetFirstOrDefaultByFilter(x => x.Id == revieweeParticipant.UserId)
+                    ?? throw new NotFoundException("User.NotFound");
                 if (request.Rating.HasValue)
                 {
-                    await ApplyRatingAndPropagate(revieweeParticipant.User, request.Rating.Value, request.Review);
+                    await ApplyRatingAndPropagate(user, request.Rating.Value, request.Review);
                 }
             }
             // If reviewee is the guide, update guide's user rating
