@@ -2,6 +2,7 @@ using System.Text.Json;
 using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Modules.Conversations.Application.Abstractions;
 using Modules.Conversations.Domain.Entities;
 
@@ -24,6 +25,22 @@ public class ChatHub(RepositoryFactory repositoryFactory) : Hub
             await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
 
         await base.OnConnectedAsync();
+    }
+
+    public async Task ListenToConversation(Guid conversationId)
+    {
+        // Optional: verify the user belongs to this conversation
+        var isParticipant = await repositoryFactory
+            .Repository<ConversationParticipant>()
+            .GetQueryable()
+            .AnyAsync(x =>
+                x.ConversationId == conversationId &&
+                x.UserId == UserId);
+
+        if (!isParticipant)
+            throw new HubException("You are not a participant in this conversation.");
+
+        await Groups.AddToGroupAsync(Context.ConnectionId, conversationId.ToString());
     }
 
     public async override Task OnDisconnectedAsync(Exception? exception)

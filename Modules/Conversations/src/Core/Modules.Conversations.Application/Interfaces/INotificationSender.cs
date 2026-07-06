@@ -6,4 +6,5 @@ namespace Modules.Conversations.Application.Interfaces;
 public interface INotificationSender
 {
     public Task SendMessageAsync(Message message, CancellationToken cancellationToken = default);
+    public Task AddParticipantsToConversation(Conversation conversation, CancellationToken cancellationToken = default);
 }

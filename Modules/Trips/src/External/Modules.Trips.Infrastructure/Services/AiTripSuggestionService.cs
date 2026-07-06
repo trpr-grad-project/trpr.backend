@@ -4,6 +4,7 @@ using Modules.Trips.Infrastructure.Clients;
 using Modules.Trips.Infrastructure.Dtos.Requests;
 using Modules.Trips.Infrastructure.Mappers;
 using Modules.Trips.Application.Dtos.Responses;
+using Modules.Trips.Infrastructure.Dtos.Responses;
 namespace Modules.Trips.Infrastructure.Services;
 
 public class AiTripSuggestionService(
@@ -19,6 +20,7 @@ public class AiTripSuggestionService(
             NumberOfDays = numberOfDays,
             DateFrom = startDate
         };
-        return await tripPlanClient.GeneratePlanAsync(tripPlanRequest);
+        TripPlanResponseDto tripPlanResponseDto = await tripPlanClient.GeneratePlanAsync(tripPlanRequest);
+        return tripPlanResponseDto;
     }
 }

@@ -8,6 +8,15 @@ namespace Modules.Conversations.Infrastructure.Services;
 
 public class NotificationSender(IHubContext<ChatHub> hubContext) : INotificationSender
 {
+    public async Task AddParticipantsToConversation(Conversation conversation, CancellationToken cancellationToken = default)
+    {
+        foreach (var participant in conversation.Participants)
+            await hubContext.Clients.User(participant.UserId.ToString()).SendAsync("NewChatCreated", new
+            {
+                conversation.Id
+            }, cancellationToken: cancellationToken);
+    }
+
     public async Task SendMessageAsync(Message message, CancellationToken cancellationToken = default)
     {
         await hubContext.Clients.Group(message.ConversationId.ToString()).SendAsync("ReceiveMessage", new

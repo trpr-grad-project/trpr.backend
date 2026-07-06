@@ -26,6 +26,7 @@ public class ChatService(
         foreach (var participant in participants)
             repositoryFactory.Repository<ConversationParticipant>().Add(participant);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        await notificationSender.AddParticipantsToConversation(conversation, cancellationToken);
         return new ConversationDetailsResponseDto
         {
             Id = conversation.Id.ToString(),
