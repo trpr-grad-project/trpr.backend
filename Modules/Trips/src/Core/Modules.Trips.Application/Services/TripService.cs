@@ -201,7 +201,11 @@ namespace Modules.Trips.Application.Services
             repositoryFactory.Repository<TripParticipant>().Add(tripParticipant);
             if (trip.AutoApprove == true)
             {
-                await Pay(trip, trip.Price, tripParticipant.User);
+                var joiningUser = await repositoryFactory.Repository<User>()
+                    .GetFirstOrDefaultByFilter(x => x.Id == userId)
+                    ?? throw new NotFoundException("User.NotFound");
+
+                await Pay(trip, trip.Price, joiningUser);
                 tripParticipant.Approve();
             }
 
@@ -279,7 +283,11 @@ namespace Modules.Trips.Application.Services
                 return;
 
             tripParticipant.Approve();
-            await Pay(trip, trip.Price, tripParticipant.User);
+            var joiningUser = await repositoryFactory.Repository<User>()
+                .GetFirstOrDefaultByFilter(x => x.Id == userId)
+                ?? throw new NotFoundException("User.NotFound");
+
+            await Pay(trip, trip.Price, joiningUser);
             repositoryFactory.Repository<TripParticipant>().Update(tripParticipant);
             await unitOfWork.SaveChangesAsync();
             if (trip.MaxParticipantsCount == trip.Participants.Count(x => x.Approved == true))
