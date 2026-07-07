@@ -21,7 +21,7 @@ namespace Modules.Trips.Presentation.Controllers.v1
         public Guid UserId => User.GetUserId();
         public ICollection<string> UserRoles => User.GetRoles();
 
-        [HttpPost]
+        [HttpPost("location")]
         [Authorize]
         public async Task<ActionResult> UpdateLocation(
             [FromQuery] Guid tripId,
