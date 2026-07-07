@@ -4,5 +4,4 @@ namespace Modules.Users.Application.Dtos.Requests
     {
         public string Token { get; set; } = string.Empty;
     }
-
 }

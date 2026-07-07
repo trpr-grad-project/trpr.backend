@@ -4,6 +4,8 @@ using Modules.Users.Application.Dtos.Requests;
 using Modules.Users.Application.Interfaces;
 using Modules.Users.Application.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using Common.Presentation.Extensions;
 
 namespace Modules.Users.Presentation.Controllers.v1
 {
@@ -11,6 +13,21 @@ namespace Modules.Users.Presentation.Controllers.v1
     [Route("api/v1/auth")]
     public class AuthController(UserService userService) : ControllerBase
     {
+        public Guid UserId => User.GetUserId();
+        /// <summary>
+        /// Get paginated list of users with optional search by username
+        /// </summary>
+        [HttpPut("password")]
+        [Authorize]
+        [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<UserResponseDto>> UpdatePassword(
+            [FromQuery] ChangePasswordRequestDto request,
+            CancellationToken cancellationToken)
+        {
+            var result = await userService.ChangePassword(UserId, request, cancellationToken);
+            return Ok(result);
+        }
+
         /// <summary>
         /// Refresh token endpoint
         /// </summary>
