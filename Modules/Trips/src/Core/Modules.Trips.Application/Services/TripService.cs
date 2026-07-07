@@ -116,7 +116,8 @@ namespace Modules.Trips.Application.Services
             if (userId.HasValue)
                 trips = trips.Where(x =>
                     x.UserId == userId.Value ||
-                    x.Participants.Any(p => p.UserId == userId.Value)
+                    x.Participants.Any(p => p.UserId == userId.Value) ||
+                    x.GuideId == userId.Value 
                 );
             if (status.HasValue)
                 trips = trips.Where(x => x.Status == status.Value);
