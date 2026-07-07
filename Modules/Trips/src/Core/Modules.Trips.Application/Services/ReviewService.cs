@@ -117,6 +117,7 @@ namespace Modules.Trips.Application.Services
                 RatingCount = user.RatingCount,
                 Review = review
             });
+            await unitOfWork.SaveChangesAsync();
         }
 
         public async Task<ICollection<ReviewResponseDto>> GetTripReviewsAsync(

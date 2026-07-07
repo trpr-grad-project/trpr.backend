@@ -24,13 +24,6 @@ public class VibeResponseDto
     public string Name { get; set; } = string.Empty;
 }
 
-public class ProfileNotificationSettingsDto
-{
-    public bool TripUpdates { get; set; }
-    public bool Messages { get; set; }
-    public bool Promotions { get; set; }
-}
-
 public class ProfileResponseDto
 {
     public Guid Id { get; set; }

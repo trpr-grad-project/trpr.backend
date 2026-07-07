@@ -15,7 +15,9 @@ public static class ProfileMapper
             Languages = [.. profile.Languages.Select(x => x.Language.ToLanguageResponseDto())],
             Interests = [.. profile.Interests.Select(x => x.Interest.ToInterestResponseDto())],
             Vibes = [.. profile.Vibes.Select(x => x.Vibe.ToVibeResponseDto())],
-            AvatarUrl = avatar
+            AvatarUrl = avatar,
+            Reviews = profile.Reviews,
+            Rating = profile.Rating,
         };
     }
 
