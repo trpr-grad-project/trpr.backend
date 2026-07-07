@@ -1,22 +1,44 @@
-﻿using Common.Application.Dtos;
+﻿using System.Security.Cryptography.X509Certificates;
+using Common.Application.Dtos;
 using Common.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging.Abstractions;
 using Modules.Trips.Application.Dtos.Requests;
 using Modules.Trips.Application.Dtos.Responses;
 using Modules.Trips.Application.Services;
 using Modules.Trips.Domain.ValueObjects;
+using Modules.Trips.Presentation.Hubs;
 
 namespace Modules.Trips.Presentation.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/trip")]
-    public class TripController(TripService tripService) : ControllerBase
+    public class TripController(TripService tripService, IHubContext<TripHub> context) : ControllerBase
     {
         public Guid UserId => User.GetUserId();
         public ICollection<string> UserRoles => User.GetRoles();
+
+        [HttpPost("location")]
+        [Authorize]
+        public async Task<ActionResult> UpdateLocation(
+            [FromQuery] Guid tripId,
+            [FromQuery] double Lat,
+            [FromQuery] double Long)
+        {
+            await context.Clients.Group(tripId.ToString())
+                .SendAsync("LocationUpdated", new
+                {
+                    UserId,
+                    TripId = tripId,
+                    Latitude = Lat,
+                    Longitude = Long
+                });
+            return NoContent();
+        }
+
         [HttpGet("suggestion")]
         [Authorize]
         public async Task<ActionResult<Dictionary<int, RankedItinerary>>> GetTripSuggestion([FromQuery] TripSuggestionRequestDto requestDto)
