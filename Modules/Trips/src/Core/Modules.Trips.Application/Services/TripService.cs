@@ -251,7 +251,7 @@ namespace Modules.Trips.Application.Services
                 .Repository<Trip>()
                 .GetFirstOrDefaultByFilter(
                     x => x.Id == dto.TripId && x.Status == TripStatus.Published && x.UserId == userId,
-                    x => x.Include(x => x.Participants))
+                    x => x.Include(x => x.Participants).Include(x => x.Guide))
                 ?? throw new NotFoundException("Trip.NotFound");
 
             if (trip.UserId == dto.UserId)
