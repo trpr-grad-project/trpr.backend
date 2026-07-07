@@ -11,6 +11,8 @@ using Modules.Users.Domain.ValueObjects;
 using System.Net.Mail;
 using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Modules.Users.Application.Mappers;
 
 namespace Modules.Users.Application.Services;
 
@@ -23,6 +25,24 @@ OtpHandlerFactory otpHandlerFactory,
 ILogger<UserService> logger,
 IUnitOfWork unitOfWork)
 {
+    public async Task<UserResponseDto> ChangePassword(Guid userId, ChangePasswordRequestDto request, CancellationToken cancellationToken)
+    {
+        string passwordHash = BCrypt
+            .Net
+            .BCrypt
+            .HashPassword(request.OldPassword);
+        string newPasswordHash = BCrypt
+            .Net
+            .BCrypt
+            .HashPassword(request.NewPassword);
+        User user = await userRepository
+            .GetFirstOrDefaultByFilter(
+                x => x.Id == userId &&
+                x.PasswordHash == passwordHash) ?? throw new NotFoundException("User.NotFound");
+        user.SetPasswordHash(newPasswordHash);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        return user.ToResponseDto();
+    }
     public async Task<OtpResponseDto> CreateUserAsync(CreateUserRequestDto createUserRequestDto, CancellationToken cancellationToken = default)
     {
         User? user = await userRepository.GetFirstOrDefaultByFilter(x => x.UserName == createUserRequestDto.Identifier);
